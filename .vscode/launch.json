@@ -1,0 +1,29 @@
+ {
+     "version": "0.2.0",
+     "configurations": [
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}/src"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Webpack",
+            "program":"${workspaceFolder}/node_modules/webpack/bin/webpack.js",
+            "args": [
+               "--config", "./webpack.config.js"
+            ],
+            "env" : { "NODE_ENV" : "dev" }
+    }],
+     "compounds": []
+ }

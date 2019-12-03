@@ -1,0 +1,28 @@
+#speciesSelectorDiv {
+  .has-overall-feedback {
+    font-weight: 600;
+  }
+
+  .has-detailed-feedback {
+    font-style: italic;
+  }
+
+  .has-no-data-loaded {
+    background-color: #ddd;
+  }
+
+  .species-option {
+    color: #323232;
+  }
+
+  .species-option.has-overall-feedback,
+  .species-option.has-detailed-feedback {
+    color: #323232;
+  }
+
+  .species-option.disabled {
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(100, 100, 100, 0.5);
+  }
+}
