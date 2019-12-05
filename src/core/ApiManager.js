@@ -10,10 +10,12 @@ export default function ApiManager(props = {}) {
     }
   ) => {
     const requestUrl = config.URL.speciesByUser + "/query";
+    //THIS NEEDS TO BE PUT INTO PRODUCTION, RIGHT NOW TESTING WITH USER "2"
+    // ACTUAL OUTPUT WILL BE EMAILS IN THE LAYER
     //const whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${options.email}'`;
     const whereClause = `${config.FIELD_NAME.speciesByUser.email} = 2`;
-    console.log("query species by user url: " + requestUrl)
-    console.log("query species by user where: " + whereClause)
+    console.log("query species by user url: ", requestUrl)
+    console.log("query species by user where: ", whereClause)
     return queryForFeaturesGet(requestUrl, {
       where: whereClause,
       outFields: "*",
@@ -27,17 +29,20 @@ export default function ApiManager(props = {}) {
       speciesCode: []
     }
   ) => {
+    console.log("DID A USER SPECIES QUERY")
     const requestUrl = config.URL.speciesLookupTable + "/query";
 
-    const whereClause = options.speciesCode
+    let whereClause = options.speciesCode
       .map(d => {
         //console.log(d)
         return `${config.FIELD_NAME.speciesLookup.speciesCode} = '${d}'`;
       })
       .join(" OR ");
-
+    console.log("=======", options)
+    // NS: This added in to search by email (expertID) to filter the speciesLookup table
+    whereClause = "("+ whereClause+ ") AND " +`${config.FIELD_NAME.speciesByUser.email} = '${options.email}'`
     const bodyFormData = new FormData();
-    console.log("querySpeciesLookupTable where: " + whereClause)
+    console.log("USER: querySpeciesLookupTable whereClause: ", whereClause)
 
     bodyFormData.append("where", whereClause);
     bodyFormData.append("outFields", "*");
@@ -51,6 +56,7 @@ export default function ApiManager(props = {}) {
   };
 
   const queryAllFeaturesFromSpeciesLookupTable = () => {
+    console.log("DID AN ALL QUERY for _species _ BECAUSE ITS THE ADMIN....")
     const requestUrl = config.URL.speciesLookupTable + "/query";
 
     const bodyFormData = new FormData();
@@ -82,14 +88,14 @@ export default function ApiManager(props = {}) {
   }; 
 
 
-  const queryHucsBySpecies = speciesKey => {
+  const queryEcoShapeBySpecies = speciesKey => {
     // const requestUrl = config.URL.speciesExtent[speciesKey] ? config.URL.speciesExtent[speciesKey] + '/query' : null;
     const requestUrl = config.URL.speciesDistribution + "/query";
     const whereClause = `${config.FIELD_NAME.speciesDistribution.speciesCode} = ${speciesKey}`;  
 
     if (requestUrl) {
-      console.log("queryHucsBySpecies url: " + requestUrl)
-      console.log("queryHucsBySpecies where: " +  whereClause)
+      console.log("queryEcoShapeBySpecies url: " + requestUrl)
+      console.log("queryEcoShapeBySpecies where: " +  whereClause)
       return queryForFeaturesGet(
         requestUrl,
         {
@@ -98,7 +104,7 @@ export default function ApiManager(props = {}) {
           f: "json",
           token: props.oauthManager.getToken()
         },
-        "no huc features for selected species"
+        "no ecoshape features for selected species"
       );
     } else {
       console.log("species extent table url is not found for", speciesKey);
@@ -410,7 +416,7 @@ export default function ApiManager(props = {}) {
   return {
     querySpeciesLookupTable,
     queryAllFeaturesFromSpeciesLookupTable,
-    queryHucsBySpecies,
+    queryEcoShapeBySpecies,
     queryStatusTable,
     fetchFeedback,
     deleteFromFeedbackTable,

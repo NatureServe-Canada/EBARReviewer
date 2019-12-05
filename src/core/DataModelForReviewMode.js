@@ -1,20 +1,20 @@
 export default function(){
 
-    let hucsWithFeedbacks = {};
+    let ecoShapesWithFeedbacks = {}; //hucsWithFeedbacks
 
-    const setHucsWithFeedbacks = (species, features)=>{
-        hucsWithFeedbacks[species] = features;
+    const setEcosWithFeedbacks = (species, features)=>{
+        ecoShapesWithFeedbacks[species] = features;
     };
 
-    const getHucsWithFeedbacks = (species)=>{
+    const getEcosWithFeedbacks = (species)=>{
         if(!species){
-            console.error('species is required to get Hucs with Feedbacks');
+            console.error('species is required to get ecoshapes with Feedbacks');
         }
-        return hucsWithFeedbacks[species];
+        return ecoShapesWithFeedbacks[species];
     };
 
     return {
-        setHucsWithFeedbacks,
-        getHucsWithFeedbacks
+        setEcosWithFeedbacks,
+        getEcosWithFeedbacks
     }
 }

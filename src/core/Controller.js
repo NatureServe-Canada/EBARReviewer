@@ -36,29 +36,31 @@ export default function Controller(props = {}) {
       // const portalUser = await oauthManager.init();
 
       const portalUser = oauthManager.getPoralUser();
-
       const speciesByUsers = await apiManager.querySpeciesByUser({
         email: portalUser.email
       });
-      console.log("speciesByUsers result: "+ speciesByUsers)
+      console.log("speciesByUsers result: ", speciesByUsers)
       const distinctUserSpecies = getDistinctSpeciesCodeToReview(
         speciesByUsers
       );
 
       const userIsAdmin = distinctUserSpecies.some(itm => itm == -1);
+      console.log("admin: ", userIsAdmin)
+      //overriding admin user because we want to test as a user, despite being logged in as admin
       const sepeciesData =
-        portalUser.username === "NSReviewToolAdmin" ||
+        portalUser.username === "gisadmin11" ||
         (distinctUserSpecies && distinctUserSpecies.length > 0 && userIsAdmin)
           ? await apiManager.queryAllFeaturesFromSpeciesLookupTable()
           : await apiManager.querySpeciesLookupTable({
-              speciesCode: distinctUserSpecies
+              speciesCode: distinctUserSpecies,
+              email: 2 //portalUser.email
             });
-      console.log("sepeciesData == ");
-      console.log(sepeciesData)
+      console.log("sepeciesData == ", sepeciesData);
+  
       const statusData = await apiManager.queryStatusTable();
       state.domains = statusData;
-      console.log("this is the status data: ")
-      console.log(statusData)
+      console.log("this is the status data: ", statusData)
+      
 /*       for (var i=0; i< statusData.length; i++){
         if (statusData[i].description =="Add Remove"){
           initStatusTable(statusData[i]);
@@ -93,10 +95,10 @@ export default function Controller(props = {}) {
       },
 
       onSubmitHandler: data => {
-        // console.log('feedback manager onSubmitHandler', data);
+        console.log('feedback manager onSubmitHandler', data);
         postFeedback(data);
-        showHucFeatureOnMap(data.hucID, data.status, data);
-        resetSelectedHucFeature();
+        showEcoFeatureOnMap(data.hucID, data.status, data);
+        resetSelectedEcoFeature();
 
         controllerProps.onDeatiledFeedbackSubmit(data);
       },
@@ -104,8 +106,8 @@ export default function Controller(props = {}) {
       onRemoveHandler: data => {
         // console.log('feedback manager onRemoveHandler', data);
         deleteFeedback(data);
-        showHucFeatureOnMap(data.hucID);
-        resetSelectedHucFeature();
+        showEcoFeatureOnMap(data.hucID);
+        resetSelectedEcoFeature();
       }
     });
   };
@@ -116,7 +118,7 @@ export default function Controller(props = {}) {
     overallFeedbacks
   ) => {
     const speciesWithDataLoaded = await apiManager.getDistinctSpeciesCodeFromModelingExtent();
-    // console.log(speciesWithDataLoaded)
+    console.log("initSpeciesLookupTable: ", speciesWithDataLoaded)
 
     const speciesWithOverallFeedback = {};
     const speciesWithDeatiledFeedback = {};
@@ -148,7 +150,7 @@ export default function Controller(props = {}) {
         speciesWithDataLoaded.indexOf(species) !== -1 ? true : false;
       return d.attributes;
     });
-
+    console.log("this data is going from initSpeciesLookupTable in controller to the dataModel.setSpeciesLookup:", data)
     dataModel.setSpeciesLookup(data);
 
     controllerProps.speciesDataOnReady(data);
@@ -176,29 +178,28 @@ export default function Controller(props = {}) {
   }; 
 
   // get list of hucs by the species code (modelling extent), then render these hucs on map
-  const searchHucsBySpecies = async speciesKey => {
-    console.log("the speciesKey from searchHucsBySpecies is: "+ speciesKey)
-    let data = dataModel.getHucsBySpecies(speciesKey);
-    console.log(speciesKey)
-    console.log("is there data in getHucsBySpecieis: " + data)
+  const searchEcoShapesBySpecies = async speciesKey => {
+    console.log("the speciesKey from searchEcoShapesBySpecies is: ", speciesKey)
+    let data = dataModel.getEcoShpsBySpecies(speciesKey);
+    console.log("is there data in searchEcoShapesBySpecies: ", data)
     if (data) {
-      renderHucsBySpeciesDataOnMap({ data, speciesKey });
+      renderEcoShpsBySpeciesDataOnMap({ data, speciesKey });
     } else {
       try {
-        console.log("No Data in getHucsBySpecieis, so trying to do a query")
-        data = await apiManager.queryHucsBySpecies(speciesKey);
+        console.log("No Data in searchEcoShapesBySpecies, so trying to do a query")
+        data = await apiManager.queryEcoShapeBySpecies(speciesKey);
 
         data = data.map(d => {
           return d.attributes;
         });
 
-        dataModel.setHucsBySpecies(speciesKey, data);
-
-        renderHucsBySpeciesDataOnMap({ data, speciesKey });
+        dataModel.setEcoShpsBySpecies(speciesKey, data);
+        
+        renderEcoShpsBySpeciesDataOnMap({ data, speciesKey });
       } catch (err) {
         console.error(err);
         // if no hucs features returned, pass an empty array so the map will re-render the hucs layers with no highlighted features
-        renderHucsBySpeciesDataOnMap({
+        renderEcoShpsBySpeciesDataOnMap({
           data: [],
           speciesKey
         });
@@ -372,7 +373,7 @@ export default function Controller(props = {}) {
         controllerProps.clearMapGraphics();
 
         data.forEach(d => {
-          showHucFeatureOnMap(d.hucID, d.status, d);
+          showEcoFeatureOnMap(d.hucID, d.status, d);
         });
 
         controllerProps.feedbackByUsersForReviewModeOnReady(data);
@@ -497,7 +498,7 @@ export default function Controller(props = {}) {
   const getHucsWithFeedbacksForReviewMode = async () => {
     const species = dataModel.getSelectedSpecies();
 
-    if (dataModelForReviewMode.getHucsWithFeedbacks(species)) {
+    if (dataModelForReviewMode.getEcosWithFeedbacks(species)) {
       renderListOfHucsWithFeedbacks();
     } else {
       try {
@@ -508,7 +509,7 @@ export default function Controller(props = {}) {
           returnDistinctValues: true
         });
 
-        dataModelForReviewMode.setHucsWithFeedbacks(species, feedbacks);
+        dataModelForReviewMode.setEcosWithFeedbacks(species, feedbacks);
 
         renderListOfHucsWithFeedbacks();
       } catch (err) {
@@ -517,13 +518,13 @@ export default function Controller(props = {}) {
     }
   };
 
-  const renderHucsBySpeciesDataOnMap = (
+  const renderEcoShpsBySpeciesDataOnMap = (
     options = {
       data: null,
       speciesKey: ""
     }
   ) => {
-    const ecos = options.data || dataModel.getHucsBySpecies();
+    const ecos = options.data || dataModel.getEcoShpsBySpecies();
 
     if (options.speciesKey) {
       // // TODO: need to use a single feature service instead of separate ones
@@ -537,8 +538,8 @@ export default function Controller(props = {}) {
       //controllerProps.showToPredictedHabitatOnMap(options.speciesKey);
     }
 
-    // mapControl.highlightHucs(hucs);
-    const hucIds = [
+    // mapControl.highlightEcos(hucs);
+    const ecoIds = [
       ...new Set(
         ecos.map(data => {
           let currId = data[config.FIELD_NAME.speciesDistribution.ecoShapeID];
@@ -550,30 +551,30 @@ export default function Controller(props = {}) {
       )
     ];
 
-    if (hucIds.length === 0) {
+    if (ecoIds.length === 0) {
       const species = dataModel.getSelectedSpecies();
       const feedbackData = feedbackManager.getFeedbackDataBySpecies(species);
       if (feedbackData) {
         Object.keys(feedbackData).forEach(function(key) {
-          hucIds.push(feedbackData[key].hucID);
+          ecoIds.push(feedbackData[key].hucID);
         });
       }
     }
-    controllerProps.zoomToHucsOnMap(hucIds);
-
-    controllerProps.highligtHucsOnMap(hucIds);
+    controllerProps.zoomToEcoShpsOnMap(ecoIds);
+    
+    controllerProps.highligtEcosOnMap(ecoIds);
 
     if (!isReviewMode) {
-      renderHucWithFeedbackDataOnMap();
+      renderEcoWithFeedbackDataOnMap();
     }
   };
-
-  const renderHucWithFeedbackDataOnMap = data => {
+  
+  const renderEcoWithFeedbackDataOnMap = data => {
     const species = dataModel.getSelectedSpecies();
     data = data || feedbackManager.getFeedbackDataBySpecies(species);
 
-    // console.log('renderHucWithFeedbackDataOnMap >>> species', species);
-    // console.log('renderHucWithFeedbackDataOnMap >>> data', data);
+    // console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
+    // console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
 
     if (data) {
       Object.keys(data).forEach(function(key) {
@@ -581,8 +582,8 @@ export default function Controller(props = {}) {
 
         const ecoID = data[key].hucID;
         const status = data[key].status;
-
-        showHucFeatureOnMap(ecoID, status, data[key]);
+        console.log("renderEcoWithFeedbackDataOnMap ::  ecoid: " + ecoID + " status: " + status)
+        showEcoFeatureOnMap(ecoID, status, data[key]);
       });
     }
   };
@@ -592,9 +593,9 @@ export default function Controller(props = {}) {
 
     const ecoID =
       state.selectedHucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
-
+    console.log("setSelectedHucFeature ", ecoID)
     if (!isReviewMode) {
-      dataModel.setSelectedHuc(ecoID);
+      dataModel.setSelectedEcoShp(ecoID);
 
       // console.log(selectedHucFeature);
       openFeedbackManager();
@@ -604,14 +605,14 @@ export default function Controller(props = {}) {
     }
   };
 
-  const resetSelectedHucFeature = () => {
+  const resetSelectedEcoFeature = () => {
     state.selectedHucFeature = null;
 
-    dataModel.setSelectedHuc();
+    dataModel.setSelectedEcoShp();
 
-    // mapControl.cleanPreviewHucGraphic();
+    // mapControl.cleanPreviewEcoGraphic();
 
-    controllerProps.clearMapGraphics("hucPreview");
+    controllerProps.clearMapGraphics("ecoPreview");
 
     feedbackManager.close();
   };
@@ -619,7 +620,7 @@ export default function Controller(props = {}) {
   const openFeedbackManager = (options = {}) => {
     const userID = oauthManager.getUserID();
     const species = dataModel.getSelectedSpecies();
-    const ecoID = dataModel.getSelectedHuc();
+    const ecoID = dataModel.getSelectedEcoShp();
     const hucName =
       state.selectedHucFeature.attributes[config.FIELD_NAME.hucLayerHucName];
     const isHucInModeledRange = dataModel.isHucInModeledRange(ecoID, species);
@@ -630,7 +631,7 @@ export default function Controller(props = {}) {
       config.FIELD_NAME.feedbackTable.additionalFields &&
       config.FIELD_NAME.feedbackTable.additionalFields.length > 0
     ) {
-      const hucsBySpeciesData = dataModel.getHucsBySpecies(species);
+      const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
       const hucForSpeciesData = hucsBySpeciesData
         ? hucsBySpeciesData.filter(
             hucData =>
@@ -647,7 +648,7 @@ export default function Controller(props = {}) {
     }
 
     // console.log('isHucInModeledRange', isHucInModeledRange);
-
+    console.log("openFeedbackManager", userID, species, ecoID)
     if (userID && species && ecoID) {
       feedbackManager.open({
         userID,
@@ -661,7 +662,7 @@ export default function Controller(props = {}) {
       console.error(
         "userID, species name and huc id are required to open the feedback manager..."
       );
-      resetSelectedHucFeature();
+      resetSelectedEcoFeature();
     }
   };
 
@@ -735,27 +736,28 @@ export default function Controller(props = {}) {
 
   const renderListOfHucsWithFeedbacks = () => {
     const species = dataModel.getSelectedSpecies();
-    const features = dataModelForReviewMode.getHucsWithFeedbacks(species);
+    const features = dataModelForReviewMode.getEcosWithFeedbacks(species);
 
     // mapControl.clearAllGraphics();
 
     controllerProps.clearMapGraphics();
-
+    console.log("render eco shapes with feedback:")
+    console.log(features)
     features.forEach(feature => {
-      showHucFeatureOnMap(
+      showEcoFeatureOnMap(
         feature.attributes[config.FIELD_NAME.feedbackTable.ecoShapeID],
         feature.attributes[config.FIELD_NAME.feedbackTable.status]
       );
     });
   };
 
-  const showHucFeatureOnMap = (hucID = "", status = 0, data = null) => {
+  const showEcoFeatureOnMap = (hucID = "", status = 0, data = null) => {
     if (!hucID) {
       console.error("hucID is missing...");
       return;
     }
 
-    controllerProps.showHucFeatureOnMap(hucID, status);
+    controllerProps.showEcoFeatureOnMap(hucID, status);
   };
 
   const setSelectedSpecies = async val => {
@@ -763,9 +765,9 @@ export default function Controller(props = {}) {
     console.log("setSelectedSpecies was called using the value:  "+ val)
     dataModel.setSelectedSpecies(val);
 
-    searchHucsBySpecies(val);
+    searchEcoShapesBySpecies(val);
 
-    resetSelectedHucFeature();
+    resetSelectedEcoFeature();
 
     controllerProps.speciesOnSelect();
 
@@ -785,11 +787,11 @@ export default function Controller(props = {}) {
       };
     });
 
-    data.unshift({
+/*     data.unshift({
       label: "Predicted Habitat",
       minVisibleScale: config.visibleRange.predictedHabitat.minScale
       // color: config.COLOR.actualModeledExtent
-    });
+    }); */
 
     return data;
   };
@@ -811,7 +813,7 @@ export default function Controller(props = {}) {
     dataModel,
     feedbackManager,
     setSelectedHucFeature,
-    resetSelectedHucFeature,
+    resetSelectedEcoFeature,
     downloadPdf,
     getOverallFeedback,
     setSelectedSpecies,

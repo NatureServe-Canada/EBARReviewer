@@ -11,19 +11,26 @@
         {
             "type": "chrome",
             "request": "launch",
+            "name": "original against localhost",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}/src"
+            },
+        {
+            //https://github.com/Microsoft/vscode-chrome-debug/issues/542
+            "type": "chrome",
+            "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch Webpack",
-            "program":"${workspaceFolder}/node_modules/webpack/bin/webpack.js",
-            "args": [
-               "--config", "./webpack.config.js"
-            ],
-            "env" : { "NODE_ENV" : "dev" }
-    }],
+            "webRoot": "${workspaceFolder}/dist",
+            "sourceMaps": true,
+            "disableNetworkCache": true,
+            "sourceMapPathOverrides": {
+                "webpack:///*": "${webRoot}/../*",
+                "webpack:///./*": "${webRoot}/../*",
+                "webpack:///src/*": "${webRoot}/../src/*",
+                "webpack:///./~/*": "${webRoot}/../node_modules/*"
+            }
+        }],
      "compounds": []
  }
+

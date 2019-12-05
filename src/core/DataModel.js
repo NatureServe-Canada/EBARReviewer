@@ -3,13 +3,12 @@ import config from "../config";
 export default class DataModel {
   constructor(options = {}) {
     this.speciesLookup = [];
-    this.hucsBySpecies = {};
-    // this.hucsBySpeciesDictionary = {};
+    this.ecoShapesBySpecies = {};//this.hucsBySpecies = {};
     this.status = [];
     this.selectedSpecies = null;
-    this.selectedHuc = null;
+    this.selectedEcoShape = null;
     this.overallFeedback = {};
-    // this.selectedHucName = null;
+    
   }
 
   init() {}
@@ -25,27 +24,16 @@ export default class DataModel {
     return speciesInfo;
   }
 
-  setHucsBySpecies(species, data = []) {
-    this.hucsBySpecies[species] = data;
-    // this.hucsBySpecies = data;
-    // console.log('hucsBySpecies', species, this.hucsBySpecies[species])
+  setEcoShpsBySpecies(species, data = []) {
+    this.ecoShapesBySpecies[species] = data;
+    // this.ecoShapesBySpecies = data;
+    // console.log('ecoShapesBySpecies', species, this.ecoShapesBySpecies[species])
   }
 
   saveToOverallFeedback(key, val) {
     this.overallFeedback[key] = val;
-    // this.hucsBySpecies = data;
+    // this.ecoShapesBySpecies = data;
   }
-
-  // setHucsBySpeciesDictionary(species, data=[]){
-  //     const dict = {};
-
-  //     data.forEach(d=>{
-  //         dict[d.HUC8] =
-  //     })
-
-  //     this.hucsBySpeciesDictionary[species] = data;
-  //     // this.hucsBySpecies = data;
-  // };
 
   setStatus(data = []) {
     this.status = data;
@@ -60,31 +48,31 @@ export default class DataModel {
     return this.selectedSpecies;
   }
 
-  setSelectedHuc(val = null) {
-    this.selectedHuc = val;
+  setSelectedEcoShp(val = null) {
+    this.selectedEcoShape = val;
   }
 
-  getSelectedHuc() {
-    return this.selectedHuc;
+  getSelectedEcoShp() {
+    return this.selectedEcoShape;
   }
 
-  getHucsBySpecies(species) {
+  getEcoShpsBySpecies(species) {
     species = species || this.selectedSpecies;
-    return this.hucsBySpecies[species];
+    return this.ecoShapesBySpecies[species];
   }
 
   getStatusByIndex(index) {
     return index && this.status[+index] ? this.status[+index] : null;
   }
 
-  isHucInModeledRange(hucID, species) {
-    const hucs = this.hucsBySpecies[species];
+  isHucInModeledRange(ecoId, species) {
+    const ecos = this.ecoShapesBySpecies[species];
 
-    // console.log('isHucInModeledRange', hucID);
+    // console.log('isHucInModeledRange', ecoId);
 
-    if (hucs) {
-      return hucs.filter(d => {
-        return d[config.FIELD_NAME.speciesDistribution.ecoShapeID] === hucID;
+    if (ecos) {
+      return ecos.filter(d => {
+        return d[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoId;
       }).length
         ? true
         : false;
@@ -92,7 +80,7 @@ export default class DataModel {
       return false;
     }
 
-    // const isHucInModeledRange = hucs.filter(d=>{ return d[config.FIELD_NAME.speciesDistribution.ecoShapeID] === hucID }).length ? true : false;
+    // const isHucInModeledRange = ecos.filter(d=>{ return d[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoId }).length ? true : false;
 
     // return isHucInModeledRange;
   }

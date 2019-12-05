@@ -66,12 +66,12 @@ export default function SpeciesSelector(
   };
 
   const getHtmlForSpeciesSelector = () => {
+    console.log("getHtmlForSpeciesSelector: ", data)
     const dataForSelectedTaxa = data.filter(d => {
-      console.log(d)
       return d[config.FIELD_NAME.speciesLookup.taxa] === selectedTaxa;
     });
-    console.log("this is the species selector data:")
-    console.log(dataForSelectedTaxa)
+    console.log("this is the species selector data:", dataForSelectedTaxa)
+    //console.log(dataForSelectedTaxa)
     dataForSelectedTaxa.sort((a, b) => {
       if (
         a[config.FIELD_NAME.speciesLookup.speciesName] <

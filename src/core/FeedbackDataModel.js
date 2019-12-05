@@ -11,7 +11,7 @@ export default class FeedbackManager {
   }
 
   init(options) {
-    this.userID = options.userID || null;
+    this.userID = 2; //options.userID || null;
     this.hucID = options.hucID || null;
     this.species = options.species || null;
     this.hucName = options.hucName || null;

@@ -172,16 +172,16 @@ export default function View() {
         // renderListOfHucsWithFeedbacks();
         viewProps.listViewForDetailedFeedbackOnClose();
       },
-      onClickHandler: hucID => {
-        // controllerProps.addPreviewHucByID(hucID);
-        viewProps.listViewForDetailedFeedbackOnClick(hucID);
+      onClickHandler: ecoId => {
+        // controllerProps.addPreviewEcoByID(ecoId);
+        viewProps.listViewForDetailedFeedbackOnClick(ecoId);
       }
     });
 
     listViewForFeedbacksByHuc.init({
       onCloseHandler: () => {
         openListView(listViewForOverallFeedback);
-        // resetSelectedHucFeature();
+        // resetSelectedEcoFeature();
         viewProps.listViewForFeedbacksByHucOnClose();
       }
     });

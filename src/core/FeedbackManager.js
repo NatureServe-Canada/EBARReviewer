@@ -55,14 +55,15 @@ export default function(options = {}) {
   };
 
   const save = feedbackData => {
-    const hucID = feedbackData.hucID;
+    const ecoId = feedbackData.hucID;
+    console.log("save feedback: ", ecoId, feedbackData.hucID)
     const species = feedbackData.species;
 
     if (!feedbackDataStore[species]) {
       feedbackDataStore[species] = {};
     }
 
-    feedbackDataStore[species][hucID] = JSON.parse(
+    feedbackDataStore[species][ecoId] = JSON.parse(
       JSON.stringify(feedbackData)
     );
 
@@ -81,22 +82,22 @@ export default function(options = {}) {
     }
   };
 
-  const removeFromDataStore = (species, hucID) => {
-    if (feedbackDataStore[species][hucID]) {
-      delete feedbackDataStore[species][hucID];
+  const removeFromDataStore = (species, ecoId) => {
+    if (feedbackDataStore[species][ecoId]) {
+      delete feedbackDataStore[species][ecoId];
     }
   };
 
   const getSavedItemFromDataStore = data => {
-    const hucID = data.hucID;
+    const ecoId = data.hucID;
     const species = data.species;
     const hucName = data.hucName;
 
-    // console.log('get Saved Item From DataStore', species, hucID, feedbackDataStore[species]);
+    // console.log('get Saved Item From DataStore', species, ecoId, feedbackDataStore[species]);
     const savedItem =
       typeof feedbackDataStore[species] !== "undefined" &&
-      typeof feedbackDataStore[species][hucID] !== "undefined"
-        ? feedbackDataStore[species][hucID]
+      typeof feedbackDataStore[species][ecoId] !== "undefined"
+        ? feedbackDataStore[species][ecoId]
         : null;
 
     if (savedItem && typeof savedItem.hucName === "undefined" && hucName) {

@@ -20,11 +20,11 @@ const MapControl = function({
   // const mapViewContainerID = options.mapViewContainerID || null;
 
   let mapView = null;
-  let hucsLayer = null;
-  let hucsByStatusGraphicLayer = null;
-  let hucPreviewGraphicLayer = null;
+  let ecoShpLayer = null;
+  let ecoShpByStatusGraphicLayer = null;
+  let ecoPreviewGraphicLayer = null;
   // let actualModelBoundaryLayer = null;
-  let hucFeatureOnSelectHandler = null;
+  let ecoFeatureOnSelectHandler = null;
   // let isOnHoldEventDisabled = false;
 
   const init = (options = {}) => {
@@ -35,7 +35,7 @@ const MapControl = function({
       return;
     }
 
-    hucFeatureOnSelectHandler = options.hucFeatureOnSelectHandler || null;    
+    ecoFeatureOnSelectHandler = options.ecoFeatureOnSelectHandler || null;    
     initMapView();
     console.log("done init: map view")
   };
@@ -185,11 +185,11 @@ const MapControl = function({
       });
   };
 
-  const initHucLayer = mapView => {
+  const initEcoLayer = mapView => {
     esriLoader
       .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
       .then(([FeatureLayer]) => {
-        hucsLayer = new FeatureLayer({
+        ecoShpLayer = new FeatureLayer({
           url: config.URL.ecoShapes,
           opacity: 0.9,
           listMode: "hide",
@@ -212,29 +212,29 @@ const MapControl = function({
             config.layerParameters.ecoShapes.maxScale
         });
 
-        mapView.map.add(hucsLayer);
-
-        initHucsReviewReferenceLayers(mapView);
-        // hucsLayer.on("layerview-create", function(evt) {
+        mapView.map.add(ecoShpLayer);
+        
+        initEcoShpReviewReferenceLayers(mapView);
+        // ecoShpLayer.on("layerview-create", function(evt) {
 
         // });
       });
   };
 
-  const initHucsReviewReferenceLayers = mapView => {
+  const initEcoShpReviewReferenceLayers = mapView => {
     esriLoader
       .loadModules(["esri/layers/GraphicsLayer"], esriLoaderOptions)
       .then(([GraphicsLayer]) => {
-        hucsByStatusGraphicLayer = new GraphicsLayer({
+        ecoShpByStatusGraphicLayer = new GraphicsLayer({
           opacity: 0.6,
           listMode: "hide"
         });
 
-        hucPreviewGraphicLayer = new GraphicsLayer({
+        ecoPreviewGraphicLayer = new GraphicsLayer({
           listMode: "hide"
         });
 
-        mapView.map.addMany([hucsByStatusGraphicLayer, hucPreviewGraphicLayer]);
+        mapView.map.addMany([ecoShpByStatusGraphicLayer, ecoPreviewGraphicLayer]);
       });
   };
 
@@ -243,11 +243,11 @@ const MapControl = function({
       // console.log('map view on hold', event);
 
       // if(!isOnHoldEventDisabled){
-      //     queryHucsLayerByMouseEvent(event);
+      //     queryEcoLayerByMouseEvent(event);
       // }
-
-      queryHucsLayerByMouseEvent(event)
-        .then(queryHucsLayerByMouseEventOnSuccessHandler)
+      
+      queryEcoLayerByMouseEvent(event)
+        .then(queryEcoLayerByMouseEventOnSuccessHandler)
         .catch(err => {
           console.log(err);
         });
@@ -335,9 +335,9 @@ const MapControl = function({
     // NS: Not loading reference layers as they arent relevant to this project
     //initReferenceLayers(mapView);
 
-    initHucLayer(mapView);
+    initEcoLayer(mapView);
 
-    initHucsReviewReferenceLayers(mapView);
+    initEcoShpReviewReferenceLayers(mapView);
 
     //initPredictedHabitatLayers(mapView);
 
@@ -346,16 +346,16 @@ const MapControl = function({
     initLayerList(mapView);
   };
 
-  const queryHucsLayerByMouseEvent = event => {
-    if (!hucsLayer) return;
-    const query = hucsLayer.createQuery();
+  const queryEcoLayerByMouseEvent = event => {
+    if (!ecoShpLayer) return;
+    const query = ecoShpLayer.createQuery();
     query.geometry = mapView.toMap(event); // the point location of the pointer
     query.spatialRelationship = "intersects"; // this is the default
     query.returnGeometry = true;
     query.outFields = ["*"];
 
     return new Promise((resolve, reject) => {
-      hucsLayer.queryFeatures(query).then(function(response) {
+      ecoShpLayer.queryFeatures(query).then(function(response) {
         // console.log(response);
 
         if (response.features && response.features.length) {
@@ -365,27 +365,27 @@ const MapControl = function({
     });
   };
 
-  const queryHucsLayerByHucID = hucID => {
-    return queryHucsLayerByHucIDs([hucID]);
+  const queryEcoShpsLayerByEcoID = ecoId => {
+    return queryEcoShpsLayerByEcoIDs([ecoId]);
   };
 
-  const queryHucsLayerByHucIDs = hucIDs => {
-    const query = hucsLayer.createQuery();
-    let where = `${config.FIELD_NAME.ecoShapeLayerID} = '${hucIDs[0]}'`;
-    if (hucIDs.length > 1) where = generateHucWhereFromHucIDs(hucIDs);
+  const queryEcoShpsLayerByEcoIDs = ecoIds => {
+    const query = ecoShpLayer.createQuery();
+    let where = `${config.FIELD_NAME.ecoShapeLayerID} = '${ecoIds[0]}'`;
+    if (ecoIds.length > 1) where = generateEcpShpWhereFromEcoIDs(ecoIds);
     query.where = where;
     query.returnGeometry = true;
     query.outFields = ["*"];
 
     return new Promise((resolve, reject) => {
-      hucsLayer
+      ecoShpLayer
         .queryFeatures(query)
         .then(function(response) {
           if (response.features && response.features.length) {
             // console.log(response.features[0]);
             resolve(response.features);
           } else {
-            reject("no huc feature is found");
+            reject("no eco feature is found");
           }
         })
         .catch(err => {
@@ -393,73 +393,74 @@ const MapControl = function({
         });
     });
   };
-
-  const generateHucWhereFromHucIDs = hucIds => {
+  
+  const generateEcpShpWhereFromEcoIDs = ecoIds => {
     let whereText = "";
-    let tempHucIds = hucIds.slice(0);
-    let currHucIds = [];
+    let tempEcoIds = ecoIds.slice(0);
+    let currEcoIds = [];
     let maxHit = false;
-    while (tempHucIds.length > 200) {
-      currHucIds = tempHucIds.shift(0, 199);
+    while (tempEcoIds.length > 200) {
+      currEcoIds = tempEcoIds.shift(0, 199);
       whereText =
         whereText +
         `${maxHit ? " OR " : ""}${
           config.FIELD_NAME.ecoShapeLayerID
-        } in ('${currHucIds.join("','")}')`;
+        } in ('${currEcoIds.join("','")}')`;
       maxHit = true;
     }
     whereText =
       whereText +
       `${maxHit ? " OR " : ""}${
         config.FIELD_NAME.ecoShapeLayerID
-      } in ('${tempHucIds.join("','")}')`;
+      } in ('${tempEcoIds.join("','")}')`;
     return whereText;
   };
 
-  const zoomToHucs = async hucIds => {
-    const hucFeats = await queryHucsLayerByHucIDs(hucIds);
-    console.log("zoom to hucs")
-    mapView.goTo(hucFeats);
+  const zoomToEcoShps = async ecoIds => {
+    const ecoFeats = await queryEcoShpsLayerByEcoIDs(ecoIds);
+    console.log("zoomToEcoShps ecofeats:", ecoFeats)
+    mapView.goTo(ecoFeats);
+    console.log("done goto: zoomtoecoshps")
   };
 
-  const queryHucsLayerByMouseEventOnSuccessHandler = feature => {
+  const queryEcoLayerByMouseEventOnSuccessHandler = feature => {
+    
+    addPreviewEcoGraphic(feature);
 
-    addPreviewHucGraphic(feature);
-
-    if (hucFeatureOnSelectHandler) {
-      hucFeatureOnSelectHandler(feature);
+    if (ecoFeatureOnSelectHandler) {
+      ecoFeatureOnSelectHandler(feature);
     }
   };
-
-  const showHucFeatureByStatus = (
-    hucID,
+  
+  const showEcoFeatureByStatus = (
+    ecoId,
     status,
     options = {
       attributes: null,
       popupTemplate: null
     }
   ) => {
-    removeHucGraphicByStatus(hucID);
+    removeEcoGraphicByStatus(ecoId);
 
     if (+status > 0) {
-      queryHucsLayerByHucID(hucID).then(features => {
-        addHucGraphicByStatus(features[0], status, options);
+      queryEcoShpsLayerByEcoID(ecoId).then(features => {
+        addEcoGraphicByStatus(features[0], status, options);
       });
     }
 
-    // queryHucsLayerByHucID(hucID).then(feature=>{
-    //     addHucGraphicByStatus(feature, status);
+    // queryEcoShpsLayerByEcoID(ecoId).then(feature=>{
+    //     addEcoGraphicByStatus(feature, status);
     // });
   };
 
-  const addHucGraphicByStatus = (feature, status, options = {}) => {
+  const addEcoGraphicByStatus = (feature, status, options = {}) => {
     const geometry = feature.geometry;
     const attributes = options.attributes
       ? { ...feature.attributes, ...options.attributes }
       : feature.attributes;
     // const popupTemplate = options.popupTemplate || null;
 
-    console.log('calling addHucGraphicByStatus', feature, status);
+    console.log('calling addEcoGraphicByStatus', feature, status);
 
     const symbols = {
       1: {
@@ -468,7 +469,7 @@ const MapControl = function({
         width: "24px",
         height: "24px",
         outline: {
-          color: config.COLOR.hucBorderIsModeled,
+          color: config.COLOR.ecoBorderIsModeled,
           width: "2px"
         }
       },
@@ -478,7 +479,7 @@ const MapControl = function({
         width: "24px",
         height: "24px",
         outline: {
-          color: config.COLOR.hucBorderIsModeled,
+          color: config.COLOR.ecoBorderIsModeled,
           width: "2px"
         }
       },
@@ -487,7 +488,7 @@ const MapControl = function({
         color: [0, 0, 0, 0],
         outline: {
           // autocasts as new SimpleLineSymbol()
-          color: config.COLOR.hucBorderCommentWithoutAction,
+          color: config.COLOR.ecoBorderCommentWithoutAction,
           width: "4px"
         }
       }
@@ -505,35 +506,35 @@ const MapControl = function({
           // popupTemplate
         });
 
-        hucsByStatusGraphicLayer.add(graphic);
+        ecoShpByStatusGraphicLayer.add(graphic);
       })
       .catch(err => {
         console.error(err);
       });
   };
 
-  const removeHucGraphicByStatus = hucID => {
-    // console.log('removeHucGraphicByStatus', hucID);
-    hucsByStatusGraphicLayer.graphics.forEach(g => {
+  const removeEcoGraphicByStatus = ecoId => {
+    // console.log('removeEcoGraphicByStatus', ecoId);
+    ecoShpByStatusGraphicLayer.graphics.forEach(g => {
       if (
         g &&
         g.attributes &&
-        g.attributes[config.FIELD_NAME.ecoShapeLayerID] === hucID
+        g.attributes[config.FIELD_NAME.ecoShapeLayerID] === ecoId
       ) {
-        hucsByStatusGraphicLayer.remove(g);
+        ecoShpByStatusGraphicLayer.remove(g);
       }
     });
   };
-
-  const addPreviewHucByID = async hucID => {
-    const hucFeature = await queryHucsLayerByHucID(hucID);
-    addPreviewHucGraphic(hucFeature);
+  
+  const addPreviewEcoByID = async ecoId => {
+    const ecoFeature = await queryEcoShpsLayerByEcoID(ecoId);
+    addPreviewEcoGraphic(ecoFeature);
   };
 
-  const addPreviewHucGraphic = feature => {
+  const addPreviewEcoGraphic = feature => {
     // const attributes = feature.attributes;
 
-    cleanPreviewHucGraphic();
+    cleanPreviewEcoGraphic();
 
     const symbol = {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
@@ -548,18 +549,18 @@ const MapControl = function({
     esriLoader
       .loadModules(["esri/Graphic"], esriLoaderOptions)
       .then(([Graphic]) => {
-        const graphicForSelectedHuc = new Graphic({
+        const graphicForSelectedEco = new Graphic({
           geometry: feature.geometry,
           symbol: symbol
         });
 
-        hucPreviewGraphicLayer.add(graphicForSelectedHuc);
+        ecoPreviewGraphicLayer.add(graphicForSelectedEco);
       });
   };
 
   const clearMapGraphics = (targetLayer = "") => {
     const layersLookup = {
-      hucPreview: hucPreviewGraphicLayer
+      ecoPreview: ecoPreviewGraphicLayer
     };
 
     if (layersLookup[targetLayer]) {
@@ -570,46 +571,46 @@ const MapControl = function({
   };
 
   const clearAllGraphics = () => {
-    if (hucsByStatusGraphicLayer) hucsByStatusGraphicLayer.removeAll();
-    cleanPreviewHucGraphic();
+    if (ecoShpByStatusGraphicLayer) ecoShpByStatusGraphicLayer.removeAll();
+    cleanPreviewEcoGraphic();
+  };
+  
+  const cleanPreviewEcoGraphic = () => {
+    if (ecoPreviewGraphicLayer) ecoPreviewGraphicLayer.removeAll();
   };
 
-  const cleanPreviewHucGraphic = () => {
-    if (hucPreviewGraphicLayer) hucPreviewGraphicLayer.removeAll();
-  };
-
-  // highlight hucs from the species extent table
-  const highlightHucs = hucIds => {
-    // cleanPreviewHucGraphic();
+  // highlight ecos from the species extent table
+  const highlightEcos = ecoIds => {
+    // cleanPreviewEcoGraphic();
     clearAllGraphics();
-    console.log("these are the hucids: " + hucIds)
-    hucsLayer.renderer = getUniqueValueRenderer(hucIds);
+    console.log("highlightEcosecoIds: ", ecoIds)
+    ecoShpLayer.renderer = getUniqueValueRenderer(ecoIds);
   };
 
-  const getUniqueValueRenderer = hucIds => {
+  const getUniqueValueRenderer = ecoIds => {
     const defaultSymbol = {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
       color: [0, 0, 0, 0],
       outline: {
         // autocasts as new SimpleLineSymbol()
-        color: config.COLOR.hucBorder,
+        color: config.COLOR.ecoBorder,
         width: "1px"
       }
     };
 
     const symbol = {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
-      color: config.COLOR.hucFill,
+      color: config.COLOR.ecoFill,
       outline: {
         // autocasts as new SimpleLineSymbol()
-        color: config.COLOR.hucBorderIsModeled,
+        color: config.COLOR.ecoBorderIsModeled,
         width: "2px"
       }
     };
 
-    const uniqueValueInfos = hucIds.map(hucId => {
+    const uniqueValueInfos = ecoIds.map(ecoId => {
       return {
-        value: hucId,
+        value: ecoId,
         symbol: symbol
       };
     });
@@ -620,7 +621,7 @@ const MapControl = function({
       defaultSymbol: defaultSymbol, //{ type: "none" },  // autocasts as new SimpleFillSymbol()
       uniqueValueInfos: uniqueValueInfos
     };
-
+    console.log("RENDERER: ", renderer)
     return renderer;
   };
 
@@ -731,19 +732,19 @@ const MapControl = function({
 
   return {
     init,
-    highlightHucs,
-    cleanPreviewHucGraphic,
-    showHucFeatureByStatus,
+    highlightEcos,
+    cleanPreviewEcoGraphic,
+    showEcoFeatureByStatus,
     // addActualModelBoundaryLayer,
     clearAllGraphics,
     // disableMapOnHoldEvent,
-    queryHucsLayerByHucID,
-    queryHucsLayerByHucIDs,
-    zoomToHucs,
-    addPreviewHucGraphic,
+    queryEcoShpsLayerByEcoID,
+    queryEcoShpsLayerByEcoIDs,
+    zoomToEcoShps,
+    addPreviewEcoGraphic,
     setLayersOpacity,
     clearMapGraphics,
-    addPreviewHucByID,
+    addPreviewEcoByID,
     showPredictedHabitatLayers,
     addCsvLayer
   };

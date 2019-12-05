@@ -105,9 +105,9 @@ const initApp = async oauthManager => {
       }
     },
 
-    highligtHucsOnMap: hucIds => {
-      // console.log('highligtHucsOnMap', data);
-      mapControl.highlightHucs(hucIds);
+    highligtEcosOnMap: ecoIds => {
+      // console.log('highligtEcosOnMap', data);
+      mapControl.highlightEcos(ecoIds);
     },
     // addActualBoundaryLayerToMap:(url='')=>{
     //     // console.log('addActualBoundaryLayerToMap', url);
@@ -116,19 +116,22 @@ const initApp = async oauthManager => {
     showToPredictedHabitatOnMap: (speciesCode = "") => {
       //mapControl.showPredictedHabitatLayers(speciesCode);
     },
-    zoomToHucsOnMap: (hucIds = []) => {
-      mapControl.zoomToHucs(hucIds);
+    
+    zoomToEcoShpsOnMap: (ecoIds = []) => {
+      mapControl.zoomToEcoShps(ecoIds);
     },
     clearMapGraphics: (targetLayer = "") => {
       // console.log('clearMapGraphics', targetLayer);
       mapControl.clearMapGraphics(targetLayer);
     },
-    showHucFeatureOnMap: (hucID = "", status) => {
-      // console.log('showHucFeatureOnMap', hucID);
-      mapControl.showHucFeatureByStatus(hucID, status);
+    
+    showEcoFeatureOnMap: (ecoId = "", status) => {
+      // console.log('showEcoFeatureOnMap', ecoId);
+      mapControl.showEcoFeatureByStatus(ecoId, status);
     },
-    addPreviewHucByID: hucID => {
-      mapControl.addPreviewHucByID(hucID);
+    //addPreviewHucByID
+    addPreviewEcoByID: ecoId => {
+      mapControl.addPreviewEcoByID(ecoId);
     },
 
     pdfUrlOnChange: (url = "") => {
@@ -147,7 +150,7 @@ const initApp = async oauthManager => {
   view.feedbackControlPanel.init({
     containerID: config.DOM_ID.feedbackControl,
     onCloseHandler: () => {
-      controller.resetSelectedHucFeature();
+      controller.resetSelectedEcoFeature();
     },
     commentOnChange: val => {
       // console.log(val);
@@ -217,11 +220,11 @@ const initApp = async oauthManager => {
     listViewForDetailedFeedbackOnClose: () => {
       controller.renderListOfHucsWithFeedbacks();
     },
-    listViewForDetailedFeedbackOnClick: hucID => {
-      mapControl.addPreviewHucByID(hucID);
+    listViewForDetailedFeedbackOnClick: ecoId => {
+      mapControl.addPreviewEcoByID(ecoId);
     },
     listViewForFeedbacksByHucOnClose: () => {
-      controller.resetSelectedHucFeature();
+      controller.resetSelectedEcoFeature();
     },
     signOutBtnOnClick: () => {
       controller.signOut();
@@ -233,9 +236,9 @@ const initApp = async oauthManager => {
   });
 
   mapControl.init({
-    hucFeatureOnSelectHandler: hucFeature => {
-      // console.log('selected hucFeature', hucFeature);
-      controller.setSelectedHucFeature(hucFeature);
+    ecoFeatureOnSelectHandler: ecoFeature => {
+      console.log('selected ecoFeature', ecoFeature);
+      controller.setSelectedHucFeature(ecoFeature);
     }
   });
 
@@ -249,6 +252,13 @@ const initApp = async oauthManager => {
     }
   });
   csvLoader.init();
+
+  const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
+  if(userDiv){
+    let componentHTML = "<div><span class='font-size-0'>Logged in as:<b> " + oauthManager.getUserID() + "</b></span></div>"
+    userDiv.innerHTML = componentHTML
+  }
+
 
   // window.appDebugger = {
   //     signOut: oauthManager.signOut
