@@ -26,7 +26,7 @@ export default function(options = {}) {
     if (savedData) {
       data = Object.assign(data, savedData);
     }
-
+    console.log("about to pass data into feedback data model: ", data)
     feedbackDataModel.init(data);
 
     if (eventHandlers["onAdd"]) {
@@ -55,8 +55,8 @@ export default function(options = {}) {
   };
 
   const save = feedbackData => {
-    const ecoId = feedbackData.hucID;
-    console.log("save feedback: ", ecoId, feedbackData.hucID)
+    const ecoId = feedbackData.ecoID;
+    console.log("save feedback: ", ecoId, feedbackData.ecoID)
     const species = feedbackData.species;
 
     if (!feedbackDataStore[species]) {
@@ -73,7 +73,7 @@ export default function(options = {}) {
   const remove = () => {
     const feedbackData = feedbackDataModel.getFeedbackData();
 
-    removeFromDataStore(feedbackData.species, feedbackData.hucID);
+    removeFromDataStore(feedbackData.species, feedbackData.ecoId);
 
     // console.log('remove feedback', feedbackData);
 
@@ -89,7 +89,7 @@ export default function(options = {}) {
   };
 
   const getSavedItemFromDataStore = data => {
-    const ecoId = data.hucID;
+    const ecoId = data.ecoId;
     const species = data.species;
     const hucName = data.hucName;
 

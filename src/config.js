@@ -1,15 +1,16 @@
 "use strict";
 
 module.exports = {
-  oauthAppID: "",
+  oauthAppID: "JAdAlm4QJ8Ot9j6r",
   webMapID: "039e37fe6e694fd58e898d762d90b632",
 
   FIELD_NAME: {
     ecoShapeLayerID: "ecoshapeid",
     statusType: "artext", //"StatusType",
+    hucLayerHucName: "HUC8",  //referenced from CONTROLLER: openFeedbackManager
 
     speciesLookup: {
-      rangeValForLookup: "rangemapid",
+      rangeValForLookup: "rangemapid", //"speciesid", this has been back and forth from speciesID. but appears its rangemap needed as the dropdown species val to hook up properly with speciesDist table
       speciesCode: "speciesid", //THIS WAS RANGEMAPID, BUT CHANGED TO MAKE THE INITIAL SPECIES DROP DOWN WORK PER USER LOGGED IN
       rangemapID: "rangemapid",
       speciesName: "national_scientific_name", //"Scientific_Name",
@@ -18,7 +19,8 @@ module.exports = {
       pdfLink: "PdfLink"
     },
     speciesDistribution: {
-      speciesCode: "rangemapid", // "SpeciesCode",
+      rangeValForLookup: "rangemapid",  //this was added as the new matching item to speciesLookup
+      speciesCode: "ecoshapeid", //"rangemapid", // "SpeciesCode",
       ecoShapeID: "ecoshapeid" // "HUCID"
     },
     rangeMap:{
@@ -130,10 +132,10 @@ module.exports = {
   },
 
   COLOR: {
-    hucBorder: [255, 255, 255, 0.3],
-    hucBorderIsModeled: [255, 255, 255, 0.5],
-    hucBorderCommentWithoutAction: [239, 35, 60, 1],
-    hucFill: [217, 217, 217, 0.4],
+    ecoBorder: [255, 255, 255, 0.3],
+    ecoBorderIsModeled: [255, 255, 255, 0.5],
+    ecoBorderCommentWithoutAction: [239, 35, 60, 1],
+    ecoFill: [217, 217, 217, 0.4],
     status0: [200, 200, 200, 0.5],
     status1: [166, 219, 160, 0.5],
     status2: [194, 165, 207, 0.5],
@@ -155,13 +157,14 @@ module.exports = {
   DOM_ID: {
     mainControl: "mainControlDiv",
     mapViewContainer: "viewDiv",
+    loggedInUser: "loggedInDiv",
     speciesSelector: "selectorsDiv",
     feedbackControl: "feedbackControlDiv",
     overallFeedbackControl: "overallFeedbackDiv",
     legend: "legendDiv",
     listViewOverallFeedback: "listViewForOverallFeedbackDiv",
     listViewDeatiledFeedback: "listViewForDetailedFeedbackDiv",
-    listViewForFeedbacksByHuc: "listViewForFeedbacksByHucDiv",
+    listViewForFeedbacksByHuc: "listViewForFeedbacksByEcoShpDiv",
     searchWidgetDiv: "searchWidgetDiv",
     layerListDiv: "layerListDiv"
   },

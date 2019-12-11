@@ -91,7 +91,7 @@ export default function ApiManager(props = {}) {
   const queryEcoShapeBySpecies = speciesKey => {
     // const requestUrl = config.URL.speciesExtent[speciesKey] ? config.URL.speciesExtent[speciesKey] + '/query' : null;
     const requestUrl = config.URL.speciesDistribution + "/query";
-    const whereClause = `${config.FIELD_NAME.speciesDistribution.speciesCode} = ${speciesKey}`;  
+    const whereClause = `${config.FIELD_NAME.speciesDistribution.rangeValForLookup} = ${speciesKey}`;   //this was speciesDist.SPECIESCODE = ...
 
     if (requestUrl) {
       console.log("queryEcoShapeBySpecies url: " + requestUrl)
@@ -112,9 +112,10 @@ export default function ApiManager(props = {}) {
   };
 
   const fetchFeedback = (options = {}) => {
-    const requestUrl = config.URL.feedbackTable + '/query'; //options.requestUrl
+    const requestUrl = options.requestUrl;  //config.URL.feedbackTable + '/query'; //options.requestUrl
     console.log("fetchFeedback url: " + requestUrl)
-    const whereClause = "1=1"; //options.where || "1=1";  options.where = "reviewid = 'gisadmin' AND retirementdate IS NULL" ???
+    const whereClause = options.where || "1=1"; // options.where = "reviewid = 'gisadmin' AND retirementdate IS NULL" ???
+    console.log("  fetchFeedback  whereClause: ", whereClause)
     const outFields = options.outFields || "*";
     const returnDistinctValues = options.returnDistinctValues || false;
     const orderByFields = options.returnDistinctValues ? outFields : null;

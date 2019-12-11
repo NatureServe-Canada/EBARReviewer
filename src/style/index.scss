@@ -54,23 +54,31 @@ body {
   height: 22px;
 }
 
+/* Add to Range */
 .legend-icon[data-index="0"] {
-  background-color: #ffd400;
-}
-
-.legend-icon[data-index="1"] {
-  background-color: rgba(255, 255, 255, 1);
-}
-
-.legend-icon[data-index="2"] {
   background: url("../static/Hatch_BlackAlt.png") center center no-repeat;
   background-size: 90%;
 }
 
-.legend-icon[data-index="3"] {
+/* Comment */
+.legend-icon[data-index="1"] {
+  background: url("../static/Outline_Red2.png") center center no-repeat;
+  background-size: 90%;
+}
+
+/* Remove from Range */
+.legend-icon[data-index="2"] {
   background: url("../static/Hatch_Red.png") center center no-repeat;
   background-size: 90%;
 }
+
+.legend-icon[data-index="3"] {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+
+
+
 
 .legend-icon[data-index="4"] {
   width: 19px;

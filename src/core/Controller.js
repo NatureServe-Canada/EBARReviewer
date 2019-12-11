@@ -97,7 +97,7 @@ export default function Controller(props = {}) {
       onSubmitHandler: data => {
         console.log('feedback manager onSubmitHandler', data);
         postFeedback(data);
-        showEcoFeatureOnMap(data.hucID, data.status, data);
+        showEcoFeatureOnMap(data.ecoID, data.status, data);
         resetSelectedEcoFeature();
 
         controllerProps.onDeatiledFeedbackSubmit(data);
@@ -106,7 +106,7 @@ export default function Controller(props = {}) {
       onRemoveHandler: data => {
         // console.log('feedback manager onRemoveHandler', data);
         deleteFeedback(data);
-        showEcoFeatureOnMap(data.hucID);
+        showEcoFeatureOnMap(data.ecoID);
         resetSelectedEcoFeature();
       }
     });
@@ -122,12 +122,12 @@ export default function Controller(props = {}) {
 
     const speciesWithOverallFeedback = {};
     const speciesWithDeatiledFeedback = {};
-
+    console.log("deatiledFeedbacks foreach: ",deatiledFeedbacks)
     deatiledFeedbacks.forEach(d => {
       const species = d.attributes[config.FIELD_NAME.feedbackTable.species];
       speciesWithDeatiledFeedback[species] = true;
     });
-
+    console.log("overallFeedbacks foreach: ",overallFeedbacks)
     overallFeedbacks.forEach(d => {
       const species = d.attributes[config.FIELD_NAME.overallFeedback.species];
 
@@ -215,13 +215,17 @@ export default function Controller(props = {}) {
       onSuccessHandler: null
     }
   ) => {
-    const userID = options.userID || oauthManager.getUserID();
+    //FIX -- hardcoded userID = 2 and removed '' around where userid below
+    const userID = 2;//options.userID || oauthManager.getUserID();
     const onSuccessHandler = options.onSuccessHandler;
-    const whereClauseParts = [
-      `${config.FIELD_NAME.feedbackTable.userID} = '${userID}'`,
+    //FIX - retirementDate was removed because its not a field that exists in the '3' -  EcoshapeReview  table
+/*     const whereClauseParts = [
+      `${config.FIELD_NAME.feedbackTable.userID} = ${userID}`,
       `${config.FIELD_NAME.feedbackTable.retirementDate} IS NULL`
+    ]; */
+    const whereClauseParts = [
+      `${config.FIELD_NAME.feedbackTable.userID} = ${userID}`
     ];
-
     if (options.species) {
       whereClauseParts.push(
         `${config.FIELD_NAME.feedbackTable.species} = '${options.species}'`
@@ -233,16 +237,16 @@ export default function Controller(props = {}) {
         requestUrl: config.URL.feedbackTable + "/query",
         where: whereClauseParts.join(" AND ")
       });
-
+      console.log("this is the result of feedbacks: ", feedbacks)
       const formattedFeedbackData = feedbacks.map(d => {
         let retObj = {
           userID: d.attributes[config.FIELD_NAME.feedbackTable.userID],
-          hucID: d.attributes[config.FIELD_NAME.feedbackTable.ecoShapeID],
+          ecoID: d.attributes[config.FIELD_NAME.feedbackTable.ecoShapeID],
           species: d.attributes[config.FIELD_NAME.feedbackTable.species],
           status: d.attributes[config.FIELD_NAME.feedbackTable.status],
           comment: d.attributes[config.FIELD_NAME.feedbackTable.comment]
         };
-
+        console.log("this is the result of formattedfeedbackdata: ", formattedFeedbackData)
         // If additional fields, then we need to set them for the feedbackDatastore
         if (
           config.FIELD_NAME.feedbackTable.additionalFields &&
@@ -256,8 +260,9 @@ export default function Controller(props = {}) {
             }
           });
         }
-
+        console.log("this is the final retObj returned: ", retObj)
         return retObj;
+        
       });
 
       if (onSuccessHandler) {
@@ -273,7 +278,8 @@ export default function Controller(props = {}) {
   };
 
   const queryOverallFeedbacksByUser = async () => {
-    const userID = oauthManager.getUserID();
+    //FIX THIS
+    const userID =2; //oauthManager.getUserID();
 
     try {
       const feedbacks = await apiManager.fetchFeedback({
@@ -343,13 +349,14 @@ export default function Controller(props = {}) {
       if (feedbacks[0]) {
         feature.attributes.ObjectId = feedbacks[0].attributes.ObjectId;
       }
-
+      // REVIEWER TABLE HAS NO DATE FIELDS...
+      /* 
       if (dataLoadDate) {
         feature.attributes[
           config.FIELD_NAME.overallFeedback.data_load_date
         ] = dataLoadDate;
       }
-
+ */
       apiManager
         .applyEditToFeatureTable(requestUrl, feature)
         .then(res => {
@@ -373,7 +380,7 @@ export default function Controller(props = {}) {
         controllerProps.clearMapGraphics();
 
         data.forEach(d => {
-          showEcoFeatureOnMap(d.hucID, d.status, d);
+          showEcoFeatureOnMap(d.ecoID, d.status, d);
         });
 
         controllerProps.feedbackByUsersForReviewModeOnReady(data);
@@ -410,7 +417,7 @@ export default function Controller(props = {}) {
     try {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
-        where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.hucID}'`
+        where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
       });
 
       if (feedbacks[0]) {
@@ -437,7 +444,7 @@ export default function Controller(props = {}) {
       let feedbackFeature = {
         attributes: {
           [config.FIELD_NAME.feedbackTable.userID]: data.userID,
-          [config.FIELD_NAME.feedbackTable.ecoShapeID]: data.hucID,
+          [config.FIELD_NAME.feedbackTable.ecoShapeID]: data.ecoID,
           [config.FIELD_NAME.feedbackTable.status]: data.status,
           [config.FIELD_NAME.feedbackTable.comment]: data.comment,
           [config.FIELD_NAME.feedbackTable.species]: data.species
@@ -464,7 +471,7 @@ export default function Controller(props = {}) {
 
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
-        where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.hucID}'`
+        where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
       });
 
       const requestUrl = feedbacks[0]
@@ -476,11 +483,12 @@ export default function Controller(props = {}) {
         feedbackFeature.attributes.ObjectId = feedbacks[0].attributes.ObjectId;
       }
 
-      if (dataLoadDate) {
+      // REVIEWER TABLE HAS NO DATE FIELDS...
+/*       if (dataLoadDate) {
         feedbackFeature.attributes[
           config.FIELD_NAME.feedbackTable.data_load_date
         ] = dataLoadDate;
-      }
+      } */
 
       apiManager
         .applyEditToFeatureTable(requestUrl, feedbackFeature)
@@ -556,7 +564,7 @@ export default function Controller(props = {}) {
       const feedbackData = feedbackManager.getFeedbackDataBySpecies(species);
       if (feedbackData) {
         Object.keys(feedbackData).forEach(function(key) {
-          ecoIds.push(feedbackData[key].hucID);
+          ecoIds.push(feedbackData[key].ecoID);
         });
       }
     }
@@ -580,7 +588,7 @@ export default function Controller(props = {}) {
       Object.keys(data).forEach(function(key) {
         // console.log(key, data[key]);
 
-        const ecoID = data[key].hucID;
+        const ecoID = data[key].ecoID;
         const status = data[key].status;
         console.log("renderEcoWithFeedbackDataOnMap ::  ecoid: " + ecoID + " status: " + status)
         showEcoFeatureOnMap(ecoID, status, data[key]);
@@ -618,7 +626,8 @@ export default function Controller(props = {}) {
   };
 
   const openFeedbackManager = (options = {}) => {
-    const userID = oauthManager.getUserID();
+    //FIX THIS
+    const userID = 2; //oauthManager.getUserID();
     const species = dataModel.getSelectedSpecies();
     const ecoID = dataModel.getSelectedEcoShp();
     const hucName =
@@ -751,13 +760,14 @@ export default function Controller(props = {}) {
     });
   };
 
-  const showEcoFeatureOnMap = (hucID = "", status = 0, data = null) => {
-    if (!hucID) {
-      console.error("hucID is missing...");
+  const showEcoFeatureOnMap = (ecoId = "", status = 0, data = null) => {
+    console.log("showEcoFeatureOnMap ecoId:", ecoId)
+    if (!ecoId) {
+      console.error("ecoID is missing...");
       return;
     }
 
-    controllerProps.showEcoFeatureOnMap(hucID, status);
+    controllerProps.showEcoFeatureOnMap(ecoId, status);
   };
 
   const setSelectedSpecies = async val => {
