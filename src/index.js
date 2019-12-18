@@ -107,7 +107,7 @@ const initApp = async oauthManager => {
 
     highligtEcosOnMap: ecoIds => {
       // console.log('highligtEcosOnMap', data);
-      mapControl.highlightEcos(ecoIds);
+      //mapControl.highlightEcos(ecoIds);
     },
     // addActualBoundaryLayerToMap:(url='')=>{
     //     // console.log('addActualBoundaryLayerToMap', url);
@@ -124,11 +124,19 @@ const initApp = async oauthManager => {
       // console.log('clearMapGraphics', targetLayer);
       mapControl.clearMapGraphics(targetLayer);
     },
+    clearEcoPresenceGraphics: () =>{
+      mapControl.clearEcoPresenceGraphics();
+    },
     
     showEcoFeatureOnMap: (ecoId = "", status) => {
-      // console.log('showEcoFeatureOnMap', ecoId);
+      console.log('showEcoFeatureOnMap', ecoId, status);
       mapControl.showEcoFeatureByStatus(ecoId, status);
     },
+
+    showEcoPresenceOnMap: (ecoId = "", presence = "") => {
+      mapControl.showEcoFeatureByPresence(ecoId, presence)
+    },
+
     //addPreviewHucByID
     addPreviewEcoByID: ecoId => {
       mapControl.addPreviewEcoByID(ecoId);

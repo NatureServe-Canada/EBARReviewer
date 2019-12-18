@@ -1,6 +1,7 @@
 export default class FeedbackManager {
   constructor(options = {}) {
     this.userID = null;
+    this.reviewid = null;
     this.ecoID = null;
     this.species = null;
     this.status = null;
@@ -12,7 +13,8 @@ export default class FeedbackManager {
 
   init(options) {
     console.log("INIT: options: ",options)
-    this.userID = 2; //options.userID || null;
+    this.userID = options.userID || null;
+    this.reviewid = options.reviewid || null;
     this.ecoID = options.ecoID || null;
     this.species = options.species || null;
     this.hucName = options.hucName || null;
@@ -49,6 +51,7 @@ export default class FeedbackManager {
 
   reset() {
     this.userID = null;
+    this.reviewid = null;
     this.ecoID = null;
     this.species = null;
     this.status = null;
@@ -62,6 +65,7 @@ export default class FeedbackManager {
   getFeedbackData() {
     return {
       userID: this.userID,
+      reviewid: this.reviewid,
       ecoID: this.ecoID,
       species: this.species,
       status: this.status,

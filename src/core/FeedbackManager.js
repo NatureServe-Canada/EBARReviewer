@@ -56,7 +56,7 @@ export default function(options = {}) {
 
   const save = feedbackData => {
     const ecoId = feedbackData.ecoID;
-    console.log("save feedback: ", ecoId, feedbackData.ecoID)
+    console.log("save feedback: ", feedbackData.ecoID)
     const species = feedbackData.species;
 
     if (!feedbackDataStore[species]) {
@@ -90,6 +90,7 @@ export default function(options = {}) {
 
   const getSavedItemFromDataStore = data => {
     const ecoId = data.ecoId;
+    const reviewid = data.reviewid;
     const species = data.species;
     const hucName = data.hucName;
 

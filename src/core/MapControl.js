@@ -27,6 +27,8 @@ const MapControl = function({
   let ecoFeatureOnSelectHandler = null;
   // let isOnHoldEventDisabled = false;
 
+  let ecoPresenceGraphicLayer = null;
+
   const init = (options = {}) => {
     if (!webMapID || !mapViewContainerID) {
       console.error(
@@ -205,11 +207,11 @@ const MapControl = function({
                 width: "0"
               }
             }
-          },
-          minScale:
+          }/*,
+           minScale:
             config.layerParameters.ecoShapes.minScale,
           maxScale:
-            config.layerParameters.ecoShapes.maxScale
+            config.layerParameters.ecoShapes.maxScale */
         });
 
         mapView.map.add(ecoShpLayer);
@@ -234,7 +236,11 @@ const MapControl = function({
           listMode: "hide"
         });
 
-        mapView.map.addMany([ecoShpByStatusGraphicLayer, ecoPreviewGraphicLayer]);
+        ecoPresenceGraphicLayer = new GraphicsLayer({
+          listMode: "hide"
+        });
+
+        mapView.map.addMany([ecoShpByStatusGraphicLayer, ecoPreviewGraphicLayer, ecoPresenceGraphicLayer]);
       });
   };
 
@@ -374,6 +380,7 @@ const MapControl = function({
     let where = `${config.FIELD_NAME.ecoShapeLayerID} = '${ecoIds[0]}'`;
     if (ecoIds.length > 1) where = generateEcpShpWhereFromEcoIDs(ecoIds);
     query.where = where;
+    query.outSpatialReference = 102100;
     query.returnGeometry = true;
     query.outFields = ["*"];
 
@@ -417,10 +424,12 @@ const MapControl = function({
   };
 
   const zoomToEcoShps = async ecoIds => {
-    const ecoFeats = await queryEcoShpsLayerByEcoIDs(ecoIds);
+
+    const ecoFeats = await queryEcoShpsLayerByEcoIDs(ecoIds);    
     console.log("zoomToEcoShps ecofeats:", ecoFeats)
     mapView.goTo(ecoFeats);
     console.log("done goto: zoomtoecoshps")
+
   };
 
   const queryEcoLayerByMouseEventOnSuccessHandler = feature => {
@@ -441,16 +450,75 @@ const MapControl = function({
     }
   ) => {
     removeEcoGraphicByStatus(ecoId);
-
+    console.log("in showEcoFeatureByStatus")
     if (+status > 0) {
       queryEcoShpsLayerByEcoID(ecoId).then(features => {
         addEcoGraphicByStatus(features[0], status, options);
       });
     }
+  };
 
-    // queryEcoShpsLayerByEcoID(ecoId).then(feature=>{
-    //     addEcoGraphicByStatus(feature, status);
-    // });
+  const showEcoFeatureByPresence = (ecoId, presence) => {
+    //function to get presnece
+    //let feature = "";
+    //let presence = "";
+
+    queryEcoShpsLayerByEcoID(ecoId).then(features => {
+      drawEcoShapeByPresence(features[0], presence);
+    });
+
+    
+  };
+
+  const drawEcoShapeByPresence = (feature, presence) => {
+    const geometry = feature.geometry;
+    const symbols = {
+      "P": {
+        type: "simple-fill", // autocasts as new SimpleFillSymbol()
+        color: [168, 0, 132, 0.35], //Cattleya Orchid 
+        outline: {
+          // autocasts as new SimpleLineSymbol()
+          color: [255, 255, 255, 0.3],
+          width: "1px"
+        }
+      },
+      "X": {
+        type: "simple-fill", 
+        color: [255, 115, 223, 0.35], //, Fuchsia Pink 
+        outline: {
+          color: [255, 255, 255, 0.3],
+          width: "1px"
+        }
+      },
+      "H":{
+        type: "simple-fill", 
+        color: [255, 190, 232, 0.35], //Rhodolite Rose 
+        outline: {
+          color: [255, 255, 255, 0.3],
+          width: "1px"
+        }
+      }
+    };
+
+    const symbol = symbols[presence];
+    //const attributes
+
+    esriLoader
+      .loadModules(["esri/Graphic"], esriLoaderOptions)
+      .then(([Graphic]) => {
+        const graphic = new Graphic({
+          geometry,
+          symbol,
+          //attributes
+          // popupTemplate
+        });
+          console.log("about to drawEcoShapeByPresence add graphic", graphic)
+        ecoPresenceGraphicLayer.add(graphic);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+
   };
 
   const addEcoGraphicByStatus = (feature, status, options = {}) => {
@@ -505,7 +573,7 @@ const MapControl = function({
           attributes
           // popupTemplate
         });
-
+          console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
         ecoShpByStatusGraphicLayer.add(graphic);
       })
       .catch(err => {
@@ -574,6 +642,10 @@ const MapControl = function({
     if (ecoShpByStatusGraphicLayer) ecoShpByStatusGraphicLayer.removeAll();
     cleanPreviewEcoGraphic();
   };
+
+  const clearEcoPresenceGraphics = () => {
+    if (ecoPresenceGraphicLayer) ecoPresenceGraphicLayer.removeAll()
+  }
   
   const cleanPreviewEcoGraphic = () => {
     if (ecoPreviewGraphicLayer) ecoPreviewGraphicLayer.removeAll();
@@ -585,12 +657,13 @@ const MapControl = function({
     clearAllGraphics();
     console.log("highlightEcosecoIds: ", ecoIds)
     ecoShpLayer.renderer = getUniqueValueRenderer(ecoIds);
+    console.log(ecoShpLayer)
   };
 
   const getUniqueValueRenderer = ecoIds => {
     const defaultSymbol = {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
-      color: [0, 0, 0, 0],
+      color: [0, 100, 0, 0],
       outline: {
         // autocasts as new SimpleLineSymbol()
         color: config.COLOR.ecoBorder,
@@ -610,7 +683,7 @@ const MapControl = function({
 
     const uniqueValueInfos = ecoIds.map(ecoId => {
       return {
-        value: ecoId,
+        value: parseInt(ecoId, 10),
         symbol: symbol
       };
     });
@@ -735,8 +808,10 @@ const MapControl = function({
     highlightEcos,
     cleanPreviewEcoGraphic,
     showEcoFeatureByStatus,
+    showEcoFeatureByPresence,
     // addActualModelBoundaryLayer,
     clearAllGraphics,
+    clearEcoPresenceGraphics,
     // disableMapOnHoldEvent,
     queryEcoShpsLayerByEcoID,
     queryEcoShpsLayerByEcoIDs,

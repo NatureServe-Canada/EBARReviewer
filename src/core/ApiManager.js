@@ -6,14 +6,14 @@ const Promise = require("es6-promise").Promise;
 export default function ApiManager(props = {}) {
   const querySpeciesByUser = (
     options = {
-      email: ""
+      username: ""
     }
   ) => {
     const requestUrl = config.URL.speciesByUser + "/query";
     //THIS NEEDS TO BE PUT INTO PRODUCTION, RIGHT NOW TESTING WITH USER "2"
     // ACTUAL OUTPUT WILL BE EMAILS IN THE LAYER
-    //const whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${options.email}'`;
-    const whereClause = `${config.FIELD_NAME.speciesByUser.email} = 2`;
+    const whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`;
+    //const whereClause = `${config.FIELD_NAME.speciesByUser.email} = 2`;
     console.log("query species by user url: ", requestUrl)
     console.log("query species by user where: ", whereClause)
     return queryForFeaturesGet(requestUrl, {
@@ -40,7 +40,7 @@ export default function ApiManager(props = {}) {
       .join(" OR ");
     console.log("=======", options)
     // NS: This added in to search by email (expertID) to filter the speciesLookup table
-    whereClause = "("+ whereClause+ ") AND " +`${config.FIELD_NAME.speciesByUser.email} = '${options.email}'`
+    whereClause = "("+ whereClause+ ") AND " +`${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`
     const bodyFormData = new FormData();
     console.log("USER: querySpeciesLookupTable whereClause: ", whereClause)
 
@@ -72,7 +72,7 @@ export default function ApiManager(props = {}) {
     );
   };
 
-   const queryStatusTable = () => {
+/*    const queryStatusTable = () => {
     const requestUrl = config.URL.statusTable + "/query";
     console.log("queryStatusTable URL: " + requestUrl)
     return queryForFeaturesGet(
@@ -85,7 +85,7 @@ export default function ApiManager(props = {}) {
       },
       "no status found in table"
     );
-  }; 
+  };  */
 
 
   const queryEcoShapeBySpecies = speciesKey => {
@@ -112,6 +112,7 @@ export default function ApiManager(props = {}) {
   };
 
   const fetchFeedback = (options = {}) => {
+    console.log("came from queryFeedbacksByUser try to do fetchFeedback")
     const requestUrl = options.requestUrl;  //config.URL.feedbackTable + '/query'; //options.requestUrl
     console.log("fetchFeedback url: " + requestUrl)
     const whereClause = options.where || "1=1"; // options.where = "reviewid = 'gisadmin' AND retirementdate IS NULL" ???
@@ -418,7 +419,7 @@ export default function ApiManager(props = {}) {
     querySpeciesLookupTable,
     queryAllFeaturesFromSpeciesLookupTable,
     queryEcoShapeBySpecies,
-    queryStatusTable,
+    //queryStatusTable,
     fetchFeedback,
     deleteFromFeedbackTable,
     applyEditToFeatureTable,

@@ -72,19 +72,34 @@ body {
   background-size: 90%;
 }
 
+/* Present */
+.legend-icon[data-index="3"] {
+  background: url("../static/Present.png") center center no-repeat;
+  background-size: 90%;
+}
+
+/* Presence Expected */
+.legend-icon[data-index="4"] {
+  background: url("../static/PresenceExpected.png") center center no-repeat;
+  background-size: 90%;
+}
+
+/* Historical */
+.legend-icon[data-index="5"] {
+  background: url("../static/Historical.png") center center no-repeat;
+  background-size: 90%;
+}
+/* 
 .legend-icon[data-index="3"] {
   background-color: rgba(255, 255, 255, 1);
 }
+ */
 
-
-
-
-
-.legend-icon[data-index="4"] {
+/* .legend-icon[data-index="4"] {
   width: 19px;
   height: 19px;
   border: solid 2px rgba(239, 35, 60, 0.7);
-}
+} */
 
 .legend-item.is-inactive {
   opacity: 0.4;

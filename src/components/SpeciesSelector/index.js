@@ -91,6 +91,7 @@ export default function SpeciesSelector(
     const optionsHtml = dataForSelectedTaxa
       .map(d => {
         const val = d[config.FIELD_NAME.speciesLookup.rangeValForLookup];
+        console.log("this is the val going into speciesSelector:", val)
         const label = d[config.FIELD_NAME.speciesLookup.speciesName];
         const hasOverallFeedback = d.hasOverallFeedback
           ? getOptionDecorationClass("overall")
@@ -109,7 +110,8 @@ export default function SpeciesSelector(
           config.allowCommentOnNoDataSpecies && !d.hasDataLoaded
             ? getOptionDecorationClass("noDataLoaded")
             : "";
-        return `<option class='select-option species-option ${hasOverallFeedback} ${hasDeatiledFeedback} ${isDisabled} ${isNoDataLoaded}' value="${val}" ${isDisabled}>${label}</option>`;
+        // have removed the "" around VAL as it's an int, not a string now.
+        return `<option class='select-option species-option ${hasOverallFeedback} ${hasDeatiledFeedback} ${isDisabled} ${isNoDataLoaded}' value=${val} ${isDisabled}>${label}</option>`;
       })
       .join("");
 

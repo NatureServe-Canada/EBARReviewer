@@ -4,6 +4,8 @@ module.exports = {
   oauthAppID: "JAdAlm4QJ8Ot9j6r",
   webMapID: "039e37fe6e694fd58e898d762d90b632",
 
+  adminUser: "gisadmin11",
+
   FIELD_NAME: {
     ecoShapeLayerID: "ecoshapeid",
     statusType: "artext", //"StatusType",
@@ -29,14 +31,14 @@ module.exports = {
     feedbackTable: {
       ecoShapeID: "ecoshapeid",// "HUCID",
       userID: "reviewid", //"UserID",
-      species: "ecoshapereviewid", //"Species",
+      species: "reviewid", //"Species",
       comment: "ecoshapereviewnotes", //"Comment_Long",
       status: "addremove", //"StatusType",
       retirementDate: "retirementdate", // "RetirementDate",
       data_load_date: "dataloaddate",// "DataLoadDate"
     },
     overallFeedback: {
-      userID: "expertid",// "UserID",
+      userID: "username",// "UserID",
       species: "rangemapid", //"Species",
       comment: "reviewnotes", //"Comment_Long",
       rating: "overallstarrating", //"Rating",
@@ -45,7 +47,7 @@ module.exports = {
     },
     speciesByUser: {
       speciesCode: "speciesid",
-      email: "expertid", //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
+      email: "username", //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
     },
     pdfLookup: {
       speciesCode: "cutecode",
@@ -56,6 +58,15 @@ module.exports = {
       data_load_date: "dataloaddate"// "DataLoadDate"
     }
   },
+
+  STATUS: [
+    {"attributes":{"artext":"Add to Range","arcode":1}},
+    {"attributes":{"artext":"Comment","arcode":2}},
+    {"attributes":{"artext":"Remove from Range","arcode":3}},
+    {"attributes":{"artext":"Present","arcode":4}},
+    {"attributes":{"artext":"Presence Expected","arcode":5}},
+    {"attributes":{"artext":"Historical","arcode":6}}
+  ],
 
   URL: {
     ecoShapes:
