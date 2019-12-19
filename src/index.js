@@ -15,10 +15,11 @@ import PolyfillForIE from "./utils/PolyfillForIE";
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
 
-  //document.querySelector(".js-accept-terms").addEventListener("click", evt => {
-  // console.log('agress');
-  initApp(oauthManager);
-  //});
+  document.querySelector(".js-accept-terms").addEventListener("click", evt => {
+    // console.log('agress');
+    initApp(oauthManager);
+  });
+  
 })();
 
 const initApp = async oauthManager => {
@@ -105,17 +106,22 @@ const initApp = async oauthManager => {
       }
     },
 
+    /*     
     highligtEcosOnMap: ecoIds => {
-      // console.log('highligtEcosOnMap', data);
-      //mapControl.highlightEcos(ecoIds);
+      console.log('highligtEcosOnMap', data);
+      mapControl.highlightEcos(ecoIds);
     },
+     */
+
     // addActualBoundaryLayerToMap:(url='')=>{
     //     // console.log('addActualBoundaryLayerToMap', url);
     //     // mapControl.addActualModelBoundaryLayer(url);
     // },
+
+    /*     
     showToPredictedHabitatOnMap: (speciesCode = "") => {
-      //mapControl.showPredictedHabitatLayers(speciesCode);
-    },
+      mapControl.showPredictedHabitatLayers(speciesCode);
+    }, */
     
     zoomToEcoShpsOnMap: (ecoIds = []) => {
       mapControl.zoomToEcoShps(ecoIds);

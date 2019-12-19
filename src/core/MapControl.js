@@ -29,6 +29,34 @@ const MapControl = function({
 
   let ecoPresenceGraphicLayer = null;
 
+  const presenceSymbols = {
+    "P": {
+      type: "simple-fill", // autocasts as new SimpleFillSymbol()
+      color: config.COLOR.present,
+      outline: {
+        // autocasts as new SimpleLineSymbol()
+        color: [255, 255, 255, 0.3],
+        width: "1px"
+      }
+    },
+    "X": {
+      type: "simple-fill", 
+      color: config.COLOR.presenceexpected,
+      outline: {
+        color: [255, 255, 255, 0.3],
+        width: "1px"
+      }
+    },
+    "H":{
+      type: "simple-fill", 
+      color: config.COLOR.historical,
+      outline: {
+        color: [255, 255, 255, 0.3],
+        width: "1px"
+      }
+    }
+  };
+
   const init = (options = {}) => {
     if (!webMapID || !mapViewContainerID) {
       console.error(
@@ -46,7 +74,7 @@ const MapControl = function({
     esriLoader
       .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config"], esriLoaderOptions)
       .then(([MapView, WebMap, esriConfig]) => {
-        esriConfig.portalUrl = "https://gis.natureserve.ca/arcgis";
+        esriConfig.portalUrl = config.portalURL; //"https://gis.natureserve.ca/arcgis";
         const webmap = new WebMap({
           portalItem: {
             id: webMapID
@@ -76,6 +104,7 @@ const MapControl = function({
       });
   };
 
+  /*
   const initReferenceLayers = mapView => {
     // Layer.fromPortalItem({
     //     portalItem: {  // autocasts new PortalItem()
@@ -143,36 +172,36 @@ const MapControl = function({
         });
 
         // HUC6
-/*         const huc6 = new FeatureLayer({
-          portalItem: {
-            // autocasts as esri/portal/PortalItem
-            id: config.reference_layers.HUC6.itemId
-          },
-          title: config.reference_layers.HUC6.title,
-          opacity: 0.9,
-          visible: false,
-          renderer: {
-            type: "simple", // autocasts as new SimpleRenderer()
-            symbol: {
-              type: "simple-fill", // autocasts as new SimpleFillSymbol()
-              color: [0, 0, 0, 0],
-              outline: {
-                // autocasts as new SimpleLineSymbol()
-                color: [0, 255, 0, 1],
-                width: "2"
-              }
-            }
-          }
-        }); */
-
-/*         const rivers = new FeatureLayer({
-          portalItem: {
-            // autocasts as esri/portal/PortalItem
-            id: config.reference_layers.RIVERS.itemId
-          },
-          title: config.reference_layers.RIVERS.title,
-          visible: false
-        }); */
+      // const huc6 = new FeatureLayer({
+      //     portalItem: {
+      //       // autocasts as esri/portal/PortalItem
+      //       id: config.reference_layers.HUC6.itemId
+      //     },
+      //     title: config.reference_layers.HUC6.title,
+      //     opacity: 0.9,
+      //     visible: false,
+      //     renderer: {
+      //       type: "simple", // autocasts as new SimpleRenderer()
+      //       symbol: {
+      //         type: "simple-fill", // autocasts as new SimpleFillSymbol()
+      //         color: [0, 0, 0, 0],
+      //         outline: {
+      //           // autocasts as new SimpleLineSymbol()
+      //           color: [0, 255, 0, 1],
+      //           width: "2"
+      //         }
+      //       }
+      //     }
+      //   }); 
+             
+        //  const rivers = new FeatureLayer({
+        //   portalItem: {
+        //     // autocasts as esri/portal/PortalItem
+        //     id: config.reference_layers.RIVERS.itemId
+        //   },
+        //   title: config.reference_layers.RIVERS.title,
+        //   visible: false
+        // }); 
 
         // mapView.map.addMany([usaProtectedAreas, nlcdLandCover, forestType, wetLand]);
         mapView.map.add(usaProtectedAreas, 0);
@@ -186,7 +215,7 @@ const MapControl = function({
         console.error(err);
       });
   };
-
+  */
   const initEcoLayer = mapView => {
     esriLoader
       .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
@@ -207,21 +236,24 @@ const MapControl = function({
                 width: "0"
               }
             }
-          }/*,
-           minScale:
-            config.layerParameters.ecoShapes.minScale,
-          maxScale:
-            config.layerParameters.ecoShapes.maxScale */
+          },
+          // minScale:
+          //   config.layerParameters.ecoShapes.minScale,
+          // maxScale:
+          //   config.layerParameters.ecoShapes.maxScale 
         });
 
-        mapView.map.add(ecoShpLayer);
+        //NS: Don't actually draw this layer. We use VT for the general ecoshape position
+        //  and we grab only shapes we need to draw based on species selection which are shown
+        //  via a GraphicsLayer
+        //mapView.map.add(ecoShpLayer);
         
         initEcoShpReviewReferenceLayers(mapView);
         // ecoShpLayer.on("layerview-create", function(evt) {
-
         // });
       });
   };
+  
 
   const initEcoShpReviewReferenceLayers = mapView => {
     esriLoader
@@ -472,36 +504,7 @@ const MapControl = function({
 
   const drawEcoShapeByPresence = (feature, presence) => {
     const geometry = feature.geometry;
-    const symbols = {
-      "P": {
-        type: "simple-fill", // autocasts as new SimpleFillSymbol()
-        color: [168, 0, 132, 0.35], //Cattleya Orchid 
-        outline: {
-          // autocasts as new SimpleLineSymbol()
-          color: [255, 255, 255, 0.3],
-          width: "1px"
-        }
-      },
-      "X": {
-        type: "simple-fill", 
-        color: [255, 115, 223, 0.35], //, Fuchsia Pink 
-        outline: {
-          color: [255, 255, 255, 0.3],
-          width: "1px"
-        }
-      },
-      "H":{
-        type: "simple-fill", 
-        color: [255, 190, 232, 0.35], //Rhodolite Rose 
-        outline: {
-          color: [255, 255, 255, 0.3],
-          width: "1px"
-        }
-      }
-    };
-
-    const symbol = symbols[presence];
-    //const attributes
+    const symbol = presenceSymbols[presence];
 
     esriLoader
       .loadModules(["esri/Graphic"], esriLoaderOptions)
@@ -651,7 +654,8 @@ const MapControl = function({
     if (ecoPreviewGraphicLayer) ecoPreviewGraphicLayer.removeAll();
   };
 
-  // highlight ecos from the species extent table
+  // This has been superseded by drawing ecos based on PRESENCE
+  /*   
   const highlightEcos = ecoIds => {
     // cleanPreviewEcoGraphic();
     clearAllGraphics();
@@ -659,7 +663,7 @@ const MapControl = function({
     ecoShpLayer.renderer = getUniqueValueRenderer(ecoIds);
     console.log(ecoShpLayer)
   };
-
+ */
   const getUniqueValueRenderer = ecoIds => {
     const defaultSymbol = {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
@@ -698,62 +702,66 @@ const MapControl = function({
     return renderer;
   };
 
+
+  /*   
   const initPredictedHabitatLayers = mapView => {
-    // console.log(url);
-    // if(actualModelBoundaryLayer){
-    //     mapView.map.remove(actualModelBoundaryLayer);
-    // }
-    //esriLoader
-    //  .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
-    //  .then(([FeatureLayer]) => {
-    //    const predictedHabitatLayers = [
-    //      config.URL.PredictedHabitat.line,
-    //      config.URL.PredictedHabitat.polygon,
-    //      config.URL.PredictedHabitat.line2,
-    //      config.URL.PredictedHabitat.polygon2
-    //    ].map(url => {
-    //      return new FeatureLayer({
-    //        url,
-    //        opacity: 0.9,
-    //        listMode: "hide",
-    //        definitionExpression: `cutecode=''`,
-    //        isPredictedHabitatLayer: true,
-    //        legendEnabled: false
-    //      });
-    //    });
-    //    mapView.map.addMany(predictedHabitatLayers);
-    //});
-    // mapView.map.reorder(actualModelBoundaryLayer, 0);
-  };
+    console.log(url);
+    if(actualModelBoundaryLayer){
+        mapView.map.remove(actualModelBoundaryLayer);
+    }
+    esriLoader
+     .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
+     .then(([FeatureLayer]) => {
+       const predictedHabitatLayers = [
+         config.URL.PredictedHabitat.line,
+         config.URL.PredictedHabitat.polygon,
+         config.URL.PredictedHabitat.line2,
+         config.URL.PredictedHabitat.polygon2
+       ].map(url => {
+         return new FeatureLayer({
+           url,
+           opacity: 0.9,
+           listMode: "hide",
+           definitionExpression: `cutecode=''`,
+           isPredictedHabitatLayer: true,
+           legendEnabled: false
+         });
+       });
+       mapView.map.addMany(predictedHabitatLayers);
+    });
+    mapView.map.reorder(actualModelBoundaryLayer, 0);
+  }; */
 
+/* 
   const showPredictedHabitatLayers = (speciesCode = "") => {
-    // mapView.map.layers.forEach(layer => {
-    //   // console.log(layer);
-    //   if (layer.isPredictedHabitatLayer) {
-    //     // console.log(la)
-    //     layer.definitionExpression = `cutecode='${speciesCode}'`;
-    //   }
-    //   layer.refresh();
-    // });
-    // zoomToPredictedHabitatLayer();
+    mapView.map.layers.forEach(layer => {
+      // console.log(layer);
+      if (layer.isPredictedHabitatLayer) {
+        // console.log(la)
+        layer.definitionExpression = `cutecode='${speciesCode}'`;
+      }
+      layer.refresh();
+    });
+    zoomToPredictedHabitatLayer();
   };
-
+ */
+/* 
   const zoomToPredictedHabitatLayer = (speciesCode = "") => {
-    // mapView.map.layers.forEach(layer => {
-    //   // console.log(layer);
-    //   if (layer.isPredictedHabitatLayer) {
-    //     // console.log(la)
-    //     layer.queryExtent().then(function(results) {
-    //       // go to the extent of the results satisfying the query
-    //       // view.goTo(results.extent);
-    //       if (results.extent) {
-    //         mapView.goTo(results.extent);
-    //       }
-    //     });
-    //   }
-    // });
+    mapView.map.layers.forEach(layer => {
+      // console.log(layer);
+      if (layer.isPredictedHabitatLayer) {
+        // console.log(la)
+        layer.queryExtent().then(function(results) {
+          // go to the extent of the results satisfying the query
+          // view.goTo(results.extent);
+          if (results.extent) {
+            mapView.goTo(results.extent);
+          }
+        });
+      }
+    });
   };
-
+ */
   const setLayersOpacity = val => {
     mapView.map.layers.forEach(layer => {
       // console.log(layer);
@@ -805,7 +813,7 @@ const MapControl = function({
 
   return {
     init,
-    highlightEcos,
+    //highlightEcos,
     cleanPreviewEcoGraphic,
     showEcoFeatureByStatus,
     showEcoFeatureByPresence,
@@ -820,7 +828,7 @@ const MapControl = function({
     setLayersOpacity,
     clearMapGraphics,
     addPreviewEcoByID,
-    showPredictedHabitatLayers,
+    //showPredictedHabitatLayers,
     addCsvLayer
   };
 };

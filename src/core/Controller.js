@@ -622,7 +622,6 @@ export default function Controller(props = {}) {
     console.log("setSelectedHucFeature ", ecoID)
     if (!isReviewMode) {
       dataModel.setSelectedEcoShp(ecoID);
-
       // console.log(selectedHucFeature);
       openFeedbackManager();
     } else {
@@ -693,7 +692,7 @@ export default function Controller(props = {}) {
     }
   };
 
-  const getPdfUrlForSelectedSpecies = async () => {
+/*   const getPdfUrlForSelectedSpecies = async () => {
     const species = dataModel.getSelectedSpecies();
     // const url = config.URL.pdf[species];
     // const url = dataModel.getSpeciesInfo(species)[config.FIELD_NAME.speciesLookup.pdfLink];
@@ -712,19 +711,19 @@ export default function Controller(props = {}) {
     } catch (err) {
       return null;
     }
-  };
+  }; */
 
-  const downloadPdf = async () => {
-    // console.log('controller: download pdf');
-    // const url = await getPdfUrlForSelectedSpecies();
-    // console.log(url);
-    // if (url) {
-    //   window.open(url);
-    // } else {
-    //   console.error("no pdf file is found for selected species", species);
-    // }
+/*   const downloadPdf = async () => {
+    console.log('controller: download pdf');
+    const url = await getPdfUrlForSelectedSpecies();
+    console.log(url);
+    if (url) {
+      window.open(url);
+    } else {
+      console.error("no pdf file is found for selected species", species);
+    }
   };
-
+ */
   const getOverallFeedback = () => {
     const species = dataModel.getSelectedSpecies();
 
@@ -798,7 +797,6 @@ export default function Controller(props = {}) {
   } */
 
   const setSelectedSpecies = async val => {
-    // console.log('setSelectedSpecies', val);
     console.log("setSelectedSpecies was called using the value:  "+ val)
     dataModel.setSelectedSpecies(val);
 
@@ -824,11 +822,13 @@ export default function Controller(props = {}) {
       };
     });
 
-/*     data.unshift({
+    /*     
+    data.unshift({
       label: "Predicted Habitat",
       minVisibleScale: config.visibleRange.predictedHabitat.minScale
       // color: config.COLOR.actualModeledExtent
-    }); */
+    }); 
+    */
 
     return data;
   };
@@ -851,7 +851,7 @@ export default function Controller(props = {}) {
     feedbackManager,
     setSelectedHucFeature,
     resetSelectedEcoFeature,
-    downloadPdf,
+    //downloadPdf,
     getOverallFeedback,
     setSelectedSpecies,
     postOverallFeedback,

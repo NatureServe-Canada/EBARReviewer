@@ -10,8 +10,7 @@ export default function ApiManager(props = {}) {
     }
   ) => {
     const requestUrl = config.URL.speciesByUser + "/query";
-    //THIS NEEDS TO BE PUT INTO PRODUCTION, RIGHT NOW TESTING WITH USER "2"
-    // ACTUAL OUTPUT WILL BE EMAILS IN THE LAYER
+    // was using id, now using portal login username 
     const whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`;
     //const whereClause = `${config.FIELD_NAME.speciesByUser.email} = 2`;
     console.log("query species by user url: ", requestUrl)
@@ -40,7 +39,7 @@ export default function ApiManager(props = {}) {
       .join(" OR ");
     console.log("=======", options)
     // NS: This added in to search by email (expertID) to filter the speciesLookup table
-    whereClause = "("+ whereClause+ ") AND " +`${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`
+    whereClause = "("+ whereClause + ") AND " +`${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`
     const bodyFormData = new FormData();
     console.log("USER: querySpeciesLookupTable whereClause: ", whereClause)
 
@@ -182,7 +181,7 @@ export default function ApiManager(props = {}) {
     });
   };
 
-  const queryPdfTable = (speciesKey = "") => {
+/*   const queryPdfTable = (speciesKey = "") => {
     const requestUrl = config.URL.pdfLookup + "/query";
     const whereClause = `${config.FIELD_NAME.pdfLookup.speciesCode} = '${speciesKey}'`;
 
@@ -200,7 +199,7 @@ export default function ApiManager(props = {}) {
     } else {
       console.log("pdf lookup table url is not found for", speciesKey);
     }
-  };
+  }; */
 
   const getDistinctSpeciesCodeFromModelingExtent = () => {
     const requestUrl = config.URL.speciesDistribution + "/query";
@@ -227,6 +226,7 @@ export default function ApiManager(props = {}) {
     });
   };
 
+/* 
   const getDataLoadDate = (speciesCode = "") => {
     const fieldNameDataLoadDate =
       config.FIELD_NAME.data_load_date.data_load_date;
@@ -249,7 +249,8 @@ export default function ApiManager(props = {}) {
       resolve(dataLoadDate);
     });
   };
-
+ */
+/* 
   const queryForDomainsGet = ( 
     requestUrl,
     params,
@@ -294,12 +295,11 @@ export default function ApiManager(props = {}) {
               console.error(err);
               reject(err);
             });
-        };
-  
+        };  
         getDomains();
       });
-
   };
+  */
 
   const queryForFeaturesGet = (
     requestUrl,
@@ -424,8 +424,8 @@ export default function ApiManager(props = {}) {
     deleteFromFeedbackTable,
     applyEditToFeatureTable,
     querySpeciesByUser,
-    queryPdfTable,
+    //queryPdfTable,
     getDistinctSpeciesCodeFromModelingExtent,
-    getDataLoadDate
+    //getDataLoadDate
   };
 }

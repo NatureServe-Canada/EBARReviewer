@@ -3,6 +3,7 @@
 module.exports = {
   oauthAppID: "JAdAlm4QJ8Ot9j6r",
   webMapID: "039e37fe6e694fd58e898d762d90b632",
+  portalURL: "https://gis.natureserve.ca/arcgis",
 
   adminUser: "gisadmin11",
 
@@ -84,7 +85,7 @@ module.exports = {
   overallFeedback:
     "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/4",
 
-  PredictedHabitat: {
+  //PredictedHabitat: {
     // "137976": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Isotria_medeloides_Boundary/FeatureServer/0",
     // "941975": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Lithobates_kauffeldi_Boundary/FeatureServer/0",
     // line:
@@ -95,52 +96,41 @@ module.exports = {
     //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Line_Part_2/FeatureServer/0",
     // polygon2:
     //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Polygon_Part_2/FeatureServer/0"
-  },
-  pdfLookup:
-    "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/6",
-  data_load_date:
-    "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/9"
+  //},
+  // pdfLookup:
+  //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/6",
+  // data_load_date:
+  //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/9"
   },
 
   layerParameters: {
     ecoShapes: {
       minScale: 0,
-      maxScale: 20000000
+      maxScale: 50000
     },
     data_load_date: {
       defaultDate: "5/14/2019  7:00:00 AM"
     }
   },
 
-  reference_layers: {
-    usa_protected_areas: {
-      itemId: "dd6077b7b71c4492aceab1ae0146ad1c",
-      title: "USA Protected Areas"
-    },
-    USA_NLCD_Land_Cover_2011: {
-      itemId: "aa71e15357a14dbb93a50ef3a8e06f70",
-      title: "USA NLCD Land Cover"
-    },
-    USA_Forest_Type: {
-      itemId: "593d022dbeb24c3abbf6c509fd592dd2",
-      title: "USA Forest Type"
-    },
-    USA_Wetlands: {
-      itemId: "0cb75b1f54854ad188302cd8b260c98f",
-      title: "USA Wetlands"
-    }
-    // these are authorative items from esri, as such they require logging into portal
-    // if needed in mobi, will need to reference them through nature serve portal and authenticate on behalf of user
-    // },
-    // HUC6: {
-    //   itemId: "651da243132d4ed78dadbf2e5a6c8e5a",
-    //   title: "Watersheds (HUC6)"
-    // },
-    // RIVERS: {
-    //   itemId: "0baca6c9ffd6499fb8e5fad50174c4e0",
-    //   title: "USA Rivers and Streams"
-    // }
-  },
+  // reference_layers: {
+  //   usa_protected_areas: {
+  //     itemId: "dd6077b7b71c4492aceab1ae0146ad1c",
+  //     title: "USA Protected Areas"
+  //   },
+  //   USA_NLCD_Land_Cover_2011: {
+  //     itemId: "aa71e15357a14dbb93a50ef3a8e06f70",
+  //     title: "USA NLCD Land Cover"
+  //   },
+  //   USA_Forest_Type: {
+  //     itemId: "593d022dbeb24c3abbf6c509fd592dd2",
+  //     title: "USA Forest Type"
+  //   },
+  //   USA_Wetlands: {
+  //     itemId: "0cb75b1f54854ad188302cd8b260c98f",
+  //     title: "USA Wetlands"
+  //   }
+  // },
 
   COLOR: {
     ecoBorder: [255, 255, 255, 0.3],
@@ -150,7 +140,10 @@ module.exports = {
     status0: [200, 200, 200, 0.5],
     status1: [166, 219, 160, 0.5],
     status2: [194, 165, 207, 0.5],
-    actualModeledExtent: "#ffd400"
+    actualModeledExtent: "#ffd400",
+    present: [168, 0, 132, 0.35], //Cattleya Orchid 
+    presenceexpected: [255, 115, 223, 0.35], //, Fuchsia Pink 
+    historical: [255, 190, 232, 0.35], //Rhodolite Rose 
   },
 
   fireflyStyle: {
