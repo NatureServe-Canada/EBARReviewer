@@ -219,8 +219,10 @@ export default function Controller(props = {}) {
       `${config.FIELD_NAME.feedbackTable.userID} = ${userID}`,
       `${config.FIELD_NAME.feedbackTable.retirementDate} IS NULL`
     ]; */
+
+
     const whereClauseParts = [
-      `${config.FIELD_NAME.feedbackTable.userID} = 2`
+      `${config.FIELD_NAME.feedbackTable.username} = '${userID}'`
     ];
     if (options.species) {
       whereClauseParts.push(
@@ -284,16 +286,17 @@ export default function Controller(props = {}) {
   };
 
   const queryOverallFeedbacksByUser = async () => {
+    /// xxx
     //FIX THIS
     const userID =oauthManager.getUserID();
 
     try {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.overallFeedback + "/query",
-        //where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} IS NULL`
-        where: '1=1'
+        where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}'` // AND ${config.FIELD_NAME.overallFeedback.retirementDate} IS NULL`
+        //where: '1=1'
       });
-
+      console.log("This is the queryOverallFeedbacksByUser feedback: ", feedbacks)
       saveOverallFeedbackToDataModel(feedbacks);
 
       return feedbacks;
@@ -311,7 +314,7 @@ export default function Controller(props = {}) {
         requestUrl: config.URL.overallFeedback + "/query",
         where: `${config.FIELD_NAME.overallFeedback.species} = '${species}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} is NULL`
       });
-
+      console.log("in getOverallFeedbacksForReviewMode ...but why in here?  feedbacks: ", feedbacks)
       controllerProps.overallFeedbackForReviewModeOnReady(feedbacks);
     } catch (err) {
       console.error(err);
@@ -333,7 +336,8 @@ export default function Controller(props = {}) {
         [config.FIELD_NAME.overallFeedback.userID]: data.reviewid, //userID,
         [config.FIELD_NAME.overallFeedback.species]: species,
         [config.FIELD_NAME.overallFeedback.rating]: data.rating,
-        [config.FIELD_NAME.overallFeedback.comment]: data.comment
+        [config.FIELD_NAME.overallFeedback.comment]: data.comment,
+        [config.FIELD_NAME.overallFeedback.username]: data.userID
       }
     };
 
@@ -355,7 +359,7 @@ export default function Controller(props = {}) {
       // let operationName = 'addFeatures';
 
       if (feedbacks[0]) {
-        feature.attributes.ObjectId = feedbacks[0].attributes.ObjectId;
+        feature.attributes.ObjectId = feedbacks[0].attributes.objectid;
       }
       // REVIEWER TABLE HAS NO DATE FIELDS...
       /* 
@@ -399,7 +403,7 @@ export default function Controller(props = {}) {
   const getFeedbacksByHucForReviewMode = async hucFeature => {
     const ecoID = hucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
     const hucName = hucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
-
+    console.log(" in  getFeedbacksByHucForReviewMode, but shouldnt be in here...? ")
     try {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
@@ -431,7 +435,7 @@ export default function Controller(props = {}) {
 
       if (feedbacks[0]) {
         const requestUrl = config.URL.feedbackTable + "/deleteFeatures";
-        const objectID = feedbacks[0].attributes.ObjectId;
+        const objectID = feedbacks[0].attributes.objectid;
 
         apiManager.deleteFromFeedbackTable(requestUrl, objectID).then(res => {
           console.log("deleted from feedback table", res);
@@ -456,7 +460,8 @@ export default function Controller(props = {}) {
           [config.FIELD_NAME.feedbackTable.ecoShapeID]: data.ecoID,
           [config.FIELD_NAME.feedbackTable.status]: data.status,
           [config.FIELD_NAME.feedbackTable.comment]: data.comment,
-          [config.FIELD_NAME.feedbackTable.species]: data.species
+          [config.FIELD_NAME.feedbackTable.species]: data.species,
+          [config.FIELD_NAME.feedbackTable.username]: data.userID
         }
       };
 
@@ -490,7 +495,7 @@ export default function Controller(props = {}) {
       // let operationName = 'addFeatures';
 
       if (feedbacks[0]) {
-        feedbackFeature.attributes.ObjectId = feedbacks[0].attributes.ObjectId;
+        feedbackFeature.attributes.objectid = feedbacks[0].attributes.objectid;   //.ObjectId;
       }
 
       // REVIEWER TABLE HAS NO DATE FIELDS...
@@ -515,18 +520,20 @@ export default function Controller(props = {}) {
 
   const getHucsWithFeedbacksForReviewMode = async () => {
     const species = dataModel.getSelectedSpecies();
-
+    console.log("in getHucsWithFeedbacksForReviewMode... ")
     if (dataModelForReviewMode.getEcosWithFeedbacks(species)) {
+      console.log("and there is data in the dataModelForReviewMode")
       renderListOfHucsWithFeedbacks();
     } else {
       try {
+        console.log("there is no data in the review mode, so about to do a query for feedbacks")
         const feedbacks = await apiManager.fetchFeedback({
           requestUrl: config.URL.feedbackTable + "/query",
           where: `${config.FIELD_NAME.feedbackTable.species} = '${species}'`,
           outFields: `${config.FIELD_NAME.feedbackTable.ecoShapeID}, ${config.FIELD_NAME.feedbackTable.status}`,
           returnDistinctValues: true
         });
-
+        console.log("now setting the feedbacks into the datamodelforreivew: ", feedbacks)
         dataModelForReviewMode.setEcosWithFeedbacks(species, feedbacks);
 
         renderListOfHucsWithFeedbacks();
@@ -596,11 +603,15 @@ export default function Controller(props = {}) {
   };
   
   const renderEcoWithFeedbackDataOnMap = data => {
-    const species = dataModel.getSelectedSpecies();
+    console.log("THIS IS WHERE THE FEEDBACK DRAW ALL BEGINS....")
+    let species = dataModel.getSelectedSpecies();
+    if (species){
+      species = parseInt(species)
+    }
     data = data || feedbackManager.getFeedbackDataBySpecies(species);
 
-    // console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
-    // console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
+    console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
+    console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
 
     if (data) {
       Object.keys(data).forEach(function(key) {
@@ -643,7 +654,7 @@ export default function Controller(props = {}) {
   };
 
   const openFeedbackManager = (options = {}) => {
-    //FIX THIS
+    //xxx FIX THIS
     const userID = oauthManager.getUserID();
     const species = parseInt(dataModel.getSelectedSpecies());
     const ecoID = dataModel.getSelectedEcoShp();

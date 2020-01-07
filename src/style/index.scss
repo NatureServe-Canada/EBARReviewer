@@ -56,7 +56,7 @@ body {
 
 /* Add to Range */
 .legend-icon[data-index="0"] {
-  background: url("../static/Hatch_BlackAlt.png") center center no-repeat;
+  background: url("../static/addlegend.png") center center no-repeat;
   background-size: 90%;
 }
 
@@ -68,7 +68,7 @@ body {
 
 /* Remove from Range */
 .legend-icon[data-index="2"] {
-  background: url("../static/Hatch_Red.png") center center no-repeat;
+  background: url("../static/removeLegend.png") center center no-repeat;
   background-size: 90%;
 }
 

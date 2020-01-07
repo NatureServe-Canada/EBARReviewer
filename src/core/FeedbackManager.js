@@ -73,7 +73,7 @@ export default function(options = {}) {
   const remove = () => {
     const feedbackData = feedbackDataModel.getFeedbackData();
 
-    removeFromDataStore(feedbackData.species, feedbackData.ecoId);
+    removeFromDataStore(feedbackData.species, feedbackData.ecoID);
 
     // console.log('remove feedback', feedbackData);
 
@@ -89,7 +89,7 @@ export default function(options = {}) {
   };
 
   const getSavedItemFromDataStore = data => {
-    const ecoId = data.ecoId;
+    const ecoId = data.ecoID;
     const reviewid = data.reviewid;
     const species = data.species;
     const hucName = data.hucName;
@@ -114,7 +114,7 @@ export default function(options = {}) {
   };
 
   const batchAddToDataStore = data => {
-    // console.log(data);
+    console.log("in batchAddToDataStore (feedbackmanager) and this is data: ", data);
 
     data.forEach(d => {
       save(d);

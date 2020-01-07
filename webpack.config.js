@@ -8,6 +8,9 @@ module.exports =  (env, options)=> {
     const devMode = options.mode === 'development' ? true : false;
 
     return {
+        entry: './src/index.js',
+        devtool: "source-map",
+        watch: true,
         output: {
             filename: 'bundle.[hash].js'
         },

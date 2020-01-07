@@ -2,8 +2,8 @@
 
 import config from "../config";
 import * as esriLoader from "esri-loader";
-import hatchRed from "../static/Hatch_RedAlt.png";
-import hatchBlack from "../static/Hatch_BlackAlt.png";
+import hatchRed from "../static/remove.png";
+import hatchBlack from "../static/add.png";
 
 const Promise = require("es6-promise").Promise;
 
@@ -29,31 +29,26 @@ const MapControl = function({
 
   let ecoPresenceGraphicLayer = null;
 
+  // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
+  const outline = {
+    color: config.COLOR.presenceOutline,
+    width: "1px"
+  }
   const presenceSymbols = {
     "P": {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
       color: config.COLOR.present,
-      outline: {
-        // autocasts as new SimpleLineSymbol()
-        color: [255, 255, 255, 0.3],
-        width: "1px"
-      }
+      outline: outline
     },
     "X": {
       type: "simple-fill", 
       color: config.COLOR.presenceexpected,
-      outline: {
-        color: [255, 255, 255, 0.3],
-        width: "1px"
-      }
+      outline: outline
     },
     "H":{
       type: "simple-fill", 
       color: config.COLOR.historical,
-      outline: {
-        color: [255, 255, 255, 0.3],
-        width: "1px"
-      }
+      outline: outline
     }
   };
 
@@ -104,7 +99,7 @@ const MapControl = function({
       });
   };
 
-  /*
+  
   const initReferenceLayers = mapView => {
     // Layer.fromPortalItem({
     //     portalItem: {  // autocasts new PortalItem()
@@ -120,57 +115,64 @@ const MapControl = function({
         [
           "esri/layers/MapImageLayer",
           "esri/layers/ImageryLayer",
-          "esri/layers/FeatureLayer"
+          "esri/layers/FeatureLayer",
+          "esri/layers/VectorTileLayer"
         ],
         esriLoaderOptions
       )
-      .then(([MapImageLayer, ImageryLayer, FeatureLayer]) => {
+      .then(([MapImageLayer, ImageryLayer, FeatureLayer, VectorTileLayer]) => {
         const defaultOpacity = 0.7;
 
-        // USA Protected Areas
-        const usaProtectedAreas = new ImageryLayer({
+        const vt = new VectorTileLayer({
           portalItem: {
             // autocasts as esri/portal/PortalItem
-            id: config.reference_layers.usa_protected_areas.itemId
+            id: config.reference_layers.vt.itemId
           },
-          title: config.reference_layers.usa_protected_areas.title,
+          title: config.reference_layers.vt.title,
+          opacity: defaultOpacity,
+          visible: true
+        });
+
+        const nawater = new FeatureLayer({
+          portalItem: {
+            // autocasts as esri/portal/PortalItem
+            id: config.reference_layers.nawater.itemId
+          },
+          title: config.reference_layers.nawater.title,
           opacity: defaultOpacity,
           visible: false
         });
 
-        // USA_NLCD_Land_Cover_2011
-        const nlcdLandCover = new ImageryLayer({
+         const protectedAreas = new MapImageLayer({
           portalItem: {
             // autocasts as esri/portal/PortalItem
-            id: config.reference_layers.USA_NLCD_Land_Cover_2011.itemId
+            id: config.reference_layers.protectedAreas.itemId
           },
-          title: config.reference_layers.USA_NLCD_Land_Cover_2011.title,
+          title: config.reference_layers.protectedAreas.title,
           opacity: defaultOpacity,
           visible: false
         });
 
-        // USA_Forest_Type
-        const forestType = new ImageryLayer({
+        const wetlands = new MapImageLayer({
           portalItem: {
             // autocasts as esri/portal/PortalItem
-            id: config.reference_layers.USA_Forest_Type.itemId
+            id: config.reference_layers.wetlands.itemId
           },
-          title: config.reference_layers.USA_Forest_Type.title,
+          title: config.reference_layers.wetlands.title,
           opacity: defaultOpacity,
           visible: false
         });
 
-        // USA_Wetlands
-        const wetLand = new MapImageLayer({
+        const landcover = new MapImageLayer({
           portalItem: {
             // autocasts as esri/portal/PortalItem
-            id: config.reference_layers.USA_Wetlands.itemId
+            id: config.reference_layers.landcover.itemId
           },
-          title: config.reference_layers.USA_Wetlands.title,
+          title: config.reference_layers.landcover.title,
           opacity: defaultOpacity,
           visible: false
         });
-
+ 
         // HUC6
       // const huc6 = new FeatureLayer({
       //     portalItem: {
@@ -204,18 +206,18 @@ const MapControl = function({
         // }); 
 
         // mapView.map.addMany([usaProtectedAreas, nlcdLandCover, forestType, wetLand]);
-        mapView.map.add(usaProtectedAreas, 0);
-        mapView.map.add(nlcdLandCover, 0);
-        mapView.map.add(forestType, 0);
-        mapView.map.add(wetLand, 0);
-        //mapView.map.add(huc6, 0);
+        mapView.map.add(vt, 0);
+        mapView.map.add(nawater, 0);
+        mapView.map.add(protectedAreas, 0);
+        mapView.map.add(wetlands, 0);
+        mapView.map.add(landcover, 0);
         //mapView.map.add(rivers, 0);
       })
       .catch(err => {
         console.error(err);
       });
   };
-  */
+  
   const initEcoLayer = mapView => {
     esriLoader
       .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
@@ -371,7 +373,7 @@ const MapControl = function({
     initBasemapGallery(mapView);
 
     // NS: Not loading reference layers as they arent relevant to this project
-    //initReferenceLayers(mapView);
+    initReferenceLayers(mapView);
 
     initEcoLayer(mapView);
 
@@ -515,7 +517,7 @@ const MapControl = function({
           //attributes
           // popupTemplate
         });
-          console.log("about to drawEcoShapeByPresence add graphic", graphic)
+          //console.log("about to drawEcoShapeByPresence add graphic", graphic)
         ecoPresenceGraphicLayer.add(graphic);
       })
       .catch(err => {
@@ -535,23 +537,29 @@ const MapControl = function({
 
     const symbols = {
       1: {
-        type: "picture-fill", // autocasts as new PictureFillSymbol()
-        url: hatchBlack, //"https://static.arcgis.com/images/Symbols/Shapes/BlackStarLargeB.png",
-        width: "24px",
-        height: "24px",
+        //type: "picture-fill", // autocasts as new PictureFillSymbol()
+        //url: hatchBlack, //"https://static.arcgis.com/images/Symbols/Shapes/BlackStarLargeB.png",
+        //width: "24px",
+        //height: "24px",
+        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+        color: "red",
+        style: "forward-diagonal",
         outline: {
           color: config.COLOR.ecoBorderIsModeled,
-          width: "2px"
+          width: "3px"
         }
       },
       2: {
-        type: "picture-fill", // autocasts as new PictureFillSymbol()
-        url: hatchRed, //"https://static.arcgis.com/images/Symbols/Shapes/BlackStarLargeB.png",
-        width: "24px",
-        height: "24px",
+        //type: "picture-fill", // autocasts as new PictureFillSymbol()
+        //url: hatchRed, //"https://static.arcgis.com/images/Symbols/Shapes/BlackStarLargeB.png",
+        //width: "24px",
+        //height: "24px",
+        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+        color: "red",
+        style: "backward-diagonal",
         outline: {
           color: config.COLOR.ecoBorderIsModeled,
-          width: "2px"
+          width: "3px"
         }
       },
       3: {
@@ -576,7 +584,7 @@ const MapControl = function({
           attributes
           // popupTemplate
         });
-          console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
+          //console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
         ecoShpByStatusGraphicLayer.add(graphic);
       })
       .catch(err => {

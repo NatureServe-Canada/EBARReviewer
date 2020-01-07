@@ -44,14 +44,14 @@ export default function() {
     const compoenetHtml = `
             <div id='overallFeedbackControlPanelContainer' class='panel panel-black'>
                 <div class="text-center">
-                    <h4>Tell us how you like the modeled results?</h4>
+                    <h4>Please provide overall range feedback</h4>
                 </div>
 
                 <div class="text-center">${getRatingStarHtml()}</div>
 
                 <div class='leader-half'>
                     <label>
-                        <span class='font-size--3'>feedback</span>
+                        <span class='font-size--3'>Overall comment:</span>
                         <textarea type="text" placeholder="" class="comment-textarea" rows="4" maxlength="4095">${comment}</textarea>
                     </label>
                 </div>

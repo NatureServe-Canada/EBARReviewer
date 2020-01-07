@@ -17,9 +17,9 @@ export default function FeedbackControlPanel() {
   };
 
   const statusLookup = {
-    1: "Add to Modeling Extent",
-    2: "Remove from Modeling Extent",
-    3: "Comment on Predicted Habitat"
+    1: "Add to Range",
+    2: "Remove from Range",
+    3: "Comment Only"
   };
 
   const init = (options = {}) => {
@@ -100,7 +100,7 @@ export default function FeedbackControlPanel() {
 
                     <div class='comment-dialog'>
                         <label>
-                            <span class='font-size--3'>Feedback Comment:</span>
+                            <span class='font-size--3'>Comment:</span>
                             <textarea type="text" placeholder="" class="comment-textarea" maxlength="4095">${comment}</textarea>
                         </label>
                     </div>
@@ -146,7 +146,7 @@ export default function FeedbackControlPanel() {
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'checked';
 
-    const outputHtml = `
+    let outputHtml = `
             <div class='flex-container'>
                 <div class='inline-block'>
                     <label class="toggle-switch">
@@ -164,6 +164,21 @@ export default function FeedbackControlPanel() {
             </div>
         `;
 
+    // Add a removal reason drop down only when removing a species
+    if (status == 2){
+      outputHtml += `<label><span class='font-size--3'>Removal Reason:</span>
+        <select id="additional-field-removalreason" class="additional-field-select additional-field-input">`
+
+      const remReasons = config.REMOVAL;
+      remReasons.map(d => {
+        let c = d.attributes.removalcode
+        let t = d.attributes.removaltext
+        outputHtml += `<option value="${c}">${t}</option>`
+      });
+      
+      outputHtml += `</select></label>`
+    }
+
     return outputHtml;
   };
 
@@ -179,6 +194,9 @@ export default function FeedbackControlPanel() {
 
       let fieldValue = null;
       config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
+
+        if (addField.field == "removalreason") { return;}
+
         fieldValue =
           state.data.additionalFields[addField.field] ||
           (addField.editable ? "" : "None set");
@@ -247,7 +265,7 @@ export default function FeedbackControlPanel() {
 
   const getHtmlForBtns = isSaved => {
     // const newStatus = isHucInModeledRange ? 2 : 1;
-    const saveBtn = `<button class="btn btn-fill js-submit-feedback trailer-half"> Save </button>`;
+    const saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half"> Save </button>`;
     // const updateBtn = `<button class="btn btn-fill js-submit-feedback trailer-half"> Save </button>`;
     // const removeBtn = `<button class="btn btn-fill js-remove-feedback trailer-half"> Reset </button>`;
 
@@ -311,7 +329,10 @@ export default function FeedbackControlPanel() {
     container.addEventListener("input", function(event) {
       // console.log(event.target);
       if (event.target.classList.contains("comment-textarea")) {
-        // console.log('textarea on input', event.target.value);
+        //console.log('textarea on input', event.target.value);
+        const btn = document.getElementsByClassName("js-submit-feedback");
+        if (btn) {btn[0].disabled = false; }
+        
         if (commentOnChange) {
           commentOnChange(event.target.value);
         }

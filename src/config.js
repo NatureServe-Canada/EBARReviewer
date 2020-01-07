@@ -2,7 +2,7 @@
 
 module.exports = {
   oauthAppID: "JAdAlm4QJ8Ot9j6r",
-  webMapID: "039e37fe6e694fd58e898d762d90b632",
+  webMapID: "da46b909ed89444396e0a5068fa1214f",
   portalURL: "https://gis.natureserve.ca/arcgis",
 
   adminUser: "gisadmin11",
@@ -36,7 +36,33 @@ module.exports = {
       comment: "ecoshapereviewnotes", //"Comment_Long",
       status: "addremove", //"StatusType",
       retirementDate: "retirementdate", // "RetirementDate",
-      data_load_date: "dataloaddate",// "DataLoadDate"
+      data_load_date: "dataloaddate",// "DataLoadDate",
+      username: "username",
+      additionalFields: [    
+        {
+          field: "reference",
+          display: "Reference",
+          editable: "textarea",
+          length: 255
+        },
+        {// this has been skipped in src\components\FeedbackControlPanel\index.js, but is used
+          // when status=2 through getHtmlForActions()
+          field: "removalreason",
+          display: "removalreason",
+          editable: "textarea",
+          length: 1
+        },
+        // {
+        //   field: "migrantstatus",
+        //   display: "migrantstatus",
+        //   editable: [" SC - Seasonal resident and confirmed breeder", "SP - Seasonal resident and probable breeder".
+        // "S? - Seasonal resident and possible breeder", "SH - Seasonal resident and current nonbreeder, historical breeder",
+        // "SN - Seasonal resident and nonbreeder", "YC - Year-round resident and confirmed breeder", "YP - Year-round resident and probable breeder",
+        // "Y? - Year-round resident and possible breeder","YH - Year-round resident and current nonbreeder, historical breeder", 
+        // "YN - Year-round resident and nonbreeder", "T - Transient"
+        // ]
+        // }
+      ]
     },
     overallFeedback: {
       userID: "username",// "UserID",
@@ -44,11 +70,11 @@ module.exports = {
       comment: "reviewnotes", //"Comment_Long",
       rating: "overallstarrating", //"Rating",
       retirementDate: "datecompleted", // "RetirementDate",
-      data_load_date: "datestarted",// "DataLoadDate"
+      data_load_date: "datestarted"// "DataLoadDate"
     },
     speciesByUser: {
       speciesCode: "speciesid",
-      email: "username", //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
+      email: "username" //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
     },
     pdfLookup: {
       speciesCode: "cutecode",
@@ -67,6 +93,13 @@ module.exports = {
     {"attributes":{"artext":"Present","arcode":4}},
     {"attributes":{"artext":"Presence Expected","arcode":5}},
     {"attributes":{"artext":"Historical","arcode":6}}
+  ],
+
+  REMOVAL: [
+    {"attributes":{"removalcode":"X","removaltext":"Presumed Extirpated"}},
+    {"attributes":{"removalcode":"N","removaltext":"Never Was There"}},
+    {"attributes":{"removalcode":"F","removaltext":"Reported But False"}},
+    {"attributes":{"removalcode":"T","removaltext":"Transient/Vagrant"}}
   ],
 
   URL: {
@@ -113,29 +146,34 @@ module.exports = {
     }
   },
 
-  // reference_layers: {
-  //   usa_protected_areas: {
-  //     itemId: "dd6077b7b71c4492aceab1ae0146ad1c",
-  //     title: "USA Protected Areas"
-  //   },
-  //   USA_NLCD_Land_Cover_2011: {
-  //     itemId: "aa71e15357a14dbb93a50ef3a8e06f70",
-  //     title: "USA NLCD Land Cover"
-  //   },
-  //   USA_Forest_Type: {
-  //     itemId: "593d022dbeb24c3abbf6c509fd592dd2",
-  //     title: "USA Forest Type"
-  //   },
-  //   USA_Wetlands: {
-  //     itemId: "0cb75b1f54854ad188302cd8b260c98f",
-  //     title: "USA Wetlands"
-  //   }
-  // },
+  reference_layers: {
+    vt: {
+      itemId: "0fa1002f17b44c54b7c54b8256a50d46",
+      title:"Ecoshapes"
+    },
+    nawater: {
+      itemId: "50a865f144e2437da3918b66e97f17e9",
+      title: "Major Lakes and Reservoirs of North America (CEC)"
+    },
+    protectedAreas: {
+      itemId: "73ba6d7c112845c7bb1944238b7f8aa0",
+      title: "World Database on Protected Areas (WDPA, UNEP)"
+    },
+    wetlands: {
+      itemId: "10eac67a4ce941118f491fadeb46a01d",
+      title: "Wetlands of North America (WWF-US, USGS)"
+    },
+    landcover: {
+      itemId: "cda5c31158c84a38b72daba84f6a4266",
+      title: "Land Cover of North America (CEC, USFS)"
+    }
+  },
 
   COLOR: {
     ecoBorder: [255, 255, 255, 0.3],
-    ecoBorderIsModeled: [255, 255, 255, 0.5],
-    ecoBorderCommentWithoutAction: [239, 35, 60, 1],
+    ecoBorderIsModeled: [255, 0, 0, 1],//[255, 255, 255, 0.5],
+    ecoBorderCommentWithoutAction: [255, 0, 0, 1],
+    presenceOutline: [255, 255, 255, 0], //fully transparent line
     ecoFill: [217, 217, 217, 0.4],
     status0: [200, 200, 200, 0.5],
     status1: [166, 219, 160, 0.5],
