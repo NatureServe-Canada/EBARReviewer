@@ -71,21 +71,6 @@ export default function ApiManager(props = {}) {
     );
   };
 
-/*    const queryStatusTable = () => {
-    const requestUrl = config.URL.statusTable + "/query";
-    console.log("queryStatusTable URL: " + requestUrl)
-    return queryForFeaturesGet(
-      requestUrl,
-      {
-        where: "1=1",
-        outFields: "*",
-        f: "json",
-        token: props.oauthManager.getToken()
-      },
-      "no status found in table"
-    );
-  };  */
-
 
   const queryEcoShapeBySpecies = speciesKey => {
     // const requestUrl = config.URL.speciesExtent[speciesKey] ? config.URL.speciesExtent[speciesKey] + '/query' : null;
@@ -112,7 +97,7 @@ export default function ApiManager(props = {}) {
 
   const fetchFeedback = (options = {}) => {
     console.log("came from queryFeedbacksByUser try to do fetchFeedback")
-    const requestUrl = options.requestUrl;  //config.URL.feedbackTable + '/query'; //options.requestUrl
+    const requestUrl = options.requestUrl;  //config.URL.feedbackTable + '/query'; 
     console.log("fetchFeedback url: " + requestUrl)
     const whereClause = options.where || "1=1"; // options.where = "reviewid = 'gisadmin' AND retirementdate IS NULL" ???
     console.log("  fetchFeedback  whereClause: ", whereClause)
@@ -181,26 +166,6 @@ export default function ApiManager(props = {}) {
     });
   };
 
-/*   const queryPdfTable = (speciesKey = "") => {
-    const requestUrl = config.URL.pdfLookup + "/query";
-    const whereClause = `${config.FIELD_NAME.pdfLookup.speciesCode} = '${speciesKey}'`;
-
-    if (requestUrl) {
-      return queryForFeaturesGet(
-        requestUrl,
-        {
-          where: whereClause,
-          outFields: "*",
-          f: "json",
-          token: props.oauthManager.getToken()
-        },
-        "no PDF resouce found for selected species"
-      );
-    } else {
-      console.log("pdf lookup table url is not found for", speciesKey);
-    }
-  }; */
-
   const getDistinctSpeciesCodeFromModelingExtent = () => {
     const requestUrl = config.URL.speciesDistribution + "/query";
     console.log("getDistinctSpeciesCodeFromModelingExtent URL: " + requestUrl)
@@ -250,56 +215,6 @@ export default function ApiManager(props = {}) {
     });
   };
  */
-/* 
-  const queryForDomainsGet = ( 
-    requestUrl,
-    params,
-    rejectMessage,
-    allowEmpty
-    ) => {
-      return new Promise((resolve, reject) => {
-        let arrOfAllFeatures = [];
-  
-        const getDomains = resultOffset => {
-  
-          axios
-            .get(requestUrl, {
-              params: params
-            })
-            .then(function(response) {              
-              if (
-                response.data &&
-                response.data.domains &&
-                response.data.domains.length
-              ) {
-                arrOfAllFeatures = [
-                  ...arrOfAllFeatures,
-                  ...response.data.domains
-                ];
-                
-                resolve(arrOfAllFeatures);
-
-              } else {
-                if (rejectMessage) {
-                  if (allowEmpty && response.data.domains ) {
-                    resolve([]);
-                  } else {
-                    reject(rejectMessage);
-                  }
-                } else {
-                  resolve([]);
-                }
-              }
-            })
-            .catch(err => {
-              console.error(err);
-              reject(err);
-            });
-        };  
-        getDomains();
-      });
-  };
-  */
 
   const queryForFeaturesGet = (
     requestUrl,
@@ -419,12 +334,10 @@ export default function ApiManager(props = {}) {
     querySpeciesLookupTable,
     queryAllFeaturesFromSpeciesLookupTable,
     queryEcoShapeBySpecies,
-    //queryStatusTable,
     fetchFeedback,
     deleteFromFeedbackTable,
     applyEditToFeatureTable,
     querySpeciesByUser,
-    //queryPdfTable,
     getDistinctSpeciesCodeFromModelingExtent,
     //getDataLoadDate
   };

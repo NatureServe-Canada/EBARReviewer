@@ -3,7 +3,7 @@ import config from "../config";
 export default class DataModel {
   constructor(options = {}) {
     this.speciesLookup = [];
-    this.ecoShapesBySpecies = {};//this.hucsBySpecies = {};
+    this.ecoShapesBySpecies = {};
     this.status = [];
     this.selectedSpecies = null;
     this.selectedEcoShape = null;
@@ -19,14 +19,14 @@ export default class DataModel {
 
   getSpeciesInfo(speciesCode = "") {
     const speciesInfo = this.speciesLookup.filter(d => {
-      return d[config.FIELD_NAME.speciesLookup.speciesCode] === speciesCode;
+      return d["rangemapid"] === +speciesCode;
+      //return d[config.FIELD_NAME.speciesLookup.speciesCode] === speciesCode;
     })[0];
     return speciesInfo;
   }
 
   setEcoShpsBySpecies(species, data = []) {
     this.ecoShapesBySpecies[species] = data;
-    // this.ecoShapesBySpecies = data;
     // console.log('ecoShapesBySpecies', species, this.ecoShapesBySpecies[species])
   }
 
@@ -67,7 +67,6 @@ export default class DataModel {
 
   isHucInModeledRange(ecoId, species) {
     const ecos = this.ecoShapesBySpecies[species];
-
     // console.log('isHucInModeledRange', ecoId);
 
     if (ecos) {
@@ -79,9 +78,7 @@ export default class DataModel {
     } else {
       return false;
     }
-
     // const isHucInModeledRange = ecos.filter(d=>{ return d[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoId }).length ? true : false;
-
     // return isHucInModeledRange;
   }
 

@@ -6,6 +6,7 @@ import FeedbackManager from "./FeedbackManager";
 import config from "../config";
 import OAuthManager from "./OauthManager";
 import ApiManager from "./ApiManager";
+import View from "./View";
 
 export default function Controller(props = {}) {
   const feedbackFailMessage =
@@ -45,8 +46,8 @@ export default function Controller(props = {}) {
       );
 
       const userIsAdmin = distinctUserSpecies.some(itm => itm == -1);
-      console.log("admin: ", userIsAdmin)
-      //overriding admin user because we want to test as a user, despite being logged in as admin
+      console.log("is admin? ", userIsAdmin)
+      //Can do an override here for admin to query all or not... 
       const sepeciesData =
         portalUser.username === config.adminUser ||
         (distinctUserSpecies && distinctUserSpecies.length > 0 && userIsAdmin)
@@ -55,12 +56,10 @@ export default function Controller(props = {}) {
               speciesCode: distinctUserSpecies,
               username: portalUser.username
             });
-      console.log("sepeciesData == ", sepeciesData);
-  
-     // const statusData = await apiManager.queryStatusTable();
+      console.log("sepeciesData == ", sepeciesData);  
+     
       const statusData = config.STATUS;
       state.domains = statusData;
-      //console.log("this is the status data: ", statusData)
       
       initStatusTable(statusData);
 
@@ -69,10 +68,10 @@ export default function Controller(props = {}) {
       const deatiledFeedbacks = await queryFeedbacksByUser();
 
       const overallFeedbacks = await queryOverallFeedbacksByUser();
+      // console.log(deatiledFeedbacks, overallFeedbacks);
 
       initSpeciesLookupTable(sepeciesData, deatiledFeedbacks, overallFeedbacks);
-
-      // console.log(deatiledFeedbacks, overallFeedbacks);
+      
     } catch (err) {
       console.error(err);
     }
@@ -150,27 +149,24 @@ export default function Controller(props = {}) {
     dataModel.setSpeciesLookup(data);
 
     controllerProps.speciesDataOnReady(data);
-
-    // console.log('init species lookup table', data);
   };
   
 
    const initStatusTable = data => {
     data = data.map(d => {
       const lineBreakPattern = /(\r\n\t|\n|\r\t)/g;
-      //console.log(d)
       let statusType = d.attributes[config.FIELD_NAME.statusType];
       
       if (lineBreakPattern.test(statusType)) {
         statusType = statusType.replace(lineBreakPattern, " ");
       }
-      console.log(statusType)
+      //console.log(statusType)
       return statusType;
     });
 
     dataModel.setStatus(data);
 
-    controllerProps.legendDataOnReady(getStatusDataForLegend(data));
+    controllerProps.legendDataOnReady(getStatusDataForLegend(data));  //unnecessary?
   }; 
 
   // get list of ecos by the species code (modelling extent), then render these ecos on map
@@ -210,7 +206,6 @@ export default function Controller(props = {}) {
       onSuccessHandler: null
     }
   ) => {
-    //FIX -- hardcoded userID = 2 and removed '' around where userid below
     const userID = options.userID || oauthManager.getUserID();
     console.log(userID)
     const onSuccessHandler = options.onSuccessHandler;
@@ -220,7 +215,6 @@ export default function Controller(props = {}) {
       `${config.FIELD_NAME.feedbackTable.retirementDate} IS NULL`
     ]; */
 
-
     const whereClauseParts = [
       `${config.FIELD_NAME.feedbackTable.username} = '${userID}'`
     ];
@@ -229,13 +223,6 @@ export default function Controller(props = {}) {
         `${config.FIELD_NAME.feedbackTable.species} = '${options.species}'`
       );
     }
-
-/*     const whereClauseParts = ['1=1'];
-    if (options.species) {
-      whereClauseParts.push(
-        `${config.FIELD_NAME.feedbackTable.species} = '${options.species}'`
-      );
-    } */
 
     try {
       console.log("in TRY of queryFeedbacksByUser")
@@ -294,7 +281,6 @@ export default function Controller(props = {}) {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.overallFeedback + "/query",
         where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}'` // AND ${config.FIELD_NAME.overallFeedback.retirementDate} IS NULL`
-        //where: '1=1'
       });
       console.log("This is the queryOverallFeedbacksByUser feedback: ", feedbacks)
       saveOverallFeedbackToDataModel(feedbacks);
@@ -356,7 +342,6 @@ export default function Controller(props = {}) {
       const requestUrl = feedbacks[0]
         ? config.URL.overallFeedback + "/updateFeatures"
         : config.URL.overallFeedback + "/addFeatures";
-      // let operationName = 'addFeatures';
 
       if (feedbacks[0]) {
         feature.attributes.ObjectId = feedbacks[0].attributes.objectid;
@@ -368,7 +353,7 @@ export default function Controller(props = {}) {
           config.FIELD_NAME.overallFeedback.data_load_date
         ] = dataLoadDate;
       }
- */
+     */
       apiManager
         .applyEditToFeatureTable(requestUrl, [feature])
         .then(res => {
@@ -402,7 +387,7 @@ export default function Controller(props = {}) {
 
   const getFeedbacksByHucForReviewMode = async hucFeature => {
     const ecoID = hucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
-    const hucName = hucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
+    const ecoName = hucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
     console.log(" in  getFeedbacksByHucForReviewMode, but shouldnt be in here...? ")
     try {
       const feedbacks = await apiManager.fetchFeedback({
@@ -416,7 +401,7 @@ export default function Controller(props = {}) {
 
       controllerProps.feedbackByHucsForReviewModeOnReady({
         data: feedbacks,
-        hucName
+        ecoName
       });
     } catch (err) {
       console.error(err);
@@ -424,7 +409,7 @@ export default function Controller(props = {}) {
   };
 
   const deleteFeedback = async (data = {}) => {
-    // // query feedback table to see if such feature already exists, if so, call update feature operation, otherwise, call add feature operation
+    // query feedback table to see if such feature already exists, if so, call update feature operation, otherwise, call add feature operation
 
     try {
       const feedbacks = await apiManager.fetchFeedback({
@@ -448,11 +433,9 @@ export default function Controller(props = {}) {
 
   // add data load date
   const postFeedback = async (data = {}) => {
-    // console.log(data);
 
     try {
       //const dataLoadDate = await apiManager.getDataLoadDate(data.species);
-      // console.log(dataLoadDate);
 
       let feedbackFeature = {
         attributes: {
@@ -492,14 +475,14 @@ export default function Controller(props = {}) {
       const requestUrl = feedbacks[0]
         ? config.URL.feedbackTable + "/updateFeatures"
         : config.URL.feedbackTable + "/addFeatures";
-      // let operationName = 'addFeatures';
 
       if (feedbacks[0]) {
-        feedbackFeature.attributes.objectid = feedbacks[0].attributes.objectid;   //.ObjectId;
+        feedbackFeature.attributes.objectid = feedbacks[0].attributes.objectid;   // objectid cAsE must match the FS field
       }
 
       // REVIEWER TABLE HAS NO DATE FIELDS...
-/*       if (dataLoadDate) {
+      /*
+      if (dataLoadDate) {
         feedbackFeature.attributes[
           config.FIELD_NAME.feedbackTable.data_load_date
         ] = dataLoadDate;
@@ -551,6 +534,7 @@ export default function Controller(props = {}) {
   ) => {
     const ecos = options.data || dataModel.getEcoShpsBySpecies();
 
+    //KH- this probably can be deleted as it's historical from esri version
     if (options.speciesKey) {
       // // TODO: need to use a single feature service instead of separate ones
       // const speciesInfo = dataModel.getSpeciesInfo(options.speciesKey);
@@ -563,7 +547,6 @@ export default function Controller(props = {}) {
       //controllerProps.showToPredictedHabitatOnMap(options.speciesKey);
     }
 
-    // mapControl.highlightEcos(hucs);
     const ecoIds = [
       ...new Set(
         ecos.map(data => {
@@ -587,7 +570,6 @@ export default function Controller(props = {}) {
       }
     }
     controllerProps.zoomToEcoShpsOnMap(ecoIds);
-    //controllerProps.highligtEcosOnMap(ecoIds);
 
     if (ecos) {
       Object.keys(ecos).forEach(function(key) {
@@ -634,7 +616,7 @@ export default function Controller(props = {}) {
     if (!isReviewMode) {
       dataModel.setSelectedEcoShp(ecoID);
       // console.log(selectedHucFeature);
-      openFeedbackManager();
+      openFeedbackManager(feature.attributes);
     } else {
       // console.log('query feedbacks for selected huc', ecoID);
       controllerProps.hucFeatureOnSelectForReviewMode(state.selectedHucFeature);
@@ -653,8 +635,8 @@ export default function Controller(props = {}) {
     feedbackManager.close();
   };
 
-  const openFeedbackManager = (options = {}) => {
-    //xxx FIX THIS
+  const openFeedbackManager = (ecoAtts = {}) => {
+    
     const userID = oauthManager.getUserID();
     const species = parseInt(dataModel.getSelectedSpecies());
     const ecoID = dataModel.getSelectedEcoShp();
@@ -693,7 +675,8 @@ export default function Controller(props = {}) {
         ecoID,
         hucName,
         isHucInModeledRange,
-        additionalFields
+        additionalFields,
+        ecoAtts
       });
     } else {
       console.error(
@@ -703,43 +686,10 @@ export default function Controller(props = {}) {
     }
   };
 
-/*   const getPdfUrlForSelectedSpecies = async () => {
-    const species = dataModel.getSelectedSpecies();
-    // const url = config.URL.pdf[species];
-    // const url = dataModel.getSpeciesInfo(species)[config.FIELD_NAME.speciesLookup.pdfLink];
-    try {
-      const pdfLookupFeatures = await apiManager.queryPdfTable(species);
-
-      if (
-        pdfLookupFeatures[0] &&
-        pdfLookupFeatures[0].attributes[config.FIELD_NAME.pdfLookup.url]
-      ) {
-        // console.log('pdfLookupFeatures[0].url', pdfLookupFeatures[0].attributes[config.FIELD_NAME.pdfLookup.url])
-        return pdfLookupFeatures[0].attributes[config.FIELD_NAME.pdfLookup.url];
-      } else {
-        return null;
-      }
-    } catch (err) {
-      return null;
-    }
-  }; */
-
-/*   const downloadPdf = async () => {
-    console.log('controller: download pdf');
-    const url = await getPdfUrlForSelectedSpecies();
-    console.log(url);
-    if (url) {
-      window.open(url);
-    } else {
-      console.error("no pdf file is found for selected species", species);
-    }
-  };
- */
   const getOverallFeedback = () => {
     const species = dataModel.getSelectedSpecies();
 
     const prevFeedbackData = dataModel.getOverallFeedback(species);
-
     // console.log(prevFeedbackData);
 
     const data = prevFeedbackData
@@ -753,7 +703,6 @@ export default function Controller(props = {}) {
   };
 
   const saveOverallFeedbackToDataModel = features => {
-    // const data = {};
 
     features.forEach(feature => {
       const key = feature.attributes[config.FIELD_NAME.overallFeedback.species];
@@ -767,8 +716,6 @@ export default function Controller(props = {}) {
 
       dataModel.saveToOverallFeedback(key, val);
     });
-
-    // console.log(data);
   };
 
   const renderListOfHucsWithFeedbacks = () => {
@@ -798,26 +745,15 @@ export default function Controller(props = {}) {
     controllerProps.showEcoFeatureOnMap(ecoId, status);
   };
 
-/*   const showEcoPresenceOnMap = (ecoId = "") => {
-    console.log("In showEcoPresenceOnMap from CONTROLLER")
-    if (!ecoId) {
-      return;
-    }
-    controllerProps.showEcoPresenceOnMap(ecoId)
-
-  } */
-
   const setSelectedSpecies = async val => {
     console.log("setSelectedSpecies was called using the value:  "+ val)
-    dataModel.setSelectedSpecies(val);
-
+    dataModel.setSelectedSpecies(val);    
+  
     searchEcoShapesBySpecies(val);
 
     resetSelectedEcoFeature();
 
     controllerProps.speciesOnSelect();
-
-    //controllerProps.pdfUrlOnChange(await getPdfUrlForSelectedSpecies());
 
     if (isReviewMode) {
       getOverallFeedbacksForReviewMode();
@@ -825,6 +761,11 @@ export default function Controller(props = {}) {
     }
   };
 
+  const getMetadata = val => {   
+    return dataModel.getSpeciesInfo(val);
+  }
+
+  /* Legend code seems unnecessary, delete? */
   const getStatusDataForLegend = data => {
     data = data.map((d, i) => {
       return {
@@ -832,14 +773,6 @@ export default function Controller(props = {}) {
         // color: config.COLOR['status' + i]
       };
     });
-
-    /*     
-    data.unshift({
-      label: "Predicted Habitat",
-      minVisibleScale: config.visibleRange.predictedHabitat.minScale
-      // color: config.COLOR.actualModeledExtent
-    }); 
-    */
 
     return data;
   };
@@ -862,9 +795,9 @@ export default function Controller(props = {}) {
     feedbackManager,
     setSelectedHucFeature,
     resetSelectedEcoFeature,
-    //downloadPdf,
     getOverallFeedback,
     setSelectedSpecies,
+    getMetadata,
     postOverallFeedback,
     getFeedbacksByUserForReviewMode,
     renderListOfHucsWithFeedbacks,

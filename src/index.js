@@ -113,11 +113,6 @@ const initApp = async oauthManager => {
     },
      */
 
-    // addActualBoundaryLayerToMap:(url='')=>{
-    //     // console.log('addActualBoundaryLayerToMap', url);
-    //     // mapControl.addActualModelBoundaryLayer(url);
-    // },
-
     /*     
     showToPredictedHabitatOnMap: (speciesCode = "") => {
       mapControl.showPredictedHabitatLayers(speciesCode);
@@ -135,7 +130,7 @@ const initApp = async oauthManager => {
     },
     
     showEcoFeatureOnMap: (ecoId = "", status) => {
-      console.log('showEcoFeatureOnMap', ecoId, status);
+      //console.log('showEcoFeatureOnMap', ecoId, status);
       mapControl.showEcoFeatureByStatus(ecoId, status);
     },
 
@@ -158,6 +153,8 @@ const initApp = async oauthManager => {
       console.log(val);
       mapControl.clearAllGraphics();
       controller.setSelectedSpecies(val);
+      let m = controller.getMetadata(val);
+      view.updateSpeciesMetadata(m);
     }
   });
 
@@ -269,7 +266,7 @@ const initApp = async oauthManager => {
 
   const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
   if(userDiv){
-    let componentHTML = "<div><span class='font-size-0'>Logged in as:<b> " + oauthManager.getUserID() + "</b></span></div>"
+    let componentHTML = "<div><span class='font-size--2'>Logged in as:<b> " + oauthManager.getUserID() + "</b></span></div>"
     userDiv.innerHTML = componentHTML
   }
 

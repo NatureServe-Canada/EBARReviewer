@@ -44,8 +44,6 @@ export default function FeedbackControlPanel() {
       return;
     }
 
-    // render();
-
     initEventHandler();
   };
 
@@ -75,12 +73,10 @@ export default function FeedbackControlPanel() {
     }
   };
 
-  const render = () => {
-    const hucName = state.data.hucName || "";
+  const render = (prvStatus = null) => {
+    const hucName = state.data.ecoAtts.ecoshapename || "";
     const comment = state.data.comment || "";
-    // const statusIdx = +data.status || 0;
-    // const message = data.isHucInModeledRange ? `Model is inaccurate, <span class='avenir-demi'>REMOVE</span> this HUC from range` : `Known occurances, <span class='avenir-demi'>ADD</span> this HUC to range`;
-
+    
     const componentHtml = `
             <div id='feedbackControlPanelContainer' class='panel panel-black'>
 
@@ -88,14 +84,14 @@ export default function FeedbackControlPanel() {
                     <span class='font-size--3 icon-ui-close js-close'></span>
                 </div>
 
-                <div class='leader-half trailer-half'>
-                    <span class='font-size-0'>${hucName}</span>
+                <div class='leader-half trailer-half' style='margin-top:0px'>
+                    <span class='font-size-0'>Ecoshape: ${hucName}</span>
                     <hr>
                 </div>
 
                 <div class='feedbackControlPanelData'>
                     <div id='actionDialogWrap'>
-                        ${getHtmlForActions()}
+                        ${getHtmlForActions(prvStatus)}
                     </div>
 
                     <div class='comment-dialog'>
@@ -131,8 +127,10 @@ export default function FeedbackControlPanel() {
   //     return state.isSumbitCommentOnly ? statusLookup[3] : 'Comment'
   // }
 
-  const getHtmlForActions = () => {
-    const status = getNewStatus();
+  const getHtmlForActions = (prvStatus = null) => {
+    let status = getNewStatus();
+    status = status === 3 ? prvStatus: status
+    console.log("status being used from toggle: ", status)
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'is-checked';
 
@@ -145,24 +143,41 @@ export default function FeedbackControlPanel() {
     // </div>`
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'checked';
-
+    let EA = state.data.ecoAtts;
+    let parentEco = EA.parentecoregionfr ? EA.parentecoregion + " ("+ EA.parentecoregionfr +")" : EA.parentecoregion;
+    let ecoZone = EA.ecozonefr ? EA.ecozone + " ("+ EA.ecozonefr +")" : EA.ecozone;
+    let terrArea = EA.terrestrialarea / 1000000
+    let terrProp = EA.terrestrialproportion * 100
     let outputHtml = `
-            <div class='flex-container'>
-                <div class='inline-block'>
-                    <label class="toggle-switch">
-                        <input type="checkbox" class="toggle-switch-input" ${
-                          state.isSumbitCommentOnly ? "" : "checked"
-                        }>
-                        <span class="toggle-switch-track margin-right-1"></span>
-                    </label>
-                </div>
-                <div class='inline-block'>
-                    <span class="toggle-switch-label font-size--2 action-message">${
-                      statusLookup[+status]
-                    }</span>
-                </div>
-            </div>
-        `;
+    <div class='flex-container' style='margin-bottom:10px'>
+    <div class='inline-block'>
+      <p class="font-size--3 meta">
+        <!--<strong>Ecoshape:</strong> ${EA.ecoshapename} <br>-->
+        <strong>Parent Ecoregion:</strong> ${parentEco} <br>
+        <strong>Ecozone:</strong> ${ecoZone}<br>
+        <strong>Terrestrial Area:</strong> ${terrArea.toFixed(2)} km2<br>
+        <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>     
+      </p>  
+    </div>
+    </div>       
+    `
+
+    outputHtml += `
+        <div class='flex-container'>
+        <div class='inline-block'>
+          <span class="toggle-switch-label font-size--3 action-message">
+            ${statusLookup[+status]}:
+          </span>
+
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-switch-input" ${
+                      state.isSumbitCommentOnly ? "" : "checked"
+                    }>
+                    <span class="toggle-switch-track margin-right-1"></span>
+                </label>
+            </div> 
+        </div>
+    `;
 
     // Add a removal reason drop down only when removing a species
     if (status == 2){
@@ -284,8 +299,9 @@ export default function FeedbackControlPanel() {
       .querySelector(".toggle-switch-input")
       .addEventListener("change", evt => {
         console.log("toggle-switch-input on change");
+        let prvStatus = getNewStatus()
         toggleIsSumbitCommentOnly();
-        render();
+        render(prvStatus);
       });
   };
 
@@ -331,7 +347,13 @@ export default function FeedbackControlPanel() {
       if (event.target.classList.contains("comment-textarea")) {
         //console.log('textarea on input', event.target.value);
         const btn = document.getElementsByClassName("js-submit-feedback");
-        if (btn) {btn[0].disabled = false; }
+        if (btn) {
+          if (event.target.value){
+            btn[0].disabled = false;
+           } else {
+            btn[0].disabled = true;
+           }
+          }
         
         if (commentOnChange) {
           commentOnChange(event.target.value);

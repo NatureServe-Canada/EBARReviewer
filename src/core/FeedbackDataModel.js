@@ -23,6 +23,7 @@ export default class FeedbackManager {
     this.isHucInModeledRange = options.isHucInModeledRange || null;
     this.isSaved = options.isSaved || null;
     this.additionalFields = options.additionalFields || {};
+    this.ecoAtts = options.ecoAtts || {};
   }
 
   // setUserID(val=''){
@@ -60,6 +61,7 @@ export default class FeedbackManager {
     this.isHucInModeledRange = null;
     this.isSaved = null;
     this.additionalFields = {};
+    this.ecoAtts = {};
   }
 
   getFeedbackData() {
@@ -73,7 +75,8 @@ export default class FeedbackManager {
       hucName: this.hucName,
       isHucInModeledRange: this.isHucInModeledRange,
       isSaved: this.isSaved,
-      additionalFields: this.additionalFields
+      additionalFields: this.additionalFields,
+      ecoAtts: this.ecoAtts
     };
   }
 }

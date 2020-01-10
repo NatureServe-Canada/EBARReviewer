@@ -1,5 +1,6 @@
 
 import * as esriLoader from 'esri-loader';
+import config from "../config";
 
 const Promise = require('es6-promise').Promise;
 const esriLoaderOptions = {
@@ -53,7 +54,7 @@ const OAuthManager = function(oauth_appid){
                 Portal
             ])=>{
                 const portal = new Portal();
-                portal.url = "https://gis.natureserve.ca/arcgis"                
+                portal.url = config.portalURL, // "https://gis.natureserve.ca/arcgis"
                 // Setting authMode to immediate signs the user in once loaded
                 portal.authMode = "immediate";
         
@@ -83,7 +84,7 @@ const OAuthManager = function(oauth_appid){
                 info = new OAuthInfo({
                     appId: oauth_appid,
                     popup: false,
-                    portalUrl: "https://gis.natureserve.ca/arcgis"
+                    portalUrl: config.portalURL, // "https://gis.natureserve.ca/arcgis"
                 });
 
                 esriId.useSignInPage = false;

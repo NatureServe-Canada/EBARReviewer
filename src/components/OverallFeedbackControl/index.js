@@ -41,6 +41,10 @@ export default function() {
   const render = () => {
     // const comment = data.comment || '';
 
+    if (!comment){
+      comment = " " //a "" comment will render as null in the html, so send in a space
+    }
+
     const compoenetHtml = `
             <div id='overallFeedbackControlPanelContainer' class='panel panel-black'>
                 <div class="text-center">

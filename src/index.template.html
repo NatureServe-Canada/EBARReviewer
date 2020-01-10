@@ -35,7 +35,7 @@
             <br><br>
             Source code: <a href="https://github.com/NatureServe-Canada/EBARReviewer">https://github.com/NatureServe-Canada/EBARReviewer</a>
             <br><br>
-            Credits: Esri Canada, NatureServe Canada (Randal Greene, Christine Terwissen)
+            App development: Esri Canada
             <br><br>
             Based on: <a href="https://github.com/allenanselmo/species-reviewer-naba">https://github.com/allenanselmo/species-reviewer-naba</a> and <a href="https://github.com/vannizhang/species-reviewer">https://github.com/vannizhang/species-reviewer</a> under Apache 2.0 (<a href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a>)
             <br><br>
@@ -65,14 +65,26 @@
         <div id="selectorsDiv"></div>
       </div>
 
+      <div class="">
+        <div id="metadataDiv">
+          <p class="font-size--3 meta">
+            <strong>Range Version:</strong> <span id="rversion"> </span> <br>
+            <strong>Stage:</strong> <span id="rstage"> </span> <br>
+            <strong>Date:</strong> <span id="rdate"> </span> <br>
+            <strong>Species Information:</strong>  <span id="rlink"></span> <br>
+            <strong>Metadata:</strong>  <span id="rmetadata"></span> <br>
+            <strong>Notes:</strong> <span id="rnotes"></span>
+         </p>     
+        </div>
+      </div>
+
       <div id="settingsDiv">
         <div
           class="text-right js-toggle-ui-component"
           data-target="settingControls"
         >
           <span class="cursor-pointer text-light-gray margin-right-quarter font-size--2">Search/Add Data</span>
-          <span
-            class="icon-ui-settings cursor-pointer text-light-gray icon-no-right-padding"
+          <span class="icon-ui-settings cursor-pointer text-light-gray icon-no-right-padding"
           ></span>
         </div>
         <div id="settingControls" class="hide">

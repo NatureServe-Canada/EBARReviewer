@@ -54,38 +54,44 @@ body {
   height: 22px;
 }
 
-/* Add to Range */
+
 .legend-icon[data-index="0"] {
+  background: url("../static/ecoshapes.png") center center no-repeat;
+  background-size: 90%;
+}
+
+/* Add to Range */
+.legend-icon[data-index="1"] {
   background: url("../static/addlegend.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Comment */
-.legend-icon[data-index="1"] {
+.legend-icon[data-index="2"] {
   background: url("../static/Outline_Red2.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Remove from Range */
-.legend-icon[data-index="2"] {
+.legend-icon[data-index="3"] {
   background: url("../static/removeLegend.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Present */
-.legend-icon[data-index="3"] {
+.legend-icon[data-index="4"] {
   background: url("../static/Present.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Presence Expected */
-.legend-icon[data-index="4"] {
+.legend-icon[data-index="5"] {
   background: url("../static/PresenceExpected.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Historical */
-.legend-icon[data-index="5"] {
+.legend-icon[data-index="6"] {
   background: url("../static/Historical.png") center center no-repeat;
   background-size: 90%;
 }
@@ -267,3 +273,12 @@ body {
   font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.3em;
 }
+
+p.meta{
+  margin: 0;
+}
+/* .meta:disabled{
+  height: 1.25rem;
+  opacity: 0.5;
+}
+ */

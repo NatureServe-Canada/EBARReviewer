@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="12.724854mm"
+   height="12.724854mm"
+   viewBox="0 0 12.724854 12.724854"
+   version="1.1"
+   id="svg8"
+   inkscape:export-filename="D:\_Projects\NatureServe\EBARReviewer\src\static\redtest.png"
+   inkscape:export-xdpi="510.99997"
+   inkscape:export-ydpi="510.99997"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="hatch_legendINKSCAPE.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="8"
+     inkscape:cx="-10.659714"
+     inkscape:cy="19.374928"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer2"
+     showgrid="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="2391"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3730" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-230.25067,-258.13162)" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2">
+    <path
+       id="path3835"
+       inkscape:label="Triangle"
+       style="fill:#333333;stroke:#333333;stroke-width:0.26458335"
+       d="m 10.032136,12.724854 2.645833,-2.645833 v 2.645833 z"
+       inkscape:connector-curvature="0" />
+    <path
+       id="path3835-3"
+       inkscape:label="Triangle"
+       style="fill:#333333;stroke:#333333;stroke-width:0.26458338"
+       d="m 2.6238029,0.0248537 -2.64583396,2.645834 v -2.645834 z"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#333333;stroke-width:0.32682133;stroke:#333333"
+       id="rect3856"
+       width="3.867002"
+       height="18.561609"
+       x="7.0620461"
+       y="-9.3116741"
+       transform="matrix(0.70710678,0.70710678,0.70710678,-0.70710678,0,0)" />
+    <rect
+       style="fill:none;stroke:#ffffff;stroke-width:0.26458332"
+       id="rect3867"
+       width="12.7"
+       height="12.7"
+       x="0"
+       y="0.024854142" />
+  </g>
+</svg>

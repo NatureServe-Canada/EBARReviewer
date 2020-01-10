@@ -218,6 +218,19 @@ export default function View() {
     });
   };
 
+  const updateSpeciesMetadata = (m) => {
+
+    document.getElementById("rversion").innerHTML = m['rangeversion'];
+    document.getElementById("rstage").innerHTML =m['rangestage'];
+    document.getElementById("rdate").innerHTML = new Date(m['rangedate']).toLocaleString();
+
+    let url = `http://explorer.natureserve.org/servlet/NatureServe?searchSciOrCommonName=${m['national_scientific_name']}&x=0&y=0`
+    document.getElementById("rlink").innerHTML = `<a href="${url}" target="_blank" class="link-white">${m['national_scientific_name']}</a>`
+    document.getElementById("rmetadata").innerHTML = m['rangemetadata'];
+    document.getElementById("rnotes").innerHTML = m['rangemapnotes'];
+
+  };
+
   return {
     init,
     legend,
@@ -234,6 +247,7 @@ export default function View() {
     switchToReviewModeView,
     initViewComponentsForReviewMode,
     openListView,
+    updateSpeciesMetadata,
     toggleControlPanel
   };
 }

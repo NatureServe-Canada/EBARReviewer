@@ -2,8 +2,8 @@
 
 import config from "../config";
 import * as esriLoader from "esri-loader";
-import hatchRed from "../static/remove.png";
-import hatchBlack from "../static/add.png";
+//import hatchRed from "../static/remove.png";
+//import hatchBlack from "../static/add.png";
 
 const Promise = require("es6-promise").Promise;
 
@@ -16,8 +16,6 @@ const MapControl = function({
   mapViewContainerID = "",
   onScaleChange = null
 } = {}) {
-  // const webMapID = options.webMapID || null;
-  // const mapViewContainerID = options.mapViewContainerID || null;
 
   let mapView = null;
   let ecoShpLayer = null;
@@ -145,7 +143,6 @@ const MapControl = function({
 
          const protectedAreas = new MapImageLayer({
           portalItem: {
-            // autocasts as esri/portal/PortalItem
             id: config.reference_layers.protectedAreas.itemId
           },
           title: config.reference_layers.protectedAreas.title,
@@ -155,7 +152,6 @@ const MapControl = function({
 
         const wetlands = new MapImageLayer({
           portalItem: {
-            // autocasts as esri/portal/PortalItem
             id: config.reference_layers.wetlands.itemId
           },
           title: config.reference_layers.wetlands.title,
@@ -165,7 +161,6 @@ const MapControl = function({
 
         const landcover = new MapImageLayer({
           portalItem: {
-            // autocasts as esri/portal/PortalItem
             id: config.reference_layers.landcover.itemId
           },
           title: config.reference_layers.landcover.title,
@@ -205,13 +200,16 @@ const MapControl = function({
         //   visible: false
         // }); 
 
+        // KH -- Need to do a test where if a layer isn't avaialble, will it blow up the app here
+        // also to test if that fails, does it fail using addMany
+        // ...really should probably be using addMany anyways....
+
         // mapView.map.addMany([usaProtectedAreas, nlcdLandCover, forestType, wetLand]);
         mapView.map.add(vt, 0);
         mapView.map.add(nawater, 0);
         mapView.map.add(protectedAreas, 0);
         mapView.map.add(wetlands, 0);
         mapView.map.add(landcover, 0);
-        //mapView.map.add(rivers, 0);
       })
       .catch(err => {
         console.error(err);
@@ -251,8 +249,7 @@ const MapControl = function({
         //mapView.map.add(ecoShpLayer);
         
         initEcoShpReviewReferenceLayers(mapView);
-        // ecoShpLayer.on("layerview-create", function(evt) {
-        // });
+
       });
   };
   
@@ -372,14 +369,11 @@ const MapControl = function({
 
     initBasemapGallery(mapView);
 
-    // NS: Not loading reference layers as they arent relevant to this project
     initReferenceLayers(mapView);
 
     initEcoLayer(mapView);
 
     initEcoShpReviewReferenceLayers(mapView);
-
-    //initPredictedHabitatLayers(mapView);
 
     initSearch(mapView);
 
@@ -493,10 +487,6 @@ const MapControl = function({
   };
 
   const showEcoFeatureByPresence = (ecoId, presence) => {
-    //function to get presnece
-    //let feature = "";
-    //let presence = "";
-
     queryEcoShpsLayerByEcoID(ecoId).then(features => {
       drawEcoShapeByPresence(features[0], presence);
     });
@@ -711,65 +701,6 @@ const MapControl = function({
   };
 
 
-  /*   
-  const initPredictedHabitatLayers = mapView => {
-    console.log(url);
-    if(actualModelBoundaryLayer){
-        mapView.map.remove(actualModelBoundaryLayer);
-    }
-    esriLoader
-     .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
-     .then(([FeatureLayer]) => {
-       const predictedHabitatLayers = [
-         config.URL.PredictedHabitat.line,
-         config.URL.PredictedHabitat.polygon,
-         config.URL.PredictedHabitat.line2,
-         config.URL.PredictedHabitat.polygon2
-       ].map(url => {
-         return new FeatureLayer({
-           url,
-           opacity: 0.9,
-           listMode: "hide",
-           definitionExpression: `cutecode=''`,
-           isPredictedHabitatLayer: true,
-           legendEnabled: false
-         });
-       });
-       mapView.map.addMany(predictedHabitatLayers);
-    });
-    mapView.map.reorder(actualModelBoundaryLayer, 0);
-  }; */
-
-/* 
-  const showPredictedHabitatLayers = (speciesCode = "") => {
-    mapView.map.layers.forEach(layer => {
-      // console.log(layer);
-      if (layer.isPredictedHabitatLayer) {
-        // console.log(la)
-        layer.definitionExpression = `cutecode='${speciesCode}'`;
-      }
-      layer.refresh();
-    });
-    zoomToPredictedHabitatLayer();
-  };
- */
-/* 
-  const zoomToPredictedHabitatLayer = (speciesCode = "") => {
-    mapView.map.layers.forEach(layer => {
-      // console.log(layer);
-      if (layer.isPredictedHabitatLayer) {
-        // console.log(la)
-        layer.queryExtent().then(function(results) {
-          // go to the extent of the results satisfying the query
-          // view.goTo(results.extent);
-          if (results.extent) {
-            mapView.goTo(results.extent);
-          }
-        });
-      }
-    });
-  };
- */
   const setLayersOpacity = val => {
     mapView.map.layers.forEach(layer => {
       // console.log(layer);
@@ -825,10 +756,8 @@ const MapControl = function({
     cleanPreviewEcoGraphic,
     showEcoFeatureByStatus,
     showEcoFeatureByPresence,
-    // addActualModelBoundaryLayer,
     clearAllGraphics,
     clearEcoPresenceGraphics,
-    // disableMapOnHoldEvent,
     queryEcoShpsLayerByEcoID,
     queryEcoShpsLayerByEcoIDs,
     zoomToEcoShps,
@@ -836,7 +765,6 @@ const MapControl = function({
     setLayersOpacity,
     clearMapGraphics,
     addPreviewEcoByID,
-    //showPredictedHabitatLayers,
     addCsvLayer
   };
 };

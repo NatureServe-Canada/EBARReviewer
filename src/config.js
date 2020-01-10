@@ -87,6 +87,7 @@ module.exports = {
   },
 
   STATUS: [
+    {"attributes":{"artext":"Ecoshapes","arcode":0}},
     {"attributes":{"artext":"Add to Range","arcode":1}},
     {"attributes":{"artext":"Comment","arcode":2}},
     {"attributes":{"artext":"Remove from Range","arcode":3}},
@@ -201,6 +202,7 @@ module.exports = {
     mapViewContainer: "viewDiv",
     loggedInUser: "loggedInDiv",
     speciesSelector: "selectorsDiv",
+    speciesMetadata: "metadataDiv",
     feedbackControl: "feedbackControlDiv",
     overallFeedbackControl: "overallFeedbackDiv",
     legend: "legendDiv",
