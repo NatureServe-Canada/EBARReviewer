@@ -146,7 +146,7 @@ export default function FeedbackControlPanel() {
     let EA = state.data.ecoAtts;
     let parentEco = EA.parentecoregionfr ? EA.parentecoregion + " ("+ EA.parentecoregionfr +")" : EA.parentecoregion;
     let ecoZone = EA.ecozonefr ? EA.ecozone + " ("+ EA.ecozonefr +")" : EA.ecozone;
-    let terrArea = EA.terrestrialarea / 1000000
+    let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-US', {minimumFractionDigits: 1})
     let terrProp = EA.terrestrialproportion * 100
     let outputHtml = `
     <div class='flex-container' style='margin-bottom:10px'>
@@ -155,7 +155,7 @@ export default function FeedbackControlPanel() {
         <!--<strong>Ecoshape:</strong> ${EA.ecoshapename} <br>-->
         <strong>Parent Ecoregion:</strong> ${parentEco} <br>
         <strong>Ecozone:</strong> ${ecoZone}<br>
-        <strong>Terrestrial Area:</strong> ${terrArea.toFixed(2)} km2<br>
+        <strong>Terrestrial Area:</strong> ${terrArea} km&sup2;<br>
         <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>     
       </p>  
     </div>
