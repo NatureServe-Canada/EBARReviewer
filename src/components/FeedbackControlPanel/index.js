@@ -73,7 +73,7 @@ export default function FeedbackControlPanel() {
     }
   };
 
-  const render = (prvStatus = null) => {
+  const render = () => {
     const hucName = state.data.ecoAtts.ecoshapename || "";
     const comment = state.data.comment || "";
     
@@ -91,7 +91,7 @@ export default function FeedbackControlPanel() {
 
                 <div class='feedbackControlPanelData'>
                     <div id='actionDialogWrap'>
-                        ${getHtmlForActions(prvStatus)}
+                        ${getHtmlForActions()}
                     </div>
 
                     <div class='comment-dialog'>
@@ -127,10 +127,8 @@ export default function FeedbackControlPanel() {
   //     return state.isSumbitCommentOnly ? statusLookup[3] : 'Comment'
   // }
 
-  const getHtmlForActions = (prvStatus = null) => {
-    let status = getNewStatus();
-    status = status === 3 ? prvStatus: status
-    console.log("status being used from toggle: ", status)
+  const getHtmlForActions = () => {
+    let status = getNewStatus(); 
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'is-checked';
 
@@ -146,7 +144,7 @@ export default function FeedbackControlPanel() {
     let EA = state.data.ecoAtts;
     let parentEco = EA.parentecoregionfr ? EA.parentecoregion + " ("+ EA.parentecoregionfr +")" : EA.parentecoregion;
     let ecoZone = EA.ecozonefr ? EA.ecozone + " ("+ EA.ecozonefr +")" : EA.ecozone;
-    let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-US', {minimumFractionDigits: 1})
+    let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-us', {'maximumFractionDigits': 2});
     let terrProp = EA.terrestrialproportion * 100
     let outputHtml = `
     <div class='flex-container' style='margin-bottom:10px'>
@@ -166,7 +164,7 @@ export default function FeedbackControlPanel() {
         <div class='flex-container'>
         <div class='inline-block'>
           <span class="toggle-switch-label font-size--3 action-message">
-            ${statusLookup[+status]}:
+            ${statusLookup[+getStatusByIsInModeledRange()]}:
           </span>
 
                 <label class="toggle-switch">
@@ -188,7 +186,13 @@ export default function FeedbackControlPanel() {
       remReasons.map(d => {
         let c = d.attributes.removalcode
         let t = d.attributes.removaltext
-        outputHtml += `<option value="${c}">${t}</option>`
+        let s = "";
+        if (state.data.additionalFields.removalreason) {
+         if (c === state.data.additionalFields.removalreason) {
+           s = "selected"
+         }
+        }
+        outputHtml += `<option ${s} value="${c}">${t}</option>`
       });
       
       outputHtml += `</select></label>`
@@ -298,10 +302,9 @@ export default function FeedbackControlPanel() {
     container
       .querySelector(".toggle-switch-input")
       .addEventListener("change", evt => {
-        console.log("toggle-switch-input on change");
-        let prvStatus = getNewStatus()
+        console.log("toggle-switch-input on change");        
         toggleIsSumbitCommentOnly();
-        render(prvStatus);
+        render();
       });
   };
 
