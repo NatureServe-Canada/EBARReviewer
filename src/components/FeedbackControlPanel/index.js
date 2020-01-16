@@ -129,7 +129,7 @@ export default function FeedbackControlPanel() {
 
   const getHtmlForActions = (prvStatus = null) => {
     let status = getNewStatus();
-    status = status === 3 ? prvStatus: status
+    //status = status === 3 ? prvStatus: status
     console.log("status being used from toggle: ", status)
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'is-checked';
@@ -146,7 +146,7 @@ export default function FeedbackControlPanel() {
     let EA = state.data.ecoAtts;
     let parentEco = EA.parentecoregionfr ? EA.parentecoregion + " ("+ EA.parentecoregionfr +")" : EA.parentecoregion;
     let ecoZone = EA.ecozonefr ? EA.ecozone + " ("+ EA.ecozonefr +")" : EA.ecozone;
-    let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-US', {minimumFractionDigits: 1})
+    let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-us', {'maximumFractionDigits': 2});
     let terrProp = EA.terrestrialproportion * 100
     let outputHtml = `
     <div class='flex-container' style='margin-bottom:10px'>
@@ -299,7 +299,7 @@ export default function FeedbackControlPanel() {
       .querySelector(".toggle-switch-input")
       .addEventListener("change", evt => {
         console.log("toggle-switch-input on change");
-        let prvStatus = getNewStatus()
+        let prvStatus =  null; //getNewStatus()
         toggleIsSumbitCommentOnly();
         render(prvStatus);
       });
