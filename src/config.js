@@ -74,7 +74,8 @@ module.exports = {
     },
     speciesByUser: {
       speciesCode: "speciesid",
-      email: "username" //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
+      email: "username", //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
+      includeinebarreviewer:"includeinebarreviewer"
     },
     pdfLookup: {
       speciesCode: "cutecode",

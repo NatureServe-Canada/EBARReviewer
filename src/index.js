@@ -19,7 +19,7 @@ import PolyfillForIE from "./utils/PolyfillForIE";
     // console.log('agress');
     initApp(oauthManager);
   });
-  
+
 })();
 
 const initApp = async oauthManager => {
@@ -117,7 +117,7 @@ const initApp = async oauthManager => {
     showToPredictedHabitatOnMap: (speciesCode = "") => {
       mapControl.showPredictedHabitatLayers(speciesCode);
     }, */
-    
+
     zoomToEcoShpsOnMap: (ecoIds = []) => {
       mapControl.zoomToEcoShps(ecoIds);
     },
@@ -128,7 +128,7 @@ const initApp = async oauthManager => {
     clearEcoPresenceGraphics: () =>{
       mapControl.clearEcoPresenceGraphics();
     },
-    
+
     showEcoFeatureOnMap: (ecoId = "", status) => {
       //console.log('showEcoFeatureOnMap', ecoId, status);
       mapControl.showEcoFeatureByStatus(ecoId, status);
@@ -271,6 +271,17 @@ const initApp = async oauthManager => {
   }
 
 
+  const toggleGraphicsLayers = document.getElementsByClassName('toggleGraphicsLayers');
+  if (toggleGraphicsLayers) {
+    for (var i = 0; i < toggleGraphicsLayers.length; i++) {
+      toggleGraphicsLayers[i].addEventListener("click", function (event) {
+
+        if (event && event.target)
+          mapControl.graphicsVisibility(event);
+      });
+    }
+  }
+  
   // window.appDebugger = {
   //     signOut: oauthManager.signOut
   // };

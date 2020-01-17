@@ -11,8 +11,11 @@ export default function ApiManager(props = {}) {
   ) => {
     const requestUrl = config.URL.speciesByUser + "/query";
     // was using id, now using portal login username 
-    const whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`;
+    let whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`; //???
+      whereClause = "("+ whereClause + ") AND " + `${config.FIELD_NAME.speciesByUser.includeinebarreviewer} = 1`;
     //const whereClause = `${config.FIELD_NAME.speciesByUser.email} = 2`;
+  
+     
     console.log("query species by user url: ", requestUrl)
     console.log("query species by user where: ", whereClause)
     return queryForFeaturesGet(requestUrl, {

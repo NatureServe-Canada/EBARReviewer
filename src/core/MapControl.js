@@ -11,7 +11,8 @@ const esriLoaderOptions = {
   url: "https://js.arcgis.com/4.10"
 };
 
-const MapControl = function({
+const MapControl = function ({
+  fullExtentArray = [],
   webMapID = "",
   mapViewContainerID = "",
   onScaleChange = null
@@ -39,12 +40,12 @@ const MapControl = function({
       outline: outline
     },
     "X": {
-      type: "simple-fill", 
+      type: "simple-fill",
       color: config.COLOR.presenceexpected,
       outline: outline
     },
-    "H":{
-      type: "simple-fill", 
+    "H": {
+      type: "simple-fill",
       color: config.COLOR.historical,
       outline: outline
     }
@@ -58,7 +59,7 @@ const MapControl = function({
       return;
     }
 
-    ecoFeatureOnSelectHandler = options.ecoFeatureOnSelectHandler || null;    
+    ecoFeatureOnSelectHandler = options.ecoFeatureOnSelectHandler || null;
     initMapView();
     console.log("done init: map view")
   };
@@ -68,6 +69,8 @@ const MapControl = function({
       .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config"], esriLoaderOptions)
       .then(([MapView, WebMap, esriConfig]) => {
         esriConfig.portalUrl = config.portalURL; //"https://gis.natureserve.ca/arcgis";
+
+
         const webmap = new WebMap({
           portalItem: {
             id: webMapID
@@ -80,6 +83,7 @@ const MapControl = function({
         });
 
         mapView.when(mapViewOnReadyHandler);
+
       });
   };
 
@@ -87,6 +91,7 @@ const MapControl = function({
     esriLoader
       .loadModules(["esri/widgets/LayerList"], esriLoaderOptions)
       .then(([LayerList]) => {
+        mapView.a
         const layerlist = new LayerList({
           container: config.DOM_ID.layerListDiv,
           view: mapView
@@ -97,7 +102,36 @@ const MapControl = function({
       });
   };
 
-  
+
+  const initBaseMapLayer = () => {
+    esriLoader
+      .loadModules(
+        [
+          "esri/Basemap"
+        ],
+        esriLoaderOptions
+      )
+      .then(([Basemap]) => {
+
+        console.log(mapView.map);
+
+        let basemapid = getCookie("basemap");//"d0135822507947b2a3809af36f2d91e6";
+        if (basemapid) {
+          var basemap = new Basemap({
+            portalItem: {
+              id: basemapid
+            }
+          });
+
+          mapView.map.basemap = basemap;
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
+
+
   const initReferenceLayers = mapView => {
     // Layer.fromPortalItem({
     //     portalItem: {  // autocasts new PortalItem()
@@ -118,7 +152,7 @@ const MapControl = function({
         ],
         esriLoaderOptions
       )
-      .then(([MapImageLayer, ImageryLayer, FeatureLayer, VectorTileLayer]) => {
+      .then(([MapImageLayer, ImageryLayer, FeatureLayer, VectorTileLayer, Basemap]) => {
         const defaultOpacity = 0.7;
 
         const vt = new VectorTileLayer({
@@ -141,7 +175,7 @@ const MapControl = function({
           visible: false
         });
 
-         const protectedAreas = new MapImageLayer({
+        const protectedAreas = new MapImageLayer({
           portalItem: {
             id: config.reference_layers.protectedAreas.itemId
           },
@@ -167,30 +201,30 @@ const MapControl = function({
           opacity: defaultOpacity,
           visible: false
         });
- 
+
         // HUC6
-      // const huc6 = new FeatureLayer({
-      //     portalItem: {
-      //       // autocasts as esri/portal/PortalItem
-      //       id: config.reference_layers.HUC6.itemId
-      //     },
-      //     title: config.reference_layers.HUC6.title,
-      //     opacity: 0.9,
-      //     visible: false,
-      //     renderer: {
-      //       type: "simple", // autocasts as new SimpleRenderer()
-      //       symbol: {
-      //         type: "simple-fill", // autocasts as new SimpleFillSymbol()
-      //         color: [0, 0, 0, 0],
-      //         outline: {
-      //           // autocasts as new SimpleLineSymbol()
-      //           color: [0, 255, 0, 1],
-      //           width: "2"
-      //         }
-      //       }
-      //     }
-      //   }); 
-             
+        // const huc6 = new FeatureLayer({
+        //     portalItem: {
+        //       // autocasts as esri/portal/PortalItem
+        //       id: config.reference_layers.HUC6.itemId
+        //     },
+        //     title: config.reference_layers.HUC6.title,
+        //     opacity: 0.9,
+        //     visible: false,
+        //     renderer: {
+        //       type: "simple", // autocasts as new SimpleRenderer()
+        //       symbol: {
+        //         type: "simple-fill", // autocasts as new SimpleFillSymbol()
+        //         color: [0, 0, 0, 0],
+        //         outline: {
+        //           // autocasts as new SimpleLineSymbol()
+        //           color: [0, 255, 0, 1],
+        //           width: "2"
+        //         }
+        //       }
+        //     }
+        //   }); 
+
         //  const rivers = new FeatureLayer({
         //   portalItem: {
         //     // autocasts as esri/portal/PortalItem
@@ -215,7 +249,7 @@ const MapControl = function({
         console.error(err);
       });
   };
-  
+
   const initEcoLayer = mapView => {
     esriLoader
       .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
@@ -247,12 +281,12 @@ const MapControl = function({
         //  and we grab only shapes we need to draw based on species selection which are shown
         //  via a GraphicsLayer
         //mapView.map.add(ecoShpLayer);
-        
+
         initEcoShpReviewReferenceLayers(mapView);
 
       });
   };
-  
+
 
   const initEcoShpReviewReferenceLayers = mapView => {
     esriLoader
@@ -272,6 +306,7 @@ const MapControl = function({
         });
 
         mapView.map.addMany([ecoShpByStatusGraphicLayer, ecoPreviewGraphicLayer, ecoPresenceGraphicLayer]);
+
       });
   };
 
@@ -282,7 +317,7 @@ const MapControl = function({
       // if(!isOnHoldEventDisabled){
       //     queryEcoLayerByMouseEvent(event);
       // }
-      
+
       queryEcoLayerByMouseEvent(event)
         .then(queryEcoLayerByMouseEventOnSuccessHandler)
         .catch(err => {
@@ -309,17 +344,46 @@ const MapControl = function({
           view
         });
 
+        var handle = basemapGallery.watch('activeBasemap', function (newValue, oldValue, property, object) {
+          // alert("Here!");'
+          var portalItem = newValue["portalItem"];
+          var basemapid = portalItem.id;
+
+          document.cookie = "basemap=" + basemapid;// newValue["title"];
+          console.log("New value: ", newValue,      // The new value of the property
+            "<br>Old value: ", oldValue,  // The previous value of the changed property
+            "<br>Watched property: ", property,  // In this example this value will always be "basemap.title"
+            "<br>Watched object: ", object);     // In this example this value will always be the map object
+        });
+
         const bgExpand = new Expand({
           view,
           content: basemapGallery,
           expandTooltip: "Change Basemap"
         });
 
-        mapView.ui.add(bgExpand, "top-left");
+        mapView.ui.add(bgExpand, "top-left");   
 
         initLegend(mapView);
       });
   };
+
+  function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
 
   const initLegend = view => {
     esriLoader
@@ -363,7 +427,7 @@ const MapControl = function({
   };
 
   const mapViewOnReadyHandler = () => {
-     console.log('mapView is ready...');
+    console.log('mapView is ready...');
 
     initMapEventHandlers();
 
@@ -378,6 +442,7 @@ const MapControl = function({
     initSearch(mapView);
 
     initLayerList(mapView);
+    initBaseMapLayer();
   };
 
   const queryEcoLayerByMouseEvent = event => {
@@ -389,7 +454,7 @@ const MapControl = function({
     query.outFields = ["*"];
 
     return new Promise((resolve, reject) => {
-      ecoShpLayer.queryFeatures(query).then(function(response) {
+      ecoShpLayer.queryFeatures(query).then(function (response) {
         // console.log(response);
 
         if (response.features && response.features.length) {
@@ -415,7 +480,7 @@ const MapControl = function({
     return new Promise((resolve, reject) => {
       ecoShpLayer
         .queryFeatures(query)
-        .then(function(response) {
+        .then(function (response) {
           if (response.features && response.features.length) {
             // console.log(response.features[0]);
             resolve(response.features);
@@ -428,7 +493,7 @@ const MapControl = function({
         });
     });
   };
-  
+
   const generateEcpShpWhereFromEcoIDs = ecoIds => {
     let whereText = "";
     let tempEcoIds = ecoIds.slice(0);
@@ -439,36 +504,42 @@ const MapControl = function({
       whereText =
         whereText +
         `${maxHit ? " OR " : ""}${
-          config.FIELD_NAME.ecoShapeLayerID
+        config.FIELD_NAME.ecoShapeLayerID
         } in ('${currEcoIds.join("','")}')`;
       maxHit = true;
     }
     whereText =
       whereText +
       `${maxHit ? " OR " : ""}${
-        config.FIELD_NAME.ecoShapeLayerID
+      config.FIELD_NAME.ecoShapeLayerID
       } in ('${tempEcoIds.join("','")}')`;
     return whereText;
   };
 
   const zoomToEcoShps = async ecoIds => {
 
-    const ecoFeats = await queryEcoShpsLayerByEcoIDs(ecoIds);    
+    const ecoFeats = await queryEcoShpsLayerByEcoIDs(ecoIds);
     console.log("zoomToEcoShps ecofeats:", ecoFeats)
-    mapView.goTo(ecoFeats);
+    // mapView.goTo(ecoFeats);
     console.log("done goto: zoomtoecoshps")
-
+    fullExtent();
   };
 
   const queryEcoLayerByMouseEventOnSuccessHandler = feature => {
-    
+
     addPreviewEcoGraphic(feature);
 
     if (ecoFeatureOnSelectHandler) {
       ecoFeatureOnSelectHandler(feature);
     }
   };
-  
+
+  function arrayRemove(arr, value) {
+    return arr.filter(function (ele) {
+      return ele != value;
+    });
+  }
+
   const showEcoFeatureByStatus = (
     ecoId,
     status,
@@ -477,10 +548,14 @@ const MapControl = function({
       popupTemplate: null
     }
   ) => {
+
     removeEcoGraphicByStatus(ecoId);
     console.log("in showEcoFeatureByStatus")
+    fullExtentArray = [];
     if (+status > 0) {
       queryEcoShpsLayerByEcoID(ecoId).then(features => {
+        console.log(features);
+        fullExtentArray.push(features[0]);
         addEcoGraphicByStatus(features[0], status, options);
       });
     }
@@ -488,11 +563,30 @@ const MapControl = function({
 
   const showEcoFeatureByPresence = (ecoId, presence) => {
     queryEcoShpsLayerByEcoID(ecoId).then(features => {
+      fullExtentArray.push(features[0]);
       drawEcoShapeByPresence(features[0], presence);
     });
+    // fullExtent();
+    // setTimeout(() => { fullExtent();}, 2000);
 
-    
+
   };
+
+  const fullExtent = () => {
+    var fullExtent = null;
+    var features = fullExtentArray;
+    for (var i = 0; i < features.length; i++) {
+      if (!fullExtent)
+        fullExtent = features[i].geometry.extent.clone();
+      else
+        fullExtent.union(features[i].geometry.extent)
+    }
+    mapView.goTo(fullExtent).then(function () {
+      if (!mapView.extent.contains(fullExtent))
+        mapView.zoom -= 1;
+    });
+  }
+
 
   const drawEcoShapeByPresence = (feature, presence) => {
     const geometry = feature.geometry;
@@ -507,7 +601,7 @@ const MapControl = function({
           //attributes
           // popupTemplate
         });
-          //console.log("about to drawEcoShapeByPresence add graphic", graphic)
+        //console.log("about to drawEcoShapeByPresence add graphic", graphic)
         ecoPresenceGraphicLayer.add(graphic);
       })
       .catch(err => {
@@ -574,8 +668,9 @@ const MapControl = function({
           attributes
           // popupTemplate
         });
-          //console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
+        //console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
         ecoShpByStatusGraphicLayer.add(graphic);
+        document.getElementById('graphicsLayersDiv').style.display = "block";
       })
       .catch(err => {
         console.error(err);
@@ -591,10 +686,11 @@ const MapControl = function({
         g.attributes[config.FIELD_NAME.ecoShapeLayerID] === ecoId
       ) {
         ecoShpByStatusGraphicLayer.remove(g);
+        //arrayRemove(fullExtentArray,g.features[0]);
       }
     });
   };
-  
+
   const addPreviewEcoByID = async ecoId => {
     const ecoFeature = await queryEcoShpsLayerByEcoID(ecoId);
     addPreviewEcoGraphic(ecoFeature);
@@ -623,7 +719,7 @@ const MapControl = function({
           symbol: symbol
         });
 
-        ecoPreviewGraphicLayer.add(graphicForSelectedEco);
+        ecoPreviewGraphicLayer.add(graphicForSelectedEco);      
       });
   };
 
@@ -647,7 +743,7 @@ const MapControl = function({
   const clearEcoPresenceGraphics = () => {
     if (ecoPresenceGraphicLayer) ecoPresenceGraphicLayer.removeAll()
   }
-  
+
   const cleanPreviewEcoGraphic = () => {
     if (ecoPreviewGraphicLayer) ecoPreviewGraphicLayer.removeAll();
   };
@@ -744,11 +840,38 @@ const MapControl = function({
         });
 
         mapView.map.add(csvLayer);
+        document.getElementById('graphicsLayersDiv').style.display = "block";
       })
       .catch(err => {
         console.error(err);
       });
   };
+
+  // Hide/Show all Graphics Layers [HM Jan.2020]
+  const graphicsVisibility = event => {
+
+    var option = event.target.id;
+    var status = event.target.checked;
+
+    switch (option) {
+      case "GL0":
+        if (ecoShpByStatusGraphicLayer)
+          ecoShpByStatusGraphicLayer.visible = status;
+        break;
+      case "GL1":
+        if (ecoPreviewGraphicLayer)
+          ecoPreviewGraphicLayer.visible = status;
+        break;
+      case "GL2":
+        if (ecoPresenceGraphicLayer)
+          ecoPresenceGraphicLayer.visible = status;
+        break;
+
+    }
+
+  };
+
+
 
   return {
     init,
@@ -765,7 +888,9 @@ const MapControl = function({
     setLayersOpacity,
     clearMapGraphics,
     addPreviewEcoByID,
-    addCsvLayer
+    addCsvLayer,
+    graphicsVisibility,
+    initBaseMapLayer
   };
 };
 
