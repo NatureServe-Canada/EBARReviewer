@@ -73,8 +73,6 @@ export default function View() {
     //     element.addEventListener('click', toggleBasemapGallery);
     // });
 
-
-
     document.querySelectorAll(".js-open-overall-feedback").forEach(element => {
       // console.log('js-open-overall-feedback on click');
       element.addEventListener("click", viewProps.openOverallBtnOnclick);
@@ -227,7 +225,7 @@ export default function View() {
     document.getElementById("rdate").innerHTML = new Date(m['rangedate']).toLocaleString();
 
     let url = `http://explorer.natureserve.org/servlet/NatureServe?searchSciOrCommonName=${m['national_scientific_name']}&x=0&y=0`
-    document.getElementById("rlink").innerHTML = `<a href="${url}" target="_blank" class="link-white">${m['national_scientific_name']}</a>`
+    document.getElementById("rlink").innerHTML = `<a href="${url}" target="_blank" class="link-white">go to NatureServe Explorer</a>`
     document.getElementById("rmetadata").innerHTML = m['rangemetadata'];
     document.getElementById("rnotes").innerHTML = m['rangemapnotes'];
 
