@@ -1,108 +1,105 @@
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="Nature Serve Canada" />
+    <title>EBAR Reviewer</title>
+    <link rel="icon" href="//www.esri.com/favicon.ico" />
+  </head>
+  <body class="">
+    <div id="agreementDiv" >
+      <div class="grid-container">
+        <div class="column-16 center-column padding-leader-5" style="padding-top: 3rem;">
+          <div>
+            <p class="font-size-2">
+              In using this tool, you will be accessing information based on locations of rare and threatened
+              species, including species subject to persecution and harm. You agree to use this information only
+              for the purposes of EBAR range maps review, and agree not to share the draft range maps with
+              anyone else via screenshots or other means unless given written permission by the EBAR team. 
+              Finalized range maps will be publicly available at no cost.
+              <br><br>  
+              Please contact the EBAR-KBA project at the email address provided below to suggest additional reviewers.
+              <br><br>
+              This app user cookies to remember some user interface selections.
+              <br><br>
+              Your species reviews will be kept in a database to support the EBAR-KBA project.              
+            </p>
+          </div>
 
-<head>
-  <meta charset="utf-8" />
-  <meta content="IE=edge" http-equiv="X-UA-Compatible" />
-  <meta name="viewport" content="width=device-width, user-scalable=no" />
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="Nature Serve Canada" />
-  <title>EBAR Reviewer</title>
-  <link rel="icon" href="//www.esri.com/favicon.ico" />
-</head>
-
-<body class="">
-  <div id="agreementDiv">
-    <div class="grid-container">
-      <div class="column-16 center-column padding-leader-5" style="padding-top: 3rem;">
-        <div>
-          <p class="font-size-2">
-
-            In using this tool, you will be accessing information that may include location information of
-            rare and threatened species, including species subject to persecution and harm. You agree to
-            use this information only for the purposes of EBAR range maps review, and not for any other
-            purposes, and agree not to share the draft range maps with anyone else via screenshots or other means.
-            <br><br>
-            I agree that my species reviews will be kept in a database to support the EBAR-KBA project.
+          <div class="text-right">
+            <btn class="btn btn-large js-accept-terms">
+              <span class="padding-left-1 padding-right-1"> I AGREE </span></btn>
+          </div>
+          <p>   
+          <div class="font-size-1"> User questions, additional reviewer suggestions, feedback and technical support: <a href="mailto:ebar-kba@natureserve.ca">ebar-kba@natureserve.ca</a>
+            <br><br>About the EBAR Reviewer app</div>
+           <div style="margin-left: 1rem;" class="font-size-1">                       
+           
+              Source code: <a href="https://github.com/NatureServe-Canada/EBARReviewer">https://github.com/NatureServe-Canada/EBARReviewer</a>
+              <br>
+              App development: Esri Canada
+              <br>
+              Based on: <a href="https://github.com/allenanselmo/species-reviewer-naba">https://github.com/allenanselmo/species-reviewer-naba</a> and <a href="https://github.com/vannizhang/species-reviewer">https://github.com/vannizhang/species-reviewer</a> under Apache 2.0 (<a href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a>)
+              <br>
+              © NatureServe Canada 2020 under CC BY 4.0 (<a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>)           
+          </div>
           </p>
         </div>
-
-        <div class="text-right">
-          <btn class="btn btn-large js-accept-terms">
-            <span class="padding-left-1 padding-right-1"> I AGREE </span></btn>
         </div>
-        <p class="font-size-1">
-
-          Technical support: <a href="mailto:ebar-kba@natureserve.ca">ebar-kba@natureserve.ca</a>
-          <br><br>
-          Source code: <a
-            href="https://github.com/NatureServe-Canada/EBARReviewer">https://github.com/NatureServe-Canada/EBARReviewer</a>
-          <br><br>
-          App development: Esri Canada
-          <br><br>
-          Based on: <a
-            href="https://github.com/allenanselmo/species-reviewer-naba">https://github.com/allenanselmo/species-reviewer-naba</a>
-          and <a
-            href="https://github.com/vannizhang/species-reviewer">https://github.com/vannizhang/species-reviewer</a>
-          under Apache 2.0 (<a href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a>)
-          <br><br>
-          © NatureServe Canada 2020 under CC BY 4.0 (<a
-            href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>)
-
-        </p>
       </div>
-
     </div>
-  </div>
-  </div>
 
-  <div id="mainControlDiv" class="panel panel-black fancy-scrollbar hide">
-    <div class="trailer-half">
-      <div class="inline-block">
-        <span class="font-size-2">EBAR Reviewer
-          <!-- <span id="index_maintenance_template_EBAR_Reviewer" style="display: none;"></span> -->
-
-        </span>
-      </div>
-      <div id="loggedInDiv">...</div>
-      <!-- <div id='downloadPdfBtn' class='inline-block right download-pdf-btn js-download-pdf' title='download metadata pdf'>
+    <div id="mainControlDiv" class="panel panel-black fancy-scrollbar hide">
+      <div class="trailer-half">
+        <div class="inline-block">
+          <span class="font-size-2">EBAR Reviewer</span>
+        </div>
+        <div id="loggedInDiv">...</div>
+        <!-- <div id='downloadPdfBtn' class='inline-block right download-pdf-btn js-download-pdf' title='download metadata pdf'>
                     <div class='center-align'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M15 3.6V16H1V0h10.4zM14 5h-4V1H2v14h12zm0-1.31L11.31 1H11v3h3zM7.617 8.296c-.011.002-.022.006-.024.01zm-1.834 5.487a7.772 7.772 0 0 0 1.078-2.094c.776-.265 1.79-.53 2.693-.754a5.695 5.695 0 0 0 2.17 1.393 1.714 1.714 0 0 0 .35.038 1.143 1.143 0 0 0 .92-.419 1.375 1.375 0 0 0 .12-1.42 1.411 1.411 0 0 0-1.247-.847l-.139-.003a8.296 8.296 0 0 0-1.788.25 23.548 23.548 0 0 1-1.726-1.913 9.45 9.45 0 0 0 .555-2.972 1.299 1.299 0 0 0-.827-1.075 1.16 1.16 0 0 0-.39-.067 1.278 1.278 0 0 0-.851.333c-.684.613-.645 1.93.1 3.354a2.093 2.093 0 0 0 .343.502c-.297.933-.657 1.94-.956 2.778a6.98 6.98 0 0 0-.998.451c-1.314.753-2.103 1.463-1.68 2.477a.994.994 0 0 0 .764.621 1.135 1.135 0 0 0 .2.017 1.858 1.858 0 0 0 1.31-.65zm-.58-.621a1.442 1.442 0 0 1-.889.522.116.116 0 0 1-.12-.063c-.086-.207-.263-.636 1.817-1.837a4.689 4.689 0 0 1-.809 1.378zm6.547-2.638l.131.003a.589.589 0 0 1 .52.371.596.596 0 0 1 .008.546.272.272 0 0 1-.21.069.914.914 0 0 1-.191-.023 4.05 4.05 0 0 1-1.461-.858 9.173 9.173 0 0 1 1.203-.108zm-2.619-.365c-.663.147-1.328.315-1.945.49a51.31 51.31 0 0 0 .69-1.899c.39.474.819.957 1.255 1.41zM7.718 4.733a.476.476 0 0 1 .34.39A5.116 5.116 0 0 1 7.56 7.23a2.73 2.73 0 0 1-.607-1.958.666.666 0 0 1 .256-.443.7.7 0 0 1 .372-.113.56.56 0 0 1 .136.016z"/></svg>
                     </div>
                 </div> -->
-    </div>
-
-    <div class="">
-      <div id="selectorsDiv"></div>
-    </div>
-
-    <div class="">
-      <div id="metadataDiv">
-        <p class="font-size--3 meta">
-          <strong>Range Version:</strong> <span id="rversion"> </span> <br>
-          <strong>Stage:</strong> <span id="rstage"> </span> <br>
-          <strong>Date:</strong> <span id="rdate"> </span> <br>
-          <strong>Species Information:</strong> <span id="rlink"></span> <br>
-          <strong>Metadata:</strong> <span id="rmetadata"></span> <br>
-          <strong>Notes:</strong> <span id="rnotes"></span>
-        </p>
       </div>
-    </div>
 
-    <div id="settingsDiv">
-      <div class="text-right js-toggle-ui-component" data-target="settingControls">
-        <span class="cursor-pointer text-light-gray margin-right-quarter font-size--2">Search/Add Data</span>
-        <span class="icon-ui-settings cursor-pointer text-light-gray icon-no-right-padding"></span>
+      <div class="">
+        <div id="selectorsDiv"></div>
       </div>
-      <div id="settingControls" class="hide">
-        <div class="setting-control-item">
-          <div class="trailer-quarter">
-            <span class="font-size--2">Search by location</span>
-          </div>
-          <div id="searchWidgetDiv"></div>
+
+      <div class="">
+        <div id="metadataDiv">
+          <p class="font-size--3 meta">
+            <strong>Range Version:</strong> <span id="rversion"> </span> <br>
+            <strong>Stage:</strong> <span id="rstage"> </span> <br>
+            <strong>Date:</strong> <span id="rdate"> </span> <br>
+            <strong>Species Information:</strong>  <span id="rlink"></span> <br>
+            <strong>Metadata:</strong>  <span id="rmetadata"></span> <br>
+            <strong>Notes:</strong> <span id="rnotes"></span>
+         </p>     
         </div>
+      </div>
 
-        <!-- <div class='setting-control-item hide'>
+      <div id="settingsDiv">
+        <div
+          class="text-right js-toggle-ui-component"
+          data-target="settingControls"
+        >
+          <span class="cursor-pointer text-light-gray margin-right-quarter font-size--2">Search/Add Data</span>
+          <span class="icon-ui-settings cursor-pointer text-light-gray icon-no-right-padding"
+          ></span>
+        </div>
+        <div id="settingControls" class="hide">
+          <div class="setting-control-item">
+            <div class="trailer-quarter">
+              <span class="font-size--2">Search by location</span>
+            </div>
+            <div id="searchWidgetDiv"></div>
+          </div>
+
+          <!-- <div class='setting-control-item hide'>
                         <form class="calcite-slider">
                             <label class='trailer-quarter'>
                                 <span class='font-size--2'>change layers opacity</span>
@@ -111,44 +108,44 @@
                         </form>
                     </div> -->
 
-        <div class="setting-control-item">
-          <div class="trailer-quarter">
-            <span class="font-size--2">Reference Layers</span>
-          </div>
-          <div id="layerListDiv"></div>
-          <div>
-            <div class="addPointHeader">To Add Your Own Point Data:</div>
-            <div class="addPointText">
-              Drag and drop a csv file from Windows Explorer onto the map.
-              File should be formatted with “latitude” and “longitude”
-              columns.
+          <div class="setting-control-item">
+            <div class="trailer-quarter">
+              <span class="font-size--2">Reference Layers</span>
+            </div>
+            <div id="layerListDiv"></div>
+            <div>
+              <div class="addPointHeader">To Add Your Own Point Data:</div>
+              <div class="addPointText">
+                Drag and drop a csv file from Windows Explorer onto the map.
+                File should be formatted with “latitude” and “longitude”
+                columns.
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="setting-control-item text-right">
-          <span class="btn btn-fill js-sign-out">Switch Account</span>
+          <div class="setting-control-item text-right">
+            <span class="btn btn-fill js-sign-out">Switch Account</span>
+          </div>
         </div>
       </div>
-    </div>
 
     <div style="display: flex; flex-direction: row">
       <div id="legendDiv" style="flex:2"></div>
       <div >
         <div style="display: flex; flex-direction: column;justify-content:space-between;height:99%;margin-top: 10px;">
-          <div style="flex:1;height: 30%;visibility: hidden;">
+          <div style="flex:1;height: 30%;">
             <div id="graphicsLayersDiv" >
                 <!-- style="display:none;" -->
               <label class="toggle-switch"> 
-                <input type="checkbox" class="toggle-switch-input toggleGraphicsLayers" id="GL1" checked>
+                <input type="checkbox" class="toggle-switch-input toggleGraphicsLayers" id="GL0" checked>
                 <span class="toggle-switch-track margin-right-1"></span>
               </label>
             </div> 
           </div>
-          <div style="flex:1;height: 30%;">
+          <div style="flex:1;height: 30%;visibility: hidden;">
             <div id="graphicsLayersDiv" >
               <label class="toggle-switch"> 
-                <input type="checkbox" class="toggle-switch-input toggleGraphicsLayers" id="GL0" checked>
+                <input type="checkbox" class="toggle-switch-input toggleGraphicsLayers" id="GL1" checked>
                 <span class="toggle-switch-track margin-right-1"></span>
               </label>
             </div> 
@@ -165,26 +162,24 @@
       </div>
     </div>
 
-<div id="test"></div>
-    <div id="listViewForOverallFeedbackDiv"></div>
+      <div id="listViewForOverallFeedbackDiv"></div>
+      <div id="listViewForDetailedFeedbackDiv"></div>
+      <div id="listViewForFeedbacksByEcoShpDiv"></div>
 
-
-
-
-    <div id="listViewForDetailedFeedbackDiv"></div>
-
-    <div id="listViewForFeedbacksByEcoShpDiv"></div>
-
-    <div id="openOverallFeedbackBtnDiv" class="leader-1">
-      <btn id="openOverallFeedbackBtn" class="btn btn-fill js-open-overall-feedback btn-disabled">Overall Feedback</btn>
+      <div id="openOverallFeedbackBtnDiv" class="leader-1">
+        <btn
+          id="openOverallFeedbackBtn"
+          class="btn btn-fill js-open-overall-feedback btn-disabled"
+          >Overall Feedback</btn
+        >
+      </div>
     </div>
-  </div>
 
-  <div id="feedbackControlDiv"></div>
+    <div id="feedbackControlDiv"></div>
 
-  <div id="overallFeedbackDiv" class="hide"></div>
+    <div id="overallFeedbackDiv" class="hide"></div>
 
-  <!-- <div id='basemapGalleryControl' class=''>
+    <!-- <div id='basemapGalleryControl' class=''>
             <div id='basemapGalleryControlHeader'>
                 <span class='avenir-demi margin-left-half fonr-size--2'>Basemap Gallery</span>
                 <div class='inline-block right js-toggle-basemap-gallery cursor-pointer'>
@@ -195,7 +190,6 @@
             <div id='basemapGalleryDiv'></div>
         </div> -->
 
-  <div id="viewDiv" class="hide"></div>
-</body>
-
+    <div id="viewDiv" class="hide"></div>
+  </body>
 </html>
