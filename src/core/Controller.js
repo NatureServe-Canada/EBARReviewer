@@ -569,7 +569,7 @@ export default function Controller(props = {}) {
         });
       }
     }
-    controllerProps.zoomToEcoShpsOnMap(ecoIds);
+    // controllerProps.zoomToEcoShpsOnMap(ecoIds);
 
     if (ecos) {
       Object.keys(ecos).forEach(function(key) {
@@ -577,6 +577,7 @@ export default function Controller(props = {}) {
         const presence = ecos[key].presence;        
         //showEcoFeatureOnMap(ecoID, status, data[key]);     
         controllerProps.showEcoPresenceOnMap(ecoID, presence);
+        controllerProps.zoomToEcoShpsOnMap(ecoIds);
       });
     }   
         if (!isReviewMode) {

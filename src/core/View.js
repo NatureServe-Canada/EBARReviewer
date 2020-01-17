@@ -221,7 +221,7 @@ export default function View() {
   const updateSpeciesMetadata = (m) => {
 
     document.getElementById("rversion").innerHTML = m['rangeversion'];
-    document.getElementById("rstage").innerHTML =m['rangestage'];
+    document.getElementById("rstage").innerHTML = m['rangestage'];
     document.getElementById("rdate").innerHTML = new Date(m['rangedate']).toLocaleString();
 
     let url = `http://explorer.natureserve.org/servlet/NatureServe?searchSciOrCommonName=${m['national_scientific_name']}&x=0&y=0`
