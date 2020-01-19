@@ -17,7 +17,7 @@ module.exports = {
       speciesCode: "speciesid", //THIS WAS RANGEMAPID, BUT CHANGED TO MAKE THE INITIAL SPECIES DROP DOWN WORK PER USER LOGGED IN
       rangemapID: "rangemapid",
       speciesName: "national_scientific_name", //"Scientific_Name",
-      taxa:"tax_group", // "Taxonomic_Group",
+      taxa: "tax_group", // "Taxonomic_Group",
       boundaryLayerLink: "BoundaryLayerLink",
       pdfLink: "PdfLink"
     },
@@ -26,7 +26,7 @@ module.exports = {
       speciesCode: "ecoshapeid", //"rangemapid", // "SpeciesCode",
       ecoShapeID: "ecoshapeid" // "HUCID"
     },
-    rangeMap:{
+    rangeMap: {
       speciesID: "speciesid"
     },
     feedbackTable: {
@@ -38,7 +38,7 @@ module.exports = {
       retirementDate: "retirementdate", // "RetirementDate",
       data_load_date: "dataloaddate",// "DataLoadDate",
       username: "username",
-      additionalFields: [    
+      additionalFields: [
         {
           field: "reference",
           display: "Reference",
@@ -52,16 +52,23 @@ module.exports = {
           editable: "textarea",
           length: 1
         },
-        // {
-        //   field: "migrantstatus",
-        //   display: "migrantstatus",
-        //   editable: [" SC - Seasonal resident and confirmed breeder", "SP - Seasonal resident and probable breeder".
-        // "S? - Seasonal resident and possible breeder", "SH - Seasonal resident and current nonbreeder, historical breeder",
-        // "SN - Seasonal resident and nonbreeder", "YC - Year-round resident and confirmed breeder", "YP - Year-round resident and probable breeder",
-        // "Y? - Year-round resident and possible breeder","YH - Year-round resident and current nonbreeder, historical breeder", 
-        // "YN - Year-round resident and nonbreeder", "T - Transient"
-        // ]
-        // }
+        {
+          field: "migrantstatus",
+          display: "Migrant Status",
+          editable: [
+            { code: "SC", desc: "SC - Seasonal resident and confirmed breeder" },
+            { code: "SP", desc: "SP - Seasonal resident and probable breeder" },
+            { code: "S?", desc: "S? - Seasonal resident and possible breeder" },
+            { code: "SH", desc: "SH - Seasonal resident and current nonbreeder, historical breeder" },
+            { code: "SN", desc: "SN - Seasonal resident and nonbreeder" },
+            { code: "YC", desc: "YC - Year-round resident and confirmed breeder" },
+            { code: "YP", desc: "YP - Year-round resident and probable breeder" },
+            { code: "Y?", desc: "Y? - Year-round resident and possible breeder" },
+            { code: "YH", desc: "YH - Year-round resident and current nonbreeder, historical breeder" },
+            { code: "YN", desc: "YN - Year-round resident and nonbreeder" },
+            { code: "T", desc: "T - Transient" }
+          ]
+        }
       ]
     },
     overallFeedback: {
@@ -69,13 +76,14 @@ module.exports = {
       species: "rangemapid", //"Species",
       comment: "reviewnotes", //"Comment_Long",
       rating: "overallstarrating", //"Rating",
-      retirementDate: "datecompleted", // "RetirementDate",
+      // retirementDate: "datecompleted", // "RetirementDate",
+      datecompleted: "datecompleted", // "DateCompleted ",
       data_load_date: "datestarted"// "DataLoadDate"
     },
     speciesByUser: {
       speciesCode: "speciesid",
       email: "username", //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
-      includeinebarreviewer:"includeinebarreviewer"
+      includeinebarreviewer: "includeinebarreviewer"
     },
     pdfLookup: {
       speciesCode: "cutecode",
@@ -88,39 +96,39 @@ module.exports = {
   },
 
   STATUS: [
-    {"attributes":{"artext":"Ecoshapes","arcode":0}},
-    {"attributes":{"artext":"Add to Range","arcode":1}},
-    {"attributes":{"artext":"Comment","arcode":2}},
-    {"attributes":{"artext":"Remove from Range","arcode":3}},
-    {"attributes":{"artext":"Present","arcode":4}},
-    {"attributes":{"artext":"Presence Expected","arcode":5}},
-    {"attributes":{"artext":"Historical","arcode":6}}
+    { "attributes": { "artext": "Ecoshapes", "arcode": 0 } },
+    { "attributes": { "artext": "Add to Range", "arcode": 1 } },
+    { "attributes": { "artext": "Comment", "arcode": 2 } },
+    { "attributes": { "artext": "Remove from Range", "arcode": 3 } },
+    { "attributes": { "artext": "Present", "arcode": 4 } },
+    { "attributes": { "artext": "Presence Expected", "arcode": 5 } },
+    { "attributes": { "artext": "Historical", "arcode": 6 } }
   ],
 
   REMOVAL: [
-    {"attributes":{"removalcode":"X","removaltext":"Presumed Extirpated"}},
-    {"attributes":{"removalcode":"N","removaltext":"Never Was There"}},
-    {"attributes":{"removalcode":"F","removaltext":"Reported But False"}},
-    {"attributes":{"removalcode":"T","removaltext":"Transient/Vagrant"}}
+    { "attributes": { "removalcode": "X", "removaltext": "Presumed Extirpated" } },
+    { "attributes": { "removalcode": "N", "removaltext": "Never Was There" } },
+    { "attributes": { "removalcode": "F", "removaltext": "Reported But False" } },
+    { "attributes": { "removalcode": "T", "removaltext": "Transient/Vagrant" } }
   ],
 
   URL: {
     ecoShapes:
-    "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/0",
+      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/0",
     speciesLookupTable:
-    "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/1",
-   speciesDistribution:
-    "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/2",
-   speciesByUser:
-    "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/1",
-   statusTable:
-    "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/5", //queryDomains?layers=EcoshapeReview",
-   feedbackTable:
-    "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/3",
-  overallFeedback:
-    "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/4",
+      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/1",
+    speciesDistribution:
+      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/2",
+    speciesByUser:
+      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/1",
+    statusTable:
+      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/5", //queryDomains?layers=EcoshapeReview",
+    feedbackTable:
+      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/3",
+    overallFeedback:
+      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/4",
 
-  //PredictedHabitat: {
+    //PredictedHabitat: {
     // "137976": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Isotria_medeloides_Boundary/FeatureServer/0",
     // "941975": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Lithobates_kauffeldi_Boundary/FeatureServer/0",
     // line:
@@ -131,11 +139,11 @@ module.exports = {
     //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Line_Part_2/FeatureServer/0",
     // polygon2:
     //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Polygon_Part_2/FeatureServer/0"
-  //},
-  // pdfLookup:
-  //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/6",
-  // data_load_date:
-  //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/9"
+    //},
+    // pdfLookup:
+    //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/6",
+    // data_load_date:
+    //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/9"
   },
 
   layerParameters: {
@@ -151,7 +159,7 @@ module.exports = {
   reference_layers: {
     vt: {
       itemId: "0fa1002f17b44c54b7c54b8256a50d46",
-      title:"Ecoshapes"
+      title: "Ecoshapes"
     },
     nawater: {
       itemId: "50a865f144e2437da3918b66e97f17e9",

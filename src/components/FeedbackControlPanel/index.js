@@ -218,13 +218,14 @@ export default function FeedbackControlPanel() {
 
         fieldValue =
           state.data.additionalFields[addField.field] ||
-          (addField.editable ? "" : "None set");
+          (addField.editable ? "" : ( (typeof addField.editable === "object")?{code:"null",desc:"None set"}:"None set"));
         outputHtml += `
                 <label>
                     <span class='font-size--3'>${
                       addField.display ? addField.display : addField.field
                     }:</span>
                 `;
+
         if (addField.editable) {
           if (
             typeof addField.editable === "object" &&
@@ -233,7 +234,7 @@ export default function FeedbackControlPanel() {
             outputHtml += `
                   <select id="additional-field-${
                     addField.field
-                  }" class="additional-field-select additional-field-input">
+                  }" class="additional-field-select additional-field-input" disabled>
                     ${
                       fieldValue === ""
                         ? '<option value="null" selected>None set</option>'
@@ -242,10 +243,11 @@ export default function FeedbackControlPanel() {
                 `;
 
             addField.editable.forEach(value => {
+
               outputHtml += `
-                 <option value="${value}" ${
-                fieldValue === value ? "selected" : ""
-              }>${value}</option>
+                 <option value="${value.code}" ${
+                fieldValue === value.code ? "selected" : ""
+              }>${value.desc}</option>
                     `;
             });
 
