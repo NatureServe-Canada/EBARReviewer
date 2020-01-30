@@ -222,7 +222,7 @@ export default function View() {
 
     document.getElementById("rversion").innerHTML = m['rangeversion'];
     document.getElementById("rstage").innerHTML = m['rangestage'];
-    document.getElementById("rdate").innerHTML = new Date(m['rangedate']).toLocaleString();
+    document.getElementById("rdate").innerHTML = new Date(m['rangedate']).toLocaleDateString();
 
     let url = `http://explorer.natureserve.org/servlet/NatureServe?searchSciOrCommonName=${m['national_scientific_name']}&x=0&y=0`
     document.getElementById("rlink").innerHTML = `<a href="${url}" target="_blank" class="link-white">go to NatureServe Explorer</a>`
