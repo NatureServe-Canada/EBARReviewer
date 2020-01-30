@@ -9,9 +9,20 @@ import MapControl from "./core/MapControl";
 import OAuthManager from "./core/OauthManager";
 import CsvLoader from "./core/CsvLoader";
 
+import ns from "./static/ns.png";
+import ns_white from "./static/ns_white.png";
+
 import PolyfillForIE from "./utils/PolyfillForIE";
 
 (async function initOAuthManager() {
+
+
+  const logo = document.getElementById("logo");
+  const nsImage = new Image();
+  nsImage.src = ns;
+  nsImage.width = "220";
+  logo.appendChild(nsImage);
+
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
 
@@ -38,6 +49,12 @@ const initApp = async oauthManager => {
       view.legend.render(newScale);
     }
   });
+
+  const navLogo = document.getElementById("navlogo");
+  const nsImageNav = new Image();
+  nsImageNav.src = ns_white;
+  nsImageNav.width="120"
+  navLogo.appendChild(nsImageNav);
 
   const controller = new Controller({
     oauthManager,
@@ -135,6 +152,9 @@ const initApp = async oauthManager => {
     },
 
     showEcoPresenceOnMap: (ecoId = "", presence = "") => {
+      // Lock the UI as we draw pink graphics
+      const modal = document.getElementById("myModal");
+      modal.style.display = "block";
       mapControl.showEcoFeatureByPresence(ecoId, presence)
     },
 
@@ -154,7 +174,7 @@ const initApp = async oauthManager => {
       mapControl.clearAllGraphics();
       controller.setSelectedSpecies(val);
       let m = controller.getMetadata(val);
-      view.updateSpeciesMetadata(m);
+      view.updateSpeciesMetadata(m);     
     }
   });
 

@@ -96,7 +96,7 @@ export default function FeedbackControlPanel() {
 
                     <div class='comment-dialog'>
                         <label>
-                            <span class='font-size--3'>Comment:</span>
+                            <span class='font-size--3'>Comment (required):</span>
                             <textarea type="text" placeholder="" class="comment-textarea" maxlength="4095">${comment}</textarea>
                         </label>
                     </div>
@@ -141,11 +141,26 @@ export default function FeedbackControlPanel() {
     // </div>`
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'checked';
-    let EA = state.data.ecoAtts;
+
+    let EA = state.data.ecoAtts;    
     let parentEco = EA.parentecoregionfr ? EA.parentecoregion + " ("+ EA.parentecoregionfr +")" : EA.parentecoregion;
     let ecoZone = EA.ecozonefr ? EA.ecozone + " ("+ EA.ecozonefr +")" : EA.ecozone;
     let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-us', {'maximumFractionDigits': 2});
-    let terrProp = EA.terrestrialproportion * 100
+    let terrProp = EA.terrestrialproportion * 100    
+
+    let huc = state.data.hucForSpeciesData;
+    let presence = ' '
+    let hucNotes = ' '
+    // Only have presence or notes for previously modelled ecoshapes, ones to be added do not have presence
+    if (huc.length > 0){
+      hucNotes = huc[0].rangemapecoshapenotes;
+      config.PRESENCE.map(d => {
+        if (d.code == huc[0].presence) {
+          presence =  d.text;
+        }
+      });
+    }
+
     let outputHtml = `
     <div class='flex-container' style='margin-bottom:10px'>
     <div class='inline-block'>
@@ -155,6 +170,8 @@ export default function FeedbackControlPanel() {
         <strong>Ecozone:</strong> ${ecoZone}<br>
         <strong>Terrestrial Area:</strong> ${terrArea} km&sup2;<br>
         <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>     
+        <strong>Presence:</strong> ${presence}  <br>     
+        <strong>Metdata:</strong> ${hucNotes} <br>  
       </p>  
     </div>
     </div>       

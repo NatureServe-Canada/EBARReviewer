@@ -645,19 +645,22 @@ export default function Controller(props = {}) {
       state.selectedHucFeature.attributes[config.FIELD_NAME.hucLayerHucName];
     const isHucInModeledRange = dataModel.isHucInModeledRange(ecoID, species);
 
+    // this was in additional fields, but need hucForSpeciesData Presence and Notes to put on UI
+    const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
+    const hucForSpeciesData = hucsBySpeciesData
+    ? hucsBySpeciesData.filter(
+        hucData =>
+          hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID) : [];
+
     // Adding addditional fields to feedback table for view/edit, pulling initial values from hucs by species extent table
     let additionalFields = {};
     if (
       config.FIELD_NAME.feedbackTable.additionalFields &&
       config.FIELD_NAME.feedbackTable.additionalFields.length > 0
     ) {
-      const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
-      const hucForSpeciesData = hucsBySpeciesData
-        ? hucsBySpeciesData.filter(
-            hucData =>
-              hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID
-          )
-        : [];
+      
+      //hucsBySpeciesData was here
+
       if (hucForSpeciesData && hucForSpeciesData.length > 0) {
         config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
           // Pull from huc either by special hucField in the feedback additional fields, or by the same field name as in the feedback table
@@ -677,7 +680,8 @@ export default function Controller(props = {}) {
         hucName,
         isHucInModeledRange,
         additionalFields,
-        ecoAtts
+        ecoAtts,
+        hucForSpeciesData
       });
     } else {
       console.error(
