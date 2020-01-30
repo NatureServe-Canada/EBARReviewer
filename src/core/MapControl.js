@@ -811,6 +811,10 @@ const MapControl = function ({
   };
 
   const addCsvLayer = (features = []) => {
+    // Lock the UI as we draw pink graphics
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
+
     const layerId = "csvLayer";
 
     let csvLayer = mapView.map.findLayerById(layerId);
@@ -846,9 +850,19 @@ const MapControl = function ({
         });
 
         mapView.map.add(csvLayer);
+
+        mapView.whenLayerView(csvLayer).then(function(csvLayerView){
+          csvLayerView.watch("updating", function(val){
+            if(!val){  // wait for the layer view to finish updating
+              modal.style.display = "none";
+            }
+          })
+        });
         document.getElementById('graphicsLayersDiv').style.display = "block";
+       
       })
       .catch(err => {
+        modal.style.display = "none";
         console.error(err);
       });
   };
