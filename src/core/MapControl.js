@@ -66,8 +66,8 @@ const MapControl = function ({
 
   const initMapView = () => {
     esriLoader
-      .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config"], esriLoaderOptions)
-      .then(([MapView, WebMap, esriConfig]) => {
+      .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config", "esri/core/watchUtils"], esriLoaderOptions)
+      .then(([MapView, WebMap, esriConfig, watchUtils]) => {
         esriConfig.portalUrl = config.portalURL; //"https://gis.natureserve.ca/arcgis";
 
 
@@ -83,6 +83,11 @@ const MapControl = function ({
         });
 
         mapView.when(mapViewOnReadyHandler);
+
+        watchUtils.whenTrue(mapView, "stationary", function() {    
+          const modal = document.getElementById("myModal");
+          modal.style.display = "none";  
+        });
 
       });
   };
@@ -172,7 +177,8 @@ const MapControl = function ({
           },
           title: config.reference_layers.nawater.title,
           opacity: defaultOpacity,
-          visible: false
+          visible: false,
+          popupEnabled: false
         });
 
         const protectedAreas = new MapImageLayer({

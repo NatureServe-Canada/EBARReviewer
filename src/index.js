@@ -152,6 +152,9 @@ const initApp = async oauthManager => {
     },
 
     showEcoPresenceOnMap: (ecoId = "", presence = "") => {
+      // Lock the UI as we draw pink graphics
+      const modal = document.getElementById("myModal");
+      modal.style.display = "block";
       mapControl.showEcoFeatureByPresence(ecoId, presence)
     },
 
