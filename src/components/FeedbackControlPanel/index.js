@@ -171,7 +171,7 @@ export default function FeedbackControlPanel() {
         <strong>Terrestrial Area:</strong> ${terrArea} km&sup2;<br>
         <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>     
         <strong>Presence:</strong> ${presence}  <br>     
-        <strong>Metdata:</strong> ${hucNotes} <br>  
+        <strong>Metadata:</strong> ${hucNotes} <br>  
       </p>  
     </div>
     </div>       
