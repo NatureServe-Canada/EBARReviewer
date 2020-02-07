@@ -577,7 +577,7 @@ export default function Controller(props = {}) {
         const presence = ecos[key].presence;        
         //showEcoFeatureOnMap(ecoID, status, data[key]);     
         controllerProps.showEcoPresenceOnMap(ecoID, presence);
-        controllerProps.zoomToEcoShpsOnMap(ecoIds);
+       // controllerProps.zoomToEcoShpsOnMap(ecoIds);
       });
     }   
         if (!isReviewMode) {

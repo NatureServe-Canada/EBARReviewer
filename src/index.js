@@ -301,6 +301,17 @@ const initApp = async oauthManager => {
       });
     }
   }
+
+  const zoomToSpeciesRange = document.getElementById('zoomToSpeciesRange');
+  if (zoomToSpeciesRange) {
+   
+    zoomToSpeciesRange.addEventListener("click", function () {
+
+        //if (event && event.target)
+        mapControl.fullExtent();
+      });
+   
+  }
   
   // window.appDebugger = {
   //     signOut: oauthManager.signOut

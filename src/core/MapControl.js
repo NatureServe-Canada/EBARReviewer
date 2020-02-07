@@ -490,6 +490,7 @@ const MapControl = function ({
           if (response.features && response.features.length) {
             // console.log(response.features[0]);
             resolve(response.features);
+            fullExtent();
           } else {
             reject("no eco feature is found");
           }
@@ -503,17 +504,17 @@ const MapControl = function ({
   const generateEcpShpWhereFromEcoIDs = ecoIds => {
     let whereText = "";
     let tempEcoIds = ecoIds.slice(0);
-    let currEcoIds = [];
+   // let currEcoIds = [];
     let maxHit = false;
-    while (tempEcoIds.length > 200) {
-      currEcoIds = tempEcoIds.shift(0, 199);
-      whereText =
-        whereText +
-        `${maxHit ? " OR " : ""}${
-        config.FIELD_NAME.ecoShapeLayerID
-        } in ('${currEcoIds.join("','")}')`;
-      maxHit = true;
-    }
+    // while (tempEcoIds.length > 200) {
+    //   currEcoIds = tempEcoIds.shift(0, 199);
+    //   whereText =
+    //     whereText +
+    //     `${maxHit ? " OR " : ""}${
+    //     config.FIELD_NAME.ecoShapeLayerID
+    //     } in ('${currEcoIds.join("','")}')`;
+    //   maxHit = true;
+    // }
     whereText =
       whereText +
       `${maxHit ? " OR " : ""}${
@@ -910,7 +911,8 @@ const MapControl = function ({
     addPreviewEcoByID,
     addCsvLayer,
     graphicsVisibility,
-    initBaseMapLayer
+    initBaseMapLayer,
+    fullExtent
   };
 };
 
