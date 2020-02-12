@@ -308,7 +308,7 @@ const initApp = async oauthManager => {
     zoomToSpeciesRange.addEventListener("click", function () {
 
         //if (event && event.target)
-        mapControl.fullExtent();
+        mapControl.fullExtentBT();
       });
    
   }

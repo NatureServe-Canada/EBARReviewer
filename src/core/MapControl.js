@@ -84,9 +84,9 @@ const MapControl = function ({
 
         mapView.when(mapViewOnReadyHandler);
 
-        watchUtils.whenTrue(mapView, "stationary", function() {    
+        watchUtils.whenTrue(mapView, "stationary", function() {
           const modal = document.getElementById("myModal");
-          modal.style.display = "none";  
+          modal.style.display = "none";
         });
 
       });
@@ -368,7 +368,7 @@ const MapControl = function ({
           expandTooltip: "Change Basemap"
         });
 
-        mapView.ui.add(bgExpand, "top-left");   
+        mapView.ui.add(bgExpand, "top-left");
 
         initLegend(mapView);
       });
@@ -489,8 +489,9 @@ const MapControl = function ({
         .then(function (response) {
           if (response.features && response.features.length) {
             // console.log(response.features[0]);
-            resolve(response.features);
             fullExtent();
+            resolve(response.features);
+
           } else {
             reject("no eco feature is found");
           }
@@ -504,7 +505,7 @@ const MapControl = function ({
   const generateEcpShpWhereFromEcoIDs = ecoIds => {
     let whereText = "";
     let tempEcoIds = ecoIds.slice(0);
-   // let currEcoIds = [];
+    // let currEcoIds = [];
     let maxHit = false;
     // while (tempEcoIds.length > 200) {
     //   currEcoIds = tempEcoIds.shift(0, 199);
@@ -573,27 +574,50 @@ const MapControl = function ({
       fullExtentArray.push(features[0]);
       drawEcoShapeByPresence(features[0], presence);
     });
-    // fullExtent();
-    // setTimeout(() => { fullExtent();}, 2000);
-
-
   };
 
-  const fullExtent = () => {
-    var fullExtent = null;
-    var features = fullExtentArray;
-    for (var i = 0; i < features.length; i++) {
-      if (!fullExtent)
-        fullExtent = features[i].geometry.extent.clone();
-      else
-        fullExtent.union(features[i].geometry.extent)
-    }
-    mapView.goTo(fullExtent).then(function () {
-      if (!mapView.extent.contains(fullExtent))
-        mapView.zoom -= 1;
-    });
-  }
+  var fullExtentArrayLength = 0;
 
+  const fullExtent = () => {
+    setTimeout(function () {
+      var fullExtent = null;
+      var features = fullExtentArray;
+      if (features && features.length > 0 && fullExtentArrayLength != features.length) {
+        console.log('FULL EXT:', features);
+        for (var i = 0; i < features.length; i++) {
+
+          fullExtentArrayLength = features.length;
+
+          if (!fullExtent)
+            fullExtent = features[i].geometry.extent.clone();
+          else
+            fullExtent.union(features[i].geometry.extent)
+        }
+        mapView.goTo(fullExtent).then(function () {
+          if (!mapView.extent.contains(fullExtent))
+            mapView.zoom -= 1;
+        });
+      }
+    }, 500);
+  }
+  const fullExtentBT = () => {
+  
+      var fullExtent = null;
+      var features = fullExtentArray;
+        for (var i = 0; i < features.length; i++) {
+
+          fullExtentArrayLength = features.length;
+
+          if (!fullExtent)
+            fullExtent = features[i].geometry.extent.clone();
+          else
+            fullExtent.union(features[i].geometry.extent)
+        }
+        mapView.goTo(fullExtent).then(function () {
+          if (!mapView.extent.contains(fullExtent))
+            mapView.zoom -= 1;
+        });
+  }
 
   const drawEcoShapeByPresence = (feature, presence) => {
     const geometry = feature.geometry;
@@ -726,11 +750,12 @@ const MapControl = function ({
           symbol: symbol
         });
 
-        ecoPreviewGraphicLayer.add(graphicForSelectedEco);      
+        ecoPreviewGraphicLayer.add(graphicForSelectedEco);
       });
   };
 
   const clearMapGraphics = (targetLayer = "") => {
+    fullExtentArray = [];
     const layersLookup = {
       ecoPreview: ecoPreviewGraphicLayer
     };
@@ -860,7 +885,7 @@ const MapControl = function ({
           })
         });
         document.getElementById('graphicsLayersDiv').style.display = "block";
-       
+
       })
       .catch(err => {
         modal.style.display = "none";
@@ -912,7 +937,8 @@ const MapControl = function ({
     addCsvLayer,
     graphicsVisibility,
     initBaseMapLayer,
-    fullExtent
+    fullExtent,
+    fullExtentBT
   };
 };
 
