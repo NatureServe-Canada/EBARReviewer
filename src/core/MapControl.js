@@ -27,6 +27,10 @@ const MapControl = function ({
   // let isOnHoldEventDisabled = false;
 
   let ecoPresenceGraphicLayer = null;
+  var pEcoByStatusCount = 0;
+  var pEcoByStatusLoaded = false;
+  var pEcoByPresenceCount = 0;
+  var pEcoByPresenceLoaded = false;
 
   // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
   const outline = {
@@ -84,10 +88,12 @@ const MapControl = function ({
 
         mapView.when(mapViewOnReadyHandler);
 
-        watchUtils.whenTrue(mapView, "stationary", function() {
-          const modal = document.getElementById("myModal");
-          modal.style.display = "none";
-        });
+        // watchUtils.whenTrue(mapView, "stationary", function () {
+        //   const modal = document.getElementById("myModal");
+        //   modal.style.display = "none";
+        // });
+
+
 
       });
   };
@@ -288,7 +294,7 @@ const MapControl = function ({
         //  via a GraphicsLayer
         //mapView.map.add(ecoShpLayer);
 
-        initEcoShpReviewReferenceLayers(mapView);
+        // initEcoShpReviewReferenceLayers(mapView); /HM: It gives duplication. MUST BE REMOVED!!!!!
 
       });
   };
@@ -489,7 +495,6 @@ const MapControl = function ({
         .then(function (response) {
           if (response.features && response.features.length) {
             // console.log(response.features[0]);
-            fullExtent();
             resolve(response.features);
 
           } else {
@@ -530,7 +535,6 @@ const MapControl = function ({
     console.log("zoomToEcoShps ecofeats:", ecoFeats)
     // mapView.goTo(ecoFeats);
     console.log("done goto: zoomtoecoshps")
-    fullExtent();
   };
 
   const queryEcoLayerByMouseEventOnSuccessHandler = feature => {
@@ -548,9 +552,12 @@ const MapControl = function ({
     });
   }
 
+
+
   const showEcoFeatureByStatus = (
     ecoId,
     status,
+    len,
     options = {
       attributes: null,
       popupTemplate: null
@@ -558,66 +565,73 @@ const MapControl = function ({
   ) => {
 
     removeEcoGraphicByStatus(ecoId);
-    console.log("in showEcoFeatureByStatus")
-    fullExtentArray = [];
+    //console.log("in showEcoFeatureByStatus", status)
     if (+status > 0) {
       queryEcoShpsLayerByEcoID(ecoId).then(features => {
-        console.log(features);
-        fullExtentArray.push(features[0]);
+        //console.log(features);
         addEcoGraphicByStatus(features[0], status, options);
+        ++pEcoByStatusCount;
+        // console.log('pEcoByStatusCount', pEcoByStatusCount, len);
+        if (len) {
+          if (pEcoByStatusCount == len) {
+            pEcoByStatusLoaded = true;
+            if (pEcoByStatusLoaded && pEcoByPresenceLoaded ) fullExtent();
+          }
+        }
       });
     }
   };
 
-  const showEcoFeatureByPresence = (ecoId, presence) => {
+
+  const showEcoFeatureByPresence = (ecoId, presence, len) => {
+    // console.log('showEcoFeatureByPresence', ecoId);
+    // console.log('showEcoFeatureByPresence', presence);
+
     queryEcoShpsLayerByEcoID(ecoId).then(features => {
-      fullExtentArray.push(features[0]);
+
       drawEcoShapeByPresence(features[0], presence);
+      ++pEcoByPresenceCount;
+      // console.log('pEcoByPresenceCount', pEcoByPresenceCount, len);
+
+      if (len) {
+        if (pEcoByPresenceCount == len) {
+          pEcoByPresenceLoaded = true;
+          if (pEcoByStatusLoaded && pEcoByPresenceLoaded ) fullExtent();
+        }
+      }
+
     });
   };
 
-  var fullExtentArrayLength = 0;
 
-  const fullExtent = () => {
-    setTimeout(function () {
-      var fullExtent = null;
-      var features = fullExtentArray;
-      if (features && features.length > 0 && fullExtentArrayLength != features.length) {
-        console.log('FULL EXT:', features);
-        for (var i = 0; i < features.length; i++) {
+  const fullExtent = () => { 
+    console.log('FULL Extent');
+    var fullExtent = null;
+    for (var i = 0; i < ecoShpByStatusGraphicLayer.graphics.items.length; i++) {
+      var features = ecoShpByStatusGraphicLayer.graphics.items[i];
+      if (!fullExtent)
+        fullExtent = features.geometry.extent.clone();
+      else
+        fullExtent.union(features.geometry.extent)
+    }
+    for (var i = 0; i < ecoPresenceGraphicLayer.graphics.items.length; i++) {
+      var features = ecoPresenceGraphicLayer.graphics.items[i];
+      if (!fullExtent)
+        fullExtent = features.geometry.extent.clone();
+      else
+        fullExtent.union(features.geometry.extent)
+    }
 
-          fullExtentArrayLength = features.length;
-
-          if (!fullExtent)
-            fullExtent = features[i].geometry.extent.clone();
-          else
-            fullExtent.union(features[i].geometry.extent)
-        }
-        mapView.goTo(fullExtent).then(function () {
-          if (!mapView.extent.contains(fullExtent))
-            mapView.zoom -= 1;
-        });
-      }
-    }, 500);
+    mapView.goTo(fullExtent).then(function () {
+      if (!mapView.extent.contains(fullExtent))
+        mapView.zoom -= 1;
+    });
+    if (pEcoByStatusLoaded && pEcoByPresenceLoaded) {
+      const modal = document.getElementById("myModal");
+      modal.style.display = "none";
+    }
   }
-  const fullExtentBT = () => {
-  
-      var fullExtent = null;
-      var features = fullExtentArray;
-        for (var i = 0; i < features.length; i++) {
 
-          fullExtentArrayLength = features.length;
-
-          if (!fullExtent)
-            fullExtent = features[i].geometry.extent.clone();
-          else
-            fullExtent.union(features[i].geometry.extent)
-        }
-        mapView.goTo(fullExtent).then(function () {
-          if (!mapView.extent.contains(fullExtent))
-            mapView.zoom -= 1;
-        });
-  }
 
   const drawEcoShapeByPresence = (feature, presence) => {
     const geometry = feature.geometry;
@@ -702,6 +716,9 @@ const MapControl = function ({
         //console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
         ecoShpByStatusGraphicLayer.add(graphic);
         document.getElementById('graphicsLayersDiv').style.display = "block";
+
+
+
       })
       .catch(err => {
         console.error(err);
@@ -755,7 +772,6 @@ const MapControl = function ({
   };
 
   const clearMapGraphics = (targetLayer = "") => {
-    fullExtentArray = [];
     const layersLookup = {
       ecoPreview: ecoPreviewGraphicLayer
     };
@@ -917,6 +933,12 @@ const MapControl = function ({
 
   };
 
+  const fullExtentClear = () => {
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
+    pEcoByStatusCount = 0;
+    pEcoByPresenceCount = 0;
+  }
 
 
   return {
@@ -938,7 +960,7 @@ const MapControl = function ({
     graphicsVisibility,
     initBaseMapLayer,
     fullExtent,
-    fullExtentBT
+    fullExtentClear
   };
 };
 

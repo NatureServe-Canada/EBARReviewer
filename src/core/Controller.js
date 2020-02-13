@@ -50,17 +50,17 @@ export default function Controller(props = {}) {
       //Can do an override here for admin to query all or not... 
       const sepeciesData =
         portalUser.username === config.adminUser ||
-        (distinctUserSpecies && distinctUserSpecies.length > 0 && userIsAdmin)
+          (distinctUserSpecies && distinctUserSpecies.length > 0 && userIsAdmin)
           ? await apiManager.queryAllFeaturesFromSpeciesLookupTable()
           : await apiManager.querySpeciesLookupTable({
-              speciesCode: distinctUserSpecies,
-              username: portalUser.username
-            });
-      console.log("sepeciesData == ", sepeciesData);  
-     
+            speciesCode: distinctUserSpecies,
+            username: portalUser.username
+          });
+      console.log("sepeciesData == ", sepeciesData);
+
       const statusData = config.STATUS;
       state.domains = statusData;
-      
+
       initStatusTable(statusData);
 
       initFeedbackManager();
@@ -71,7 +71,7 @@ export default function Controller(props = {}) {
       // console.log(deatiledFeedbacks, overallFeedbacks);
 
       initSpeciesLookupTable(sepeciesData, deatiledFeedbacks, overallFeedbacks);
-      
+
     } catch (err) {
       console.error(err);
     }
@@ -130,7 +130,7 @@ export default function Controller(props = {}) {
         speciesWithOverallFeedback[species] = true;
       }
     });
-    
+
     data = data.map(d => {
       const species = d.attributes[config.FIELD_NAME.speciesLookup.speciesCode];
       //console.log("initSpecies lookup  " + d.attributes[config.FIELD_NAME.speciesLookup.rangemapID])
@@ -150,13 +150,13 @@ export default function Controller(props = {}) {
 
     controllerProps.speciesDataOnReady(data);
   };
-  
 
-   const initStatusTable = data => {
+
+  const initStatusTable = data => {
     data = data.map(d => {
       const lineBreakPattern = /(\r\n\t|\n|\r\t)/g;
       let statusType = d.attributes[config.FIELD_NAME.statusType];
-      
+
       if (lineBreakPattern.test(statusType)) {
         statusType = statusType.replace(lineBreakPattern, " ");
       }
@@ -167,7 +167,7 @@ export default function Controller(props = {}) {
     dataModel.setStatus(data);
 
     controllerProps.legendDataOnReady(getStatusDataForLegend(data));  //unnecessary?
-  }; 
+  };
 
   // get list of ecos by the species code (modelling extent), then render these ecos on map
   const searchEcoShapesBySpecies = async speciesKey => {
@@ -185,7 +185,7 @@ export default function Controller(props = {}) {
         });
         console.log("this is from the try of searchEcoShapesBySpecies: ",data)
         dataModel.setEcoShpsBySpecies(speciesKey, data);
-        
+
         renderEcoShpsBySpeciesDataOnMap({ data, speciesKey });
       } catch (err) {
         console.error("this is an error when trying to select ecoshapes and render:", err);
@@ -210,10 +210,10 @@ export default function Controller(props = {}) {
     console.log(userID)
     const onSuccessHandler = options.onSuccessHandler;
     //FIX - retirementDate was removed because its not a field that exists in the '3' -  EcoshapeReview  table
-/*     const whereClauseParts = [
-      `${config.FIELD_NAME.feedbackTable.userID} = ${userID}`,
-      `${config.FIELD_NAME.feedbackTable.retirementDate} IS NULL`
-    ]; */
+    /*     const whereClauseParts = [
+          `${config.FIELD_NAME.feedbackTable.userID} = ${userID}`,
+          `${config.FIELD_NAME.feedbackTable.retirementDate} IS NULL`
+        ]; */
 
     const whereClauseParts = [
       `${config.FIELD_NAME.feedbackTable.username} = '${userID}'`
@@ -256,7 +256,7 @@ export default function Controller(props = {}) {
         }
         console.log("this is the final retObj returned: ", retObj)
         return retObj;
-        
+
       });
 
       if (onSuccessHandler) {
@@ -394,9 +394,9 @@ export default function Controller(props = {}) {
         requestUrl: config.URL.feedbackTable + "/query",
         where: `${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${ecoID}' AND ${
           config.FIELD_NAME.feedbackTable.species
-        } = '${dataModel.getSelectedSpecies()}' AND ${
+          } = '${dataModel.getSelectedSpecies()}' AND ${
           config.FIELD_NAME.feedbackTable.retirementDate
-        } is null`
+          } is null`
       });
 
       controllerProps.feedbackByHucsForReviewModeOnReady({
@@ -558,7 +558,7 @@ export default function Controller(props = {}) {
         })
       )
     ];
-    
+
     controllerProps.clearEcoPresenceGraphics();
     if (ecoIds.length === 0) {
       const species = dataModel.getSelectedSpecies();
@@ -570,21 +570,23 @@ export default function Controller(props = {}) {
       }
     }
     // controllerProps.zoomToEcoShpsOnMap(ecoIds);
-
+   var dataCount = Object.keys(ecos).length;
+   const modal = document.getElementById("myModal");
+   modal.style.display = "block";
     if (ecos) {
-      Object.keys(ecos).forEach(function(key) {
+      Object.keys(ecos).forEach(function (key) {
         const ecoID = ecos[key].ecoshapeid;
-        const presence = ecos[key].presence;        
+        const presence = ecos[key].presence;
         //showEcoFeatureOnMap(ecoID, status, data[key]);     
-        controllerProps.showEcoPresenceOnMap(ecoID, presence);
-       // controllerProps.zoomToEcoShpsOnMap(ecoIds);
+        controllerProps.showEcoPresenceOnMap(ecoID, presence,dataCount);
+        // controllerProps.zoomToEcoShpsOnMap(ecoIds);
       });
-    }   
-        if (!isReviewMode) {
+    }
+    if (!isReviewMode) {
       renderEcoWithFeedbackDataOnMap();
     }
   };
-  
+
   const renderEcoWithFeedbackDataOnMap = data => {
     console.log("THIS IS WHERE THE FEEDBACK DRAW ALL BEGINS....")
     let species = dataModel.getSelectedSpecies();
@@ -595,6 +597,9 @@ export default function Controller(props = {}) {
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
+    var dataCount = Object.keys(data).length;
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
 
     if (data) {
       Object.keys(data).forEach(function(key) {
@@ -603,7 +608,8 @@ export default function Controller(props = {}) {
         const ecoID = data[key].ecoID;
         const status = data[key].status;
         console.log("renderEcoWithFeedbackDataOnMap ::  ecoid: " + ecoID + " status: " + status)
-        showEcoFeatureOnMap(ecoID, status, data[key]);     
+   
+        showEcoFeatureOnMap(ecoID, status, data[key], dataCount);
       });
     }
   };
@@ -637,7 +643,7 @@ export default function Controller(props = {}) {
   };
 
   const openFeedbackManager = (ecoAtts = {}) => {
-    
+
     const userID = oauthManager.getUserID();
     const species = parseInt(dataModel.getSelectedSpecies());
     const ecoID = dataModel.getSelectedEcoShp();
@@ -648,7 +654,7 @@ export default function Controller(props = {}) {
     // this was in additional fields, but need hucForSpeciesData Presence and Notes to put on UI
     const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
     const hucForSpeciesData = hucsBySpeciesData
-    ? hucsBySpeciesData.filter(
+      ? hucsBySpeciesData.filter(
         hucData =>
           hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID) : [];
 
@@ -658,7 +664,7 @@ export default function Controller(props = {}) {
       config.FIELD_NAME.feedbackTable.additionalFields &&
       config.FIELD_NAME.feedbackTable.additionalFields.length > 0
     ) {
-      
+
       //hucsBySpeciesData was here
 
       if (hucForSpeciesData && hucForSpeciesData.length > 0) {
@@ -699,9 +705,9 @@ export default function Controller(props = {}) {
 
     const data = prevFeedbackData
       ? {
-          rating: prevFeedbackData[config.FIELD_NAME.overallFeedback.rating],
-          comment: prevFeedbackData[config.FIELD_NAME.overallFeedback.comment]
-        }
+        rating: prevFeedbackData[config.FIELD_NAME.overallFeedback.rating],
+        comment: prevFeedbackData[config.FIELD_NAME.overallFeedback.comment]
+      }
       : {};
 
     return data;
@@ -740,20 +746,20 @@ export default function Controller(props = {}) {
     });
   };
 
-  const showEcoFeatureOnMap = (ecoId = "", status = 0, data = null) => {
+  const showEcoFeatureOnMap = (ecoId = "", status = 0, data = null, len=0) => {
     console.log("showEcoFeatureOnMap ecoId:", ecoId)
     if (!ecoId) {
       console.error("ecoID is missing...");
       return;
     }
 
-    controllerProps.showEcoFeatureOnMap(ecoId, status);
+    controllerProps.showEcoFeatureOnMap(ecoId, status, len);
   };
 
   const setSelectedSpecies = async val => {
     console.log("setSelectedSpecies was called using the value:  "+ val)
-    dataModel.setSelectedSpecies(val);    
-  
+    dataModel.setSelectedSpecies(val);
+
     searchEcoShapesBySpecies(val);
 
     resetSelectedEcoFeature();
@@ -766,7 +772,7 @@ export default function Controller(props = {}) {
     }
   };
 
-  const getMetadata = val => {   
+  const getMetadata = val => {
     return dataModel.getSpeciesInfo(val);
   }
 

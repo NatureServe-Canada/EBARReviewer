@@ -81,7 +81,8 @@ export default function FeedbackControlPanel() {
             <div id='feedbackControlPanelContainer' class='panel panel-black'>
 
                 <div class='trailer-0 text-right close-btn'>
-                    <span class='font-size--3 icon-ui-close js-close'></span>
+                   <!-- <span class='font-size--3 icon-ui-close js-close'></span> -->
+                   <span class='icon-ui-left-arrow js-close'></span>
                 </div>
 
                 <div class='leader-half trailer-half' style='margin-top:0px'>

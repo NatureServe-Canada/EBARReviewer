@@ -146,16 +146,17 @@ const initApp = async oauthManager => {
       mapControl.clearEcoPresenceGraphics();
     },
 
-    showEcoFeatureOnMap: (ecoId = "", status) => {
-      //console.log('showEcoFeatureOnMap', ecoId, status);
-      mapControl.showEcoFeatureByStatus(ecoId, status);
+    showEcoFeatureOnMap: (ecoId = "", status, len) => {
+      //console.log('showEcoFeatureOnMap', ecoId, status, len);
+      mapControl.showEcoFeatureByStatus(ecoId, status, len);
     },
 
-    showEcoPresenceOnMap: (ecoId = "", presence = "") => {
+    showEcoPresenceOnMap: (ecoId = "", presence = "",len) => {
       // Lock the UI as we draw pink graphics
-      const modal = document.getElementById("myModal");
-      modal.style.display = "block";
-      mapControl.showEcoFeatureByPresence(ecoId, presence)
+     // const modal = document.getElementById("myModal");
+     // modal.style.display = "block";
+     console.log('showEcoPresenceOnMap');
+      mapControl.showEcoFeatureByPresence(ecoId, presence,len)
     },
 
     //addPreviewHucByID
@@ -172,6 +173,9 @@ const initApp = async oauthManager => {
     onChange: val => {
       console.log(val);
       mapControl.clearAllGraphics();
+      mapControl.fullExtentClear();
+      const modal = document.getElementById("myModal");
+         modal.style.display = "block";
       controller.setSelectedSpecies(val);
       let m = controller.getMetadata(val);
       view.updateSpeciesMetadata(m);     
@@ -308,7 +312,7 @@ const initApp = async oauthManager => {
     zoomToSpeciesRange.addEventListener("click", function () {
 
         //if (event && event.target)
-        mapControl.fullExtentBT();
+        mapControl.fullExtent();
       });
    
   }
