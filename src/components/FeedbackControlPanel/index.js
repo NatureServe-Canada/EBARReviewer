@@ -86,11 +86,17 @@ export default function FeedbackControlPanel() {
       document.getElementsByClassName('esri-sketch')[0].style.display = "block";
       const modal = document.getElementById("myModal");
       modal.setAttribute('multi_selection', 'true');
-      document.getElementById("fbSaveMS").style.display = "block";
-      document.getElementById("fbSave").style.display = "none";
-      document.getElementById("markupLabel").style.display = "none";
-      document.getElementById("fbReset").style.display = "none";
-      document.getElementById("fbResetMS").style.display = "block";
+      try { document.getElementById("fbSaveMS").style.display = "block"; } catch{ }
+      try { document.getElementById("fbSave").style.display = "none"; } catch{ }
+      // document.getElementById("markupLabel").style.display = "none";
+      try { document.getElementById("fbReset").style.display = "none"; } catch{ }
+      try { document.getElementById("fbResetMS").style.display = "block"; } catch{ }
+      document.getElementById('curEcoSelected').style.display = "none";
+      document.getElementById('fbTitle').innerText = 'Multiple Ecoshapes selected';
+      try { document.getElementById('field-comment').value  = ""; } catch{ }
+      try { document.getElementById('additional-field-reference').value  = ""; } catch{ }
+      document.getElementById("field-markup").selectedIndex = "0";
+
     }
     else {
       document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "none";
@@ -98,12 +104,21 @@ export default function FeedbackControlPanel() {
       clearMultiSelectGraphics();
       const modal = document.getElementById("myModal");
       modal.setAttribute('multi_selection', 'false');
-      document.getElementById("fbSaveMS").style.display = "none";
-      document.getElementById("fbSave").style.display = "block";
-      document.getElementById("markupLabel").style.display = "block";
-      document.getElementById("fbReset").style.display = "block";
-      document.getElementById("fbResetMS").style.display = "none";
+      try { document.getElementById("fbSaveMS").style.display = "none"; } catch{ }
+      try { document.getElementById("fbSave").style.display = "block"; } catch{ }
+      // document.getElementById("markupLabel").style.display = "block";
+      try { document.getElementById("fbReset").style.display = "block"; } catch{ }
+      try { document.getElementById("fbResetMS").style.display = "none"; } catch{ }
+      document.getElementById('curEcoSelected').style.display = "block";
+      const hucName = state.data.ecoAtts.ecoshapename || "";
+      document.getElementById('fbTitle').innerText = `Ecoshape: ${hucName}`;
+      try { document.getElementById('field-comment').value  = ""; } catch{ }
+      try { document.getElementById('additional-field-reference').value  = ""; } catch{ }
+      try { document.getElementById('field-comment').value  = document.getElementById('field-comment').getAttribute('defaultvalue'); } catch{ }
+      try { document.getElementById('additional-field-reference').value  = document.getElementById('additional-field-reference').getAttribute('defaultvalue'); } catch{ }
+      document.getElementById("field-markup").selectedIndex = "0";
       //need to clear graphics
+      //defaultvalue
     }
 
   };
@@ -144,20 +159,18 @@ export default function FeedbackControlPanel() {
             <div id='feedbackControlPanelContainer' class='panel panel-black'>
 
                 <div class='trailer-0 text-right close-btn'>
-                     <!-- <span class='font-size--3 icon-ui-close js-close'></span> -->
-                    <!-- <span class='icon-ui-arrow-left-circled js-close'></span> -->
                     <span class='icon-ui-left-arrow js-close'></span>
                 </div>
 
                 <div class='leader-half trailer-half' style='margin-top:0px'>`;
-    componentHtml += (state.isMultiSelection) ? `<span class='font-size-0'>Multiple Ecoshapes selected</span>` : `<span class='font-size-0'>Ecoshape: ${hucName}</span>`;
+    componentHtml += (state.isMultiSelection) ? `<span class='font-size-0' id="fbTitle">Multiple Ecoshapes selected</span>` : `<span class='font-size-0' id="fbTitle">Ecoshape: ${hucName}</span>`;
     componentHtml += `  
                     <hr>
                 </div>
 
                 <div class='feedbackControlPanelData'>
                     <div id='actionDialogWrap'>`;
-    componentHtml += (state.isMultiSelection) ? `<span class='font-size-0'>Ecoshape: ${hucName}</span>` : ``;
+    // componentHtml += (state.isMultiSelection) ? `<span class='font-size-0'>Ecoshape: ${hucName}</span>` : ``;
 
     componentHtml += `${getHtmlForActions()}
                     </div>
@@ -169,7 +182,7 @@ export default function FeedbackControlPanel() {
                     <div class='comment-dialog'>
                         <label class="feedback">
                             <span class='font-size--3'>Comment (required):</span>
-                            <textarea type="text" id="field-comment" placeholder="" class="comment-textarea" maxlength="4095">${comment}</textarea>
+                            <textarea type="text" id="field-comment" placeholder="" class="comment-textarea" maxlength="4095" defaultValue="${comment}">${comment}</textarea>
                         </label>
                     </div>
 
@@ -193,6 +206,7 @@ export default function FeedbackControlPanel() {
                     </div>
 
                     <div id="feedbackControlPanelMultiSelectInfo" style="flex;flex-direction:row;display:${state.isMultiSelection ? "block" : "none"};" class="font-size--3 meta">
+                    <span style="color:lightpink">WARNING: existing Markup for the selected Ecoshapes will be replaced on Save.</span>
                        <div>Ecoshape(s):<span id="feedbackControlPanelMSIecoshapes" style="margin-left:5px;"></span></div>
                        <div>Terrestrial Area:<span id="feedbackControlPanelMSIarea" style="margin-left:5px;"></span></div>
                         <div>Terrestrial Proportion:<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
@@ -258,9 +272,11 @@ export default function FeedbackControlPanel() {
     }
 
 
-    let outputHtml = `
-    <div class='flex-container' style='margin-bottom:10px'>
-    <div class='inline-block'>
+    let outputHtml = ``;
+
+    if(!state.isMultiSelection){
+      outputHtml +=`<div class='flex-container' style='margin-bottom:10px'>
+    <div class='inline-block' id="curEcoSelected">
       <p class="font-size--3 meta">
         <!--<strong>Ecoshape:</strong> ${EA.ecoshapename} <br>-->
         <strong>Parent Ecoregion:</strong> ${parentEco} <br>
@@ -272,11 +288,13 @@ export default function FeedbackControlPanel() {
       </p>  
     </div>
     </div>       
-    `
+    `;
+    }
     let range = [];
 
 
     if (state && state.data) {
+
       range.push({ code: "null", text: "None set", status: true });
 
       config.PRESENCE.map(d => {
@@ -285,14 +303,14 @@ export default function FeedbackControlPanel() {
           if (state && state.data && state.data.hucForSpeciesData && state.data.hucForSpeciesData.length > 0 &&
             state.data.hucForSpeciesData[0].presence.toUpperCase() != d.code.toUpperCase()) {
             if (state && state.data && state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) {
-              range.push({ code: d.code, text: d.text, status: true });
+              range.push({ code: d.code, text: d.text, status: false });
             } else {
               range.push({ code: d.code, text: d.text, status: false });
             }
           }
         } else {
           if (state && state.data && state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) {
-            range.push({ code: d.code, text: d.text, status: true });
+            //range.push({ code: d.code, text: d.text, status: true });
           } else {
             range.push({ code: d.code, text: d.text, status: false });
           }
@@ -302,7 +320,7 @@ export default function FeedbackControlPanel() {
       });
       if (state && state.data && state.data.isHucInModeledRange) {
         if (state.data.markup && state.data.markup.toUpperCase() === "R") {
-          range.push({ code: "R", text: "Remove", status: true });
+          //range.push({ code: "R", text: "Remove", status: true });
         }
         else {
           range.push({ code: "R", text: "Remove", status: false });
@@ -311,9 +329,12 @@ export default function FeedbackControlPanel() {
     }
 
 
+    // outputHtml += `
+    //     <div class='flex-container'><label class="feedback" id="markupLabel" style="display:${state.isMultiSelection ? "none" : "block"};"> <span class="font-size--3">Markup (required):</snap>
+    //         <select style="width:100%" id="field-markup" required>`;
     outputHtml += `
-        <div class='flex-container'><label class="feedback" id="markupLabel" style="display:${state.isMultiSelection ? "none" : "block"};"> <span class="font-size--3">Markup (required):</snap>
-            <select style="width:100%" id="field-markup" required>`;
+    <div class='flex-container'><label class="feedback" id="markupLabel" > <span class="font-size--3">Markup (required):</snap>
+        <select style="width:100%" id="field-markup" required>`;
 
     range.map(item => {
 
@@ -367,7 +388,7 @@ export default function FeedbackControlPanel() {
             outputHtml += `
                   <select id="additional-field-${
               addField.field
-              }" class="additional-field-select additional-field-input" >
+              }" class="additional-field-select additional-field-input"  defaultValue="">
                     ${
               fieldValue === ""
                 ? '<option value="null" selected>None set</option>'
@@ -393,7 +414,7 @@ export default function FeedbackControlPanel() {
               addField.field
               }" class="additional-field-textarea additional-field-input" ${
               addField.maxlength ? `maxlength="${addField.maxlength}"` : ""
-              }>${fieldValue ? fieldValue : ""}</textarea>
+              } defaultvalue="${fieldValue ? fieldValue : ""}">${fieldValue ? fieldValue : ""}</textarea>
             `;
           } else {
             outputHtml += `
@@ -434,16 +455,18 @@ export default function FeedbackControlPanel() {
 
     let btnsForExistingItem = `
             <nav class='trailer-half'>
-                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback trailer-half" id="fbReset" style="display:${state.isMultiSelection ? "none" : "block"};"> Reset </button>`;
+                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback trailer-half;color: lightblue;" id="fbReset" style="display:${state.isMultiSelection ? "none" : "block"};"> Reset </button>`;
     btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ? "none" : "block"};"> Save </button>`;
 
     if (!state.isMultiSelection)
-      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>
-      <button class="btn btn-half btn-grouped js-remove-feedbackMS trailer-half" style="display:none;width:100%" id="fbResetMS"> Reset Multi-Selection</button>
+      btnsForExistingItem += `
+      <button class="btn btn-half btn-grouped js-remove-feedbackMS btn-transparent trailer-half" style="display:none;width:50%;color: lightblue;padding: 5px;" id="fbResetMS"> Reset Multi-Selection</button>
+      <button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half" style="display:none;width:50%;padding: 5px;" id="fbSaveMS"> Save Multi-Selection</button>
       `;
     else
-      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half"  style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>
-      <button class="btn btn-half btn-grouped js-remove-feedbackMS trailer-half" style="display:block;width:100%" id="fbResetMS"> Reset Multi-Selection</button>
+      btnsForExistingItem += `
+      <button class="btn btn-half btn-grouped js-remove-feedbackMS btn-transparent trailer-half" style="display:block;width:50%;color: lightblue;padding: 5px;" id="fbResetMS"> Reset Multi-Selection</button>
+      <button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half"  style="display:block;width:50%;margin-left:2px;padding: 5px;" id="fbSaveMS"> Save Multi-Selection</button>
       `;
 
     btnsForExistingItem += `</nav>`;
@@ -489,8 +512,8 @@ export default function FeedbackControlPanel() {
       var enable = true;
       feedbackObjects.map(el => {
         if (
-          (el.req && el.id!="field-markup" && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
-         // || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
+          (el.req && el.id != "field-markup" && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
+          // || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
         ) enable = false;
       });
       const btn = document.getElementsByClassName("js-submit-feedbackMS");
