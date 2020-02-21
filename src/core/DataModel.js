@@ -8,10 +8,10 @@ export default class DataModel {
     this.selectedSpecies = null;
     this.selectedEcoShape = null;
     this.overallFeedback = {};
-    
+    this.selectedEcoShapes = [];
   }
 
-  init() {}
+  init() { }
 
   setSpeciesLookup(data = []) {
     this.speciesLookup = data;
@@ -50,12 +50,20 @@ export default class DataModel {
 
   setSelectedEcoShp(val = null) {
     this.selectedEcoShape = val;
+    if (val)
+      this.selectedEcoShapes.push(val);
   }
 
   getSelectedEcoShp() {
     return this.selectedEcoShape;
   }
 
+  getSelectedEcoShps() {
+    return this.selectedEcoShapes;
+  }
+  clearSelectedEcoShps() {
+    this.selectedEcoShapes = [];
+  }
   getEcoShpsBySpecies(species) {
     species = species || this.selectedSpecies;
     return this.ecoShapesBySpecies[species];

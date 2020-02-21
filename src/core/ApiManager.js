@@ -148,7 +148,6 @@ export default function ApiManager(props = {}) {
 
   const applyEditToFeatureTable = (requestUrl, feature) => {
     // const requestUrl = config.URL.feedbackTable + '/' + operationName;
-
     const bodyFormData = new FormData();
     bodyFormData.append("features", JSON.stringify(feature));
     bodyFormData.append("rollbackOnFailure", false);
@@ -197,9 +196,9 @@ export default function ApiManager(props = {}) {
 /* 
   const getDataLoadDate = (speciesCode = "") => {
     const fieldNameDataLoadDate =
-      config.FIELD_NAME.data_load_date.data_load_date;
-    const requestUrl = config.URL.data_load_date + "/query";
-    const where = `${config.FIELD_NAME.data_load_date.species_code} = '${speciesCode}'`;
+      config.FIELD_NAME.datestarted.datestarted;
+    const requestUrl = config.URL.datestarted + "/query";
+    const where = `${config.FIELD_NAME.datestarted.species_code} = '${speciesCode}'`;
 
     return new Promise(async (resolve, reject) => {
       const queryResult = await queryForFeaturesGet(requestUrl, {
@@ -212,7 +211,7 @@ export default function ApiManager(props = {}) {
       const dataLoadDate =
         queryResult && queryResult[0]
           ? queryResult[0].attributes[fieldNameDataLoadDate]
-          : config.layerParameters.data_load_date.defaultDate;
+          : config.layerParameters.datestarted.defaultDate;
 
       resolve(dataLoadDate);
     });
@@ -249,7 +248,6 @@ export default function ApiManager(props = {}) {
                 ...arrOfAllFeatures,
                 ...response.data.features
               ];
-
               if (response.data.exceededTransferLimit) {
                 getFeatures(response.data.features.length + resultOffset);
               } else {

@@ -1,6 +1,6 @@
 import FeedbackDataModel from "./FeedbackDataModel";
 
-export default function(options = {}) {
+export default function (options = {}) {
   const feedbackDataStore = {};
   const feedbackDataModel = new FeedbackDataModel();
 
@@ -18,7 +18,13 @@ export default function(options = {}) {
     eventHandlers["onRemove"] = options.onRemoveHandler || null;
   };
 
+  // const getTotalSelection = (data = []) => {
+
+  //   console.log("getTotalSelection", data);
+  // }
+
   const open = (data = {}) => {
+    console.log("feedback open", data);
     // if data is already in dataStore, use the item from data store instead because it has the status and comments info
     const savedData = getSavedItemFromDataStore(data);
 
@@ -46,6 +52,10 @@ export default function(options = {}) {
 
   const submit = () => {
     const feedbackData = feedbackDataModel.getFeedbackData();
+    ////=======TEMP do not save migrantstatus data====
+   // console.log('MAI feedbackData', feedbackData);
+    //delete feedbackData.additionalFields.migrantstatus;
+    console.log('MAI2 feedbackData', feedbackData);
 
     save(feedbackData);
 
@@ -97,7 +107,7 @@ export default function(options = {}) {
     // console.log('get Saved Item From DataStore', species, ecoId, feedbackDataStore[species]);
     const savedItem =
       typeof feedbackDataStore[species] !== "undefined" &&
-      typeof feedbackDataStore[species][ecoId] !== "undefined"
+        typeof feedbackDataStore[species][ecoId] !== "undefined"
         ? feedbackDataStore[species][ecoId]
         : null;
 
@@ -137,6 +147,7 @@ export default function(options = {}) {
     remove,
     feedbackDataModel,
     batchAddToDataStore,
-    getFeedbackDataBySpecies
+    getFeedbackDataBySpecies,
+    //  getTotalSelection
   };
 }

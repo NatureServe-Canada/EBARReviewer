@@ -1,8 +1,9 @@
 import "./style.scss";
 
-export default function() {
+export default function () {
   let container = null;
   let onSubmitHandler = null;
+  let onSubmitSaveHandler = null;
   let onCloseHandler = null;
 
   let rating = 0;
@@ -13,6 +14,7 @@ export default function() {
       ? document.getElementById(options.containerID)
       : null;
     onSubmitHandler = options.onSubmitHandler || null;
+    onSubmitSaveHandler = options.onSubmitSaveHandler || null;
     onCloseHandler = options.onCloseHandler || null;
 
     // rating = options.rating || rating;
@@ -41,7 +43,7 @@ export default function() {
   const render = () => {
     // const comment = data.comment || '';
 
-    if (!comment){
+    if (!comment) {
       comment = " " //a "" comment will render as null in the html, so send in a space
     }
 
@@ -60,9 +62,11 @@ export default function() {
                     </label>
                 </div>
 
-                <div class='leader-half trailer-half action-btn-wrap'>
-                    <btn class='btn btn-half js-close'>Close</btn>
-                    <btn class='btn btn-half js-submit'>Save</btn>
+                <div class='leader-half trailer-half action-btn-wrap' style="display: flex;
+                justify-content: space-between;">
+                    <btn class='btn btn-half js-close' style="margin:2px;" id="ofcClose">Close</btn>
+                    <btn class='btn btn-half js-submit' style="margin:2px;">Save</btn>
+                    <btn class='btn btn-half js-submitsave' style="margin:2px;">Submit</btn>
                 </div>
             </div>
         `;
@@ -98,7 +102,7 @@ export default function() {
   };
 
   const initEventHandler = () => {
-    container.addEventListener("click", function(event) {
+    container.addEventListener("click", function (event) {
       if (event.target.classList.contains("js-close")) {
         onCloseHandler();
       }
@@ -123,9 +127,21 @@ export default function() {
           comment
         });
       }
+      if (event.target.classList.contains("js-submitsave")) {
+        if (!rating) {
+          alert("please provide a star rating");
+          return;
+        }
+
+        onSubmitSaveHandler({
+          rating,
+          comment
+        });
+      }
+
     });
 
-    container.addEventListener("input", function(event) {
+    container.addEventListener("input", function (event) {
       // console.log(event.target);
       setComment(event.target.value);
     });
@@ -136,23 +152,39 @@ export default function() {
   };
 
   const open = (data = { rating: 0, comment: "" }) => {
+    console.log(data);
     setRating(data.rating);
     setComment(data.comment);
 
     render();
     toggleVisibility(true);
+    checkState(data);
   };
 
-  const close = () => {
-    setRating();
-    setComment();
-    toggleVisibility(false);
-  };
+  const checkState = data => {
+   //debugger
+   console.log('data.datecompleted',data.datecompleted);
+ 
+    if (data.datecompleted) {
+      // document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "none";
+      // document.getElementById("ofcClose").style.pointerEvents = "auto";
+    }
+    else{
+      document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "auto";
+    }
+  }
 
-  return {
-    init,
-    // toggleVisibility,
-    open,
-    close
-  };
-}
+    const close = () => {
+      setRating();
+      setComment();
+      toggleVisibility(false);
+    };
+
+    return {
+      init,
+      // toggleVisibility,
+      open,
+      close,
+    //  checkState
+    };
+  }

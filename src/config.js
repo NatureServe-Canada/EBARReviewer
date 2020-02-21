@@ -3,7 +3,7 @@
 module.exports = {
   oauthAppID: "JAdAlm4QJ8Ot9j6r",
   webMapID: "da46b909ed89444396e0a5068fa1214f",
-  portalURL: "https://gis.natureserve.ca/arcgis",
+  portalURL: "https://gis.natureserve.ca/portal",//arcgis",
 
   adminUser: "gisadmin11",
 
@@ -36,21 +36,26 @@ module.exports = {
       comment: "ecoshapereviewnotes", //"Comment_Long",
       status: "addremove", //"StatusType",
       retirementDate: "retirementdate", // "RetirementDate",
-      data_load_date: "dataloaddate",// "DataLoadDate",
+      datestarted: "dataloaddate",// "DataLoadDate",
       username: "username",
+      markup: "markup",
       additionalFields: [
         {
           field: "reference",
           display: "Reference",
           editable: "textarea",
-          length: 255
+          length: 255,
+          required: false,
+          visible: true
         },
         {// this has been skipped in src\components\FeedbackControlPanel\index.js, but is used
           // when status=2 through getHtmlForActions()
           field: "removalreason",
           display: "removalreason",
           editable: "textarea",
-          length: 1
+          length: 1,
+          required: false,
+          visible: true
         },
         {
           field: "migrantstatus",
@@ -67,7 +72,9 @@ module.exports = {
             { code: "YH", desc: "YH - Year-round resident and current nonbreeder, historical breeder" },
             { code: "YN", desc: "YN - Year-round resident and nonbreeder" },
             { code: "T", desc: "T - Transient" }
-          ]
+          ],
+          required: false,
+          visible: true
         }
       ]
     },
@@ -78,7 +85,7 @@ module.exports = {
       rating: "overallstarrating", //"Rating",
       // retirementDate: "datecompleted", // "RetirementDate",
       datecompleted: "datecompleted", // "DateCompleted ",
-      data_load_date: "datestarted"// "DataLoadDate"
+      datestarted: "datestarted"// "DataLoadDate"
     },
     speciesByUser: {
       speciesCode: "speciesid",
@@ -89,27 +96,40 @@ module.exports = {
       speciesCode: "cutecode",
       url: "url"
     },
-    data_load_date: {
+    datestarted: {
       species_code: "cutecode",
-      data_load_date: "dataloaddate"// "DataLoadDate"
+      datestarted: "dataloaddate"// "DataLoadDate"
     }
   },
 
   STATUS: [
+    // { "attributes": { "artext": "Ecoshapes", "arcode": 0 } },
+    // { "attributes": { "artext": "Add to Range", "arcode": 1 } },
+    // { "attributes": { "artext": "Comment", "arcode": 2 } },
+    // { "attributes": { "artext": "Remove from Range", "arcode": 3 } },
+    // { "attributes": { "artext": "Present", "arcode": 4 } },
+    // { "attributes": { "artext": "Presence Expected", "arcode": 5 } },
+    // { "attributes": { "artext": "Historical", "arcode": 6 } }
     { "attributes": { "artext": "Ecoshapes", "arcode": 0 } },
-    { "attributes": { "artext": "Add to Range", "arcode": 1 } },
-    { "attributes": { "artext": "Comment", "arcode": 2 } },
-    { "attributes": { "artext": "Remove from Range", "arcode": 3 } },
-    { "attributes": { "artext": "Present", "arcode": 4 } },
-    { "attributes": { "artext": "Presence Expected", "arcode": 5 } },
-    { "attributes": { "artext": "Historical", "arcode": 6 } }
+    { "attributes": { "artext": "Add/Change", "arcode": 1 } },
+    { "attributes": { "artext": "Remove", "arcode": 2 } },
+    { "attributes": { "artext": "Present", "arcode": 3 } },
+    { "attributes": { "artext": "Presence Expected", "arcode": 4 } },
+    { "attributes": { "artext": "Historical", "arcode": 5 } }
+  ],
+
+  PRESENCE: [
+    { "code": "P", "text": "Present" },
+    { "code": "X", "text": "Presence Expected" },
+    { "code": "H", "text": "Historical" }
   ],
 
   REMOVAL: [
     { "attributes": { "removalcode": "X", "removaltext": "Presumed Extirpated" } },
     { "attributes": { "removalcode": "N", "removaltext": "Never Was There" } },
     { "attributes": { "removalcode": "F", "removaltext": "Reported But False" } },
-    { "attributes": { "removalcode": "T", "removaltext": "Transient/Vagrant" } }
+    { "attributes": { "removalcode": "T", "removaltext": "Transient/Vagrant" } },
+    { "attributes": { "removalcode": "O", "removaltext": "Other" } }
   ],
 
   URL: {
@@ -142,7 +162,7 @@ module.exports = {
     //},
     // pdfLookup:
     //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/6",
-    // data_load_date:
+    // datestarted:
     //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/9"
   },
 
@@ -151,7 +171,7 @@ module.exports = {
       minScale: 0,
       maxScale: 50000
     },
-    data_load_date: {
+    datestarted: {
       defaultDate: "5/14/2019  7:00:00 AM"
     }
   },
@@ -185,13 +205,14 @@ module.exports = {
     ecoBorderCommentWithoutAction: [255, 0, 0, 1],
     presenceOutline: [255, 255, 255, 0], //fully transparent line
     ecoFill: [217, 217, 217, 0.4],
+
     status0: [200, 200, 200, 0.5],
     status1: [166, 219, 160, 0.5],
     status2: [194, 165, 207, 0.5],
     actualModeledExtent: "#ffd400",
-    present: [168, 0, 132, 0.35], //Cattleya Orchid 
-    presenceexpected: [255, 115, 223, 0.35], //, Fuchsia Pink 
-    historical: [255, 190, 232, 0.35], //Rhodolite Rose 
+    present: [168, 0, 132, 0.55], //Cattleya Orchid 
+    presenceexpected: [255, 115, 223, 0.55], //, Fuchsia Pink 
+    historical: [255, 190, 232, 0.55], //Rhodolite Rose
   },
 
   fireflyStyle: {

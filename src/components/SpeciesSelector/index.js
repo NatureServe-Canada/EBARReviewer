@@ -45,7 +45,7 @@ export default function SpeciesSelector(
       return 0;
     });
 
-    // console.log(distinctTaxa);
+    console.log(distinctTaxa);
 
     const optionsHtml = distinctTaxa
       .map(d => {
@@ -136,7 +136,7 @@ export default function SpeciesSelector(
   ) => {
     data = options.data || data;
 
-    // console.log(data);
+    console.log('139',data);
 
     // const options = data.map(d=>{
     //     const val = d.SpeciesCode;

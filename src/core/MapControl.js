@@ -25,8 +25,16 @@ const MapControl = function ({
   // let actualModelBoundaryLayer = null;
   let ecoFeatureOnSelectHandler = null;
   // let isOnHoldEventDisabled = false;
+  let isMapMultiSelectionClick = false;
 
   let ecoPresenceGraphicLayer = null;
+  let ecoMultiSelection = null;
+  var pEcoByStatusCount = 0;
+  var pEcoByStatusLoaded = false;
+  var pEcoByPresenceCount = 0;
+  var pEcoByPresenceLoaded = false;
+  let multiSelectionList = [];
+  let currentSelectedFeature = null;
 
   // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
   const outline = {
@@ -66,8 +74,8 @@ const MapControl = function ({
 
   const initMapView = () => {
     esriLoader
-      .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config"], esriLoaderOptions)
-      .then(([MapView, WebMap, esriConfig]) => {
+      .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config", "esri/core/watchUtils"], esriLoaderOptions)
+      .then(([MapView, WebMap, esriConfig, watchUtils]) => {
         esriConfig.portalUrl = config.portalURL; //"https://gis.natureserve.ca/arcgis";
 
 
@@ -83,6 +91,12 @@ const MapControl = function ({
         });
 
         mapView.when(mapViewOnReadyHandler);
+
+        // watchUtils.whenTrue(mapView, "stationary", function () {
+        //   const modal = document.getElementById("myModal");
+        //   modal.style.display = "none";
+        // });
+
 
       });
   };
@@ -162,7 +176,8 @@ const MapControl = function ({
           },
           title: config.reference_layers.vt.title,
           opacity: defaultOpacity,
-          visible: true
+          visible: false,
+          popupEnabled: false
         });
 
         const nawater = new FeatureLayer({
@@ -282,7 +297,7 @@ const MapControl = function ({
         //  via a GraphicsLayer
         //mapView.map.add(ecoShpLayer);
 
-        initEcoShpReviewReferenceLayers(mapView);
+        // initEcoShpReviewReferenceLayers(mapView); /HM: It gives duplication. MUST BE REMOVED!!!!!
 
       });
   };
@@ -305,18 +320,25 @@ const MapControl = function ({
           listMode: "hide"
         });
 
-        mapView.map.addMany([ecoShpByStatusGraphicLayer, ecoPreviewGraphicLayer, ecoPresenceGraphicLayer]);
+        ecoMultiSelection = new GraphicsLayer({
+          listMode: "hide",
+          title: "Selection"
+        });
+
+        mapView.map.addMany([ecoShpByStatusGraphicLayer, ecoPreviewGraphicLayer, ecoPresenceGraphicLayer, ecoMultiSelection]);
 
       });
   };
 
   const initMapEventHandlers = () => {
     mapView.on("click", event => {
-      // console.log('map view on hold', event);
+      const modal = document.getElementById("myModal");
+      var ms = modal.getAttribute('multi_selection');
 
-      // if(!isOnHoldEventDisabled){
-      //     queryEcoLayerByMouseEvent(event);
-      // }
+      if (!ms || ms == "false") {
+        ecoMultiSelection.removeAll();
+        ecoPreviewGraphicLayer.removeAll();
+      }
 
       queryEcoLayerByMouseEvent(event)
         .then(queryEcoLayerByMouseEventOnSuccessHandler)
@@ -332,6 +354,15 @@ const MapControl = function ({
       }
     });
   };
+
+  const initMapEventHandlersRemove = () => {
+    mapView.on("click", event => {
+      // isMapMultiSelectionClick = true;
+      ecoMultiSelection.remove(event.graphic);
+    });
+  }
+
+
 
   const initBasemapGallery = view => {
     esriLoader
@@ -362,7 +393,7 @@ const MapControl = function ({
           expandTooltip: "Change Basemap"
         });
 
-        mapView.ui.add(bgExpand, "top-left");   
+        mapView.ui.add(bgExpand, "top-left");
 
         initLegend(mapView);
       });
@@ -428,8 +459,9 @@ const MapControl = function ({
 
   const mapViewOnReadyHandler = () => {
     console.log('mapView is ready...');
-
     initMapEventHandlers();
+
+    initSketch(mapView);
 
     initBasemapGallery(mapView);
 
@@ -442,14 +474,178 @@ const MapControl = function ({
     initSearch(mapView);
 
     initLayerList(mapView);
+
     initBaseMapLayer();
+  };
+
+  const initSketch = view => {
+    esriLoader
+      .loadModules(["esri/widgets/Sketch"], esriLoaderOptions)
+      .then(([Sketch]) => {
+        const sketchWidget = new Sketch({
+          view,
+          layer: ecoMultiSelection,
+          id: "SketchWidget"
+        });
+
+        sketchWidget.on("create", function (event) {
+          //   // check if the create event's state has changed to complete indicating
+          //   // the graphic create operation is completed.
+          initMapEventHandlersRemove();
+          if (event.state === "complete") {
+            console.log(event.graphic);
+
+            if (queryEcoLayerByMSMouseEvent)
+              queryEcoLayerByMSMouseEvent(event.graphic.geometry);
+
+            queryEcoLayerByMSMouseEvent(event)
+              .then(queryEcoLayerByMSMouseEventOnSuccessHandler)
+              .catch(err => {
+                console.log(err);
+              });
+
+
+            // remove the graphic from the layer. Sketch adds
+            // the completed graphic to the layer by default.
+            ecoMultiSelection.remove(event.graphic);
+            initMapEventHandlers();
+            // use the graphic.geometry to query features that intersect it
+            // selectFeatures(event.graphic.geometry);
+          }
+        });
+
+
+        view.ui.add(sketchWidget, {
+          position: "bottom-left",
+          index: 0,
+          id: "SketchWidget",
+          visible: false
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  const queryEcoLayerByMSMouseEvent = event => {
+    if (!ecoShpLayer) return;
+    // debugger
+    if (!(event && event.graphic && event.graphic.geometry)) return;
+    //debugger
+    const query = ecoShpLayer.createQuery();
+    query.geometry = event.graphic.geometry; // the point location of the pointer
+    query.spatialRelationship = "intersects"; // this is the default
+    query.distance = 20;
+    query.returnGeometry = true;
+    query.outFields = ["*"];
+
+    return new Promise((resolve, reject) => {
+      ecoShpLayer.queryFeatures(query).then(function (response) {
+        // console.log(response);
+
+        if (response.features && response.features.length) {
+          resolve(response.features);//[0]);
+        }
+      });
+    });
+  };
+
+  const queryEcoLayerByMSMouseEventOnSuccessHandler = features => {
+    for (var i = 0; i < features.length; i++) {
+      console.log(features[i]);
+      addPreviewEcoGraphicMS(features[i]);
+    }
+  };
+
+  const addPreviewEcoGraphicMS = feature => {
+    const symbol = {
+      type: "simple-fill", // autocasts as new SimpleFillSymbol()
+      color: [0, 0, 0, 0],
+      outline: {
+        // autocasts as new SimpleLineSymbol()
+        color: [84, 242, 242, 0.75],
+        width: "2.5px"
+      }
+    };
+
+    esriLoader
+      .loadModules(["esri/Graphic"], esriLoaderOptions)
+      .then(([Graphic]) => {
+        const graphicForSelectedEco = new Graphic({
+          geometry: feature.geometry,
+          symbol: symbol
+        });
+
+        // ecoPreviewGraphicLayer.add(graphicForSelectedEco);
+        ecoMultiSelection.add(graphicForSelectedEco);
+        console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
+
+      });
+
+    addtoMSlist(feature);
+
+  };
+
+
+  const addtoMSlist = feature => {
+    const modal = document.getElementById("myModal");
+    var ms = modal.getAttribute('multi_selection');
+
+    if (!ms || ms == "false") {
+      multiSelectionList = [];
+      multiSelectionList.push(feature);
+    }
+    else {
+      let existObj = false;
+      let ind = 0;
+      for (var i = 0; i < multiSelectionList.length; ++i) {
+        if (feature.attributes.ecoshapename === multiSelectionList[i].attributes.ecoshapename) {
+          existObj = true;
+          ind = i;
+        }
+      }
+
+      if (!existObj) {
+        multiSelectionList.push(feature);
+      }
+      showMS();
+    }
+
+  };
+
+  const showMS = () => {
+    try {
+      let terrAreaTotal = parseFloat(0);
+      var terrPropTotal = parseFloat(0);
+      var hucNames = [];
+      multiSelectionList.forEach(element => {
+        if (element && element.attributes) {
+          let EA = element.attributes;
+          let terrArea = EA.terrestrialarea;//(EA.terrestrialarea / 1000000).toLocaleString('en-us', { 'maximumFractionDigits': 2 });
+          let terrProp = EA.terrestrialproportion;// * 100;
+          terrAreaTotal = terrAreaTotal + terrArea;
+          terrPropTotal = terrPropTotal + terrProp;
+          let hucName = element.attributes.ecoshapename || "";
+
+          if (hucName != "") hucNames.push(hucName);
+        }
+      });
+
+      var tat = (terrAreaTotal / 1000000).toLocaleString('en-us', { 'maximumFractionDigits': 2 });
+      var tpt = (parseFloat(terrPropTotal) * 100).toFixed(1);
+      document.getElementById("feedbackControlPanelMSIecoshapes").innerText = hucNames.join(', ');
+      document.getElementById("feedbackControlPanelMSIarea").innerText = tat + " km²";
+      document.getElementById("feedbackControlPanelMSIproportion").innerText = tpt.toString() + " %";
+    } catch{ };
   };
 
   const queryEcoLayerByMouseEvent = event => {
     if (!ecoShpLayer) return;
+    // if (isMapMultiSelectionClick === false) return;
     const query = ecoShpLayer.createQuery();
     query.geometry = mapView.toMap(event); // the point location of the pointer
     query.spatialRelationship = "intersects"; // this is the default
+    query.distance = 20;
     query.returnGeometry = true;
     query.outFields = ["*"];
 
@@ -497,17 +693,7 @@ const MapControl = function ({
   const generateEcpShpWhereFromEcoIDs = ecoIds => {
     let whereText = "";
     let tempEcoIds = ecoIds.slice(0);
-    let currEcoIds = [];
     let maxHit = false;
-    while (tempEcoIds.length > 200) {
-      currEcoIds = tempEcoIds.shift(0, 199);
-      whereText =
-        whereText +
-        `${maxHit ? " OR " : ""}${
-        config.FIELD_NAME.ecoShapeLayerID
-        } in ('${currEcoIds.join("','")}')`;
-      maxHit = true;
-    }
     whereText =
       whereText +
       `${maxHit ? " OR " : ""}${
@@ -522,16 +708,34 @@ const MapControl = function ({
     console.log("zoomToEcoShps ecofeats:", ecoFeats)
     // mapView.goTo(ecoFeats);
     console.log("done goto: zoomtoecoshps")
-    fullExtent();
   };
 
-  const queryEcoLayerByMouseEventOnSuccessHandler = feature => {
+  const getSelectedArray = () => {
 
+    return ecoPreviewGraphicLayer;
+  }
+
+  const clearMSelection = () => {
+    console.log("clearMSelection");
+    ecoMultiSelection.removeAll(); //all selected assets for multi-selection
+    // ecoPreviewGraphicLayer.removeAll();//current selected asset
+    multiSelectionList = [];
+    const modal = document.getElementById("myModal");
+    modal.setAttribute('multi_selection',false);
+    addtoMSlist(currentSelectedFeature);
+    showMS();
+  }
+  const clearEcoPreviewGraphicLayer = () => {
+    ecoPreviewGraphicLayer.removeAll();//current selected asset
+  }
+
+  const queryEcoLayerByMouseEventOnSuccessHandler = feature => {
     addPreviewEcoGraphic(feature);
 
     if (ecoFeatureOnSelectHandler) {
       ecoFeatureOnSelectHandler(feature);
     }
+
   };
 
   function arrayRemove(arr, value) {
@@ -543,6 +747,7 @@ const MapControl = function ({
   const showEcoFeatureByStatus = (
     ecoId,
     status,
+    len,
     options = {
       attributes: null,
       popupTemplate: null
@@ -551,40 +756,76 @@ const MapControl = function ({
 
     removeEcoGraphicByStatus(ecoId);
     console.log("in showEcoFeatureByStatus")
-    fullExtentArray = [];
     if (+status > 0) {
       queryEcoShpsLayerByEcoID(ecoId).then(features => {
-        console.log(features);
-        fullExtentArray.push(features[0]);
+        console.log('ByStatus', features);
         addEcoGraphicByStatus(features[0], status, options);
+        ++pEcoByStatusCount;
+        console.log('pEcoByStatusCount', pEcoByStatusCount, len);
+        if (len) {
+          if (pEcoByStatusCount == len) {
+            pEcoByStatusLoaded = true;
+            if (pEcoByStatusLoaded && pEcoByPresenceLoaded) fullExtent();
+          }
+        }
       });
     }
+    else {
+      ++pEcoByStatusCount;
+      console.log('pEcoByStatusCount', pEcoByStatusCount, len);
+      if (len) {
+        if (pEcoByStatusCount == len) {
+          pEcoByStatusLoaded = true;
+          if (pEcoByStatusLoaded && pEcoByPresenceLoaded) fullExtent();
+        }
+      }
+    }
   };
 
-  const showEcoFeatureByPresence = (ecoId, presence) => {
+  const showEcoFeatureByPresence = (ecoId, presence, len) => {
     queryEcoShpsLayerByEcoID(ecoId).then(features => {
-      fullExtentArray.push(features[0]);
+      // fullExtentArray.push(features[0]);
       drawEcoShapeByPresence(features[0], presence);
+      console.log('ByPresence', features);
+      ++pEcoByPresenceCount;
+      console.log('pEcoByPresenceCount', pEcoByPresenceCount, len);
+      if (len) {
+        if (pEcoByPresenceCount == len) {
+          pEcoByPresenceLoaded = true;
+          if (pEcoByStatusLoaded && pEcoByPresenceLoaded) fullExtent();
+        }
+      }
+
     });
-    // fullExtent();
-    // setTimeout(() => { fullExtent();}, 2000);
+  }
 
-
-  };
 
   const fullExtent = () => {
+    console.log('FULL Extent');
     var fullExtent = null;
-    var features = fullExtentArray;
-    for (var i = 0; i < features.length; i++) {
+    for (var i = 0; i < ecoShpByStatusGraphicLayer.graphics.items.length; i++) {
+      var features = ecoShpByStatusGraphicLayer.graphics.items[i];
       if (!fullExtent)
-        fullExtent = features[i].geometry.extent.clone();
+        fullExtent = features.geometry.extent.clone();
       else
-        fullExtent.union(features[i].geometry.extent)
+        fullExtent.union(features.geometry.extent)
     }
+    for (var i = 0; i < ecoPresenceGraphicLayer.graphics.items.length; i++) {
+      var features = ecoPresenceGraphicLayer.graphics.items[i];
+      if (!fullExtent)
+        fullExtent = features.geometry.extent.clone();
+      else
+        fullExtent.union(features.geometry.extent)
+    }
+
     mapView.goTo(fullExtent).then(function () {
       if (!mapView.extent.contains(fullExtent))
         mapView.zoom -= 1;
     });
+    if (pEcoByStatusLoaded && pEcoByPresenceLoaded) {
+      const modal = document.getElementById("myModal");
+      modal.style.display = "none";
+    }
   }
 
 
@@ -626,10 +867,10 @@ const MapControl = function ({
         //width: "24px",
         //height: "24px",
         type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        color: "red",
+        color: "green",
         style: "forward-diagonal",
         outline: {
-          color: config.COLOR.ecoBorderIsModeled,
+          color: "green",//config.COLOR.ecoBorderIsModeled,
           width: "3px"
         }
       },
@@ -647,13 +888,23 @@ const MapControl = function ({
         }
       },
       3: {
-        type: "simple-fill", // autocasts as new SimpleFillSymbol()
-        color: [0, 0, 0, 0],
+        // type: "simple-fill", // autocasts as new SimpleFillSymbol()
+        // color: [0, 0, 0, 0],
+        // outline: {
+        //   // autocasts as new SimpleLineSymbol()
+        //   color: config.COLOR.ecoBorderCommentWithoutAction,
+        //   width: "4px"
+        // }
+
+        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+        color: "red",
+        style: "backward-diagonal",
         outline: {
-          // autocasts as new SimpleLineSymbol()
-          color: config.COLOR.ecoBorderCommentWithoutAction,
-          width: "4px"
+          color: config.COLOR.ecoBorderIsModeled,
+          width: "3px"
         }
+
+
       }
     };
 
@@ -719,9 +970,22 @@ const MapControl = function ({
           symbol: symbol
         });
 
-        ecoPreviewGraphicLayer.add(graphicForSelectedEco);      
+        ecoPreviewGraphicLayer.add(graphicForSelectedEco);
+        ecoMultiSelection.add(graphicForSelectedEco);
+
+        console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
+
       });
+    try {
+      addtoMSlist(feature);
+      currentSelectedFeature = feature;
+    } catch (e) { }
+
   };
+
+  const fbMsTotal = () => {
+
+  }
 
   const clearMapGraphics = (targetLayer = "") => {
     const layersLookup = {
@@ -757,7 +1021,7 @@ const MapControl = function ({
     ecoShpLayer.renderer = getUniqueValueRenderer(ecoIds);
     console.log(ecoShpLayer)
   };
- */
+  */
   const getUniqueValueRenderer = ecoIds => {
     const defaultSymbol = {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
@@ -805,6 +1069,10 @@ const MapControl = function ({
   };
 
   const addCsvLayer = (features = []) => {
+    // Lock the UI as we draw pink graphics
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
+
     const layerId = "csvLayer";
 
     let csvLayer = mapView.map.findLayerById(layerId);
@@ -840,9 +1108,19 @@ const MapControl = function ({
         });
 
         mapView.map.add(csvLayer);
+
+        mapView.whenLayerView(csvLayer).then(function (csvLayerView) {
+          csvLayerView.watch("updating", function (val) {
+            if (!val) {  // wait for the layer view to finish updating
+              modal.style.display = "none";
+            }
+          })
+        });
+
         document.getElementById('graphicsLayersDiv').style.display = "block";
       })
       .catch(err => {
+        modal.style.display = "none";
         console.error(err);
       });
   };
@@ -872,6 +1150,12 @@ const MapControl = function ({
   };
 
 
+  const fullExtentClear = () => {
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
+    pEcoByStatusCount = 0;
+    pEcoByPresenceCount = 0;
+  }
 
   return {
     init,
@@ -890,7 +1174,13 @@ const MapControl = function ({
     addPreviewEcoByID,
     addCsvLayer,
     graphicsVisibility,
-    initBaseMapLayer
+    initBaseMapLayer,
+    clearMSelection,
+    getSelectedArray,
+    fullExtent,
+    fullExtentClear,
+    showMS,
+    clearEcoPreviewGraphicLayer
   };
 };
 

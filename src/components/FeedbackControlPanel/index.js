@@ -1,5 +1,6 @@
 import "./style.scss";
 import config from "../../config";
+import { debuglog } from "util";
 
 export default function FeedbackControlPanel() {
   let container = null;
@@ -9,18 +10,27 @@ export default function FeedbackControlPanel() {
   let additionalFieldInputOnChange = null;
   let onSubmitHandler = null;
   let onRemoveHandler = null;
+  let entityFieldInputOnChange = null;
+  let feedbackObjects = [];
+  let clearMultiSelectGraphics = null;
+  let onSubmitMSHandler = null;
+
   // let statusData = [];
 
-  const state = {
+  //const 
+  let state = {
     data: null,
-    isSumbitCommentOnly: false
+    isSumbitCommentOnly: false,
+    isMultiSelection: true
   };
 
-  const statusLookup = {
-    1: "Add to Range",
-    2: "Remove from Range",
-    3: "Comment Only"
-  };
+  // const statusLookup = {
+  //   // 1: "Add to Range",
+  //   // 2: "Remove from Range",
+  //   // 3: "Comment Only"
+  //   1: "Add/Change",
+  //   2: "Remove",
+  // };
 
   const init = (options = {}) => {
     container = options.containerID
@@ -34,26 +44,60 @@ export default function FeedbackControlPanel() {
     commentOnChange = options.commentOnChange || null;
 
     additionalFieldInputOnChange = options.additionalFieldInputOnChange || null;
+    entityFieldInputOnChange = options.entityFieldInputOnChange || null;
 
     onSubmitHandler = options.onSubmitHandler || null;
 
     onRemoveHandler = options.onRemoveHandler || null;
+    clearMultiSelectGraphics = options.clearMultiSelectGraphics || null;
+    onSubmitMSHandler = options.onSubmitMSHandler || null;
 
     if (!container) {
       console.error("containerID is required for FeedbackControlPanel");
       return;
     }
 
+    feedbackObjects.push({ id: "field-markup", req: true, rep: "field-", value: null });
+    feedbackObjects.push({ id: "field-comment", req: true, rep: "field-", value: null });
+    config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
+      feedbackObjects.push({ id: "additional-field-" + addField.field, req: addField.required, rep: "additional-field-", value: null });
+    });
+
     initEventHandler();
   };
 
   const initState = data => {
     state.data = data;
-    state.isSumbitCommentOnly = +state.data.status === 3 ? true : false;
+    state.isSumbitCommentOnly = false;//+state.data.status === 3 ? true : false;
+    state.isMultiSelection = data.isMultiSelection;
   };
 
-  const toggleIsSumbitCommentOnly = () => {
-    state.isSumbitCommentOnly = !state.isSumbitCommentOnly;
+  // const toggleIsSumbitCommentOnly = () => {
+  //   state.isSumbitCommentOnly = !state.isSumbitCommentOnly;
+  // };
+
+  const toggleIsMultiSelection = () => {
+    // alert(state.isMultiSelection);
+    state.isMultiSelection = !state.isMultiSelection;
+    if (state.isMultiSelection === true) {
+      document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "block";
+      document.getElementsByClassName('esri-sketch')[0].style.display = "block";
+      const modal = document.getElementById("myModal");
+      modal.setAttribute('multi_selection', 'true');
+      document.getElementById("fbSaveMS").style.display = "block";
+      document.getElementById("fbSave").style.display = "none";
+    }
+    else {
+      document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "none";
+      document.getElementsByClassName('esri-sketch')[0].style.display = "none";
+      clearMultiSelectGraphics();
+      const modal = document.getElementById("myModal");
+      modal.setAttribute('multi_selection', 'false');
+      document.getElementById("fbSaveMS").style.display = "none";
+      document.getElementById("fbSave").style.display = "block";
+      //need to clear graphics
+    }
+
   };
 
   const resetState = () => {
@@ -61,27 +105,40 @@ export default function FeedbackControlPanel() {
     state.isSumbitCommentOnly = false;
   };
 
-  const getStatusByIsInModeledRange = () => {
-    return state.data.isHucInModeledRange ? 2 : 1;
-  };
-
-  const getNewStatus = () => {
-    if (state.isSumbitCommentOnly) {
-      return 3;
-    } else {
-      return getStatusByIsInModeledRange();
-    }
-  };
 
   const render = () => {
+    try {
+      const modal = document.getElementById("myModal");
+      var ms = modal.getAttribute('multi_selection');
+      if (ms && ms == "true") state.isMultiSelection = true;
+    }
+    catch (e) {
+      console.log(e);
+    }
+
+    if (state.data) {
+      feedbackObjects.map(el => {
+        switch (el.rep) {
+          case "field-":
+            el.value = state.data[el.id.replace(el.rep, '')];
+            break;
+          case "additional-field-":
+            el.value = state.data.additionalFields[el.id.replace(el.rep, '')];
+            break;
+        }
+      });
+    }
+
     const hucName = state.data.ecoAtts.ecoshapename || "";
     const comment = state.data.comment || "";
-    
+
     const componentHtml = `
             <div id='feedbackControlPanelContainer' class='panel panel-black'>
 
                 <div class='trailer-0 text-right close-btn'>
-                    <span class='font-size--3 icon-ui-close js-close'></span>
+                     <!-- <span class='font-size--3 icon-ui-close js-close'></span> -->
+                    <!-- <span class='icon-ui-arrow-left-circled js-close'></span> -->
+                    <span class='icon-ui-left-arrow js-close'></span>
                 </div>
 
                 <div class='leader-half trailer-half' style='margin-top:0px'>
@@ -94,16 +151,43 @@ export default function FeedbackControlPanel() {
                         ${getHtmlForActions()}
                     </div>
 
+                    <div id='removeReason'>
+                    
+                    </div>
+
                     <div class='comment-dialog'>
-                        <label>
-                            <span class='font-size--3'>Comment:</span>
-                            <textarea type="text" placeholder="" class="comment-textarea" maxlength="4095">${comment}</textarea>
+                        <label class="feedback">
+                            <span class='font-size--3'>Comment (required):</span>
+                            <textarea type="text" id="field-comment" placeholder="" class="comment-textarea" maxlength="4095">${comment}</textarea>
                         </label>
                     </div>
 
                     <div class='additional-field-dialog'>
                         ${getHtmlForAdditionalFields()}
                     </div>
+
+
+                    <div class='flex-container' style="margin-left:2px;">
+                      <div class='inline-block'>
+                      <span class="toggle-switch-label font-size--3 action-message">
+                       Multi-Selection 
+                      </span>
+                        <label class="toggle-switch feedback">
+                          <input type="checkbox" class="toggle-switch-input" id="toggleMS" ${
+      state.isMultiSelection ? "checked" : ""
+      }>
+                        <span class="toggle-switch-track margin-right-1"></span>
+                      </label>
+                     </div> 
+                    </div>
+
+                    <div id="feedbackControlPanelMultiSelectInfo" style="flex;flex-direction:row;display:${state.isMultiSelection ? "block" : "none"};" class="font-size--3 meta">
+                       <div>Ecoshape(s):<span id="feedbackControlPanelMSIecoshapes" style="margin-left:5px;"></span></div>
+                       <div>Terrestrial Area:<span id="feedbackControlPanelMSIarea" style="margin-left:5px;"></span></div>
+                        <div>Terrestrial Proportion:<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
+                   
+                        </div>
+
                 </div>
 
                 <div class='trailer-half'>
@@ -113,9 +197,8 @@ export default function FeedbackControlPanel() {
         `;
 
     container.innerHTML = componentHtml;
-
-    addSwitcherOnChangeHandler();
-
+    addSwitcherOnMultiSelectionHandler();
+    enableSaveButton();
     // console.log('render feedback control panel', state.data);
   };
 
@@ -128,7 +211,7 @@ export default function FeedbackControlPanel() {
   // }
 
   const getHtmlForActions = () => {
-    let status = getNewStatus(); 
+    //let status = getNewStatus();
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'is-checked';
 
@@ -141,11 +224,28 @@ export default function FeedbackControlPanel() {
     // </div>`
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'checked';
+
     let EA = state.data.ecoAtts;
-    let parentEco = EA.parentecoregionfr ? EA.parentecoregion + " ("+ EA.parentecoregionfr +")" : EA.parentecoregion;
-    let ecoZone = EA.ecozonefr ? EA.ecozone + " ("+ EA.ecozonefr +")" : EA.ecozone;
-    let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-us', {'maximumFractionDigits': 2});
-    let terrProp = EA.terrestrialproportion * 100
+    let parentEco = EA.parentecoregionfr ? EA.parentecoregion + " (" + EA.parentecoregionfr + ")" : EA.parentecoregion;
+    let ecoZone = EA.ecozonefr ? EA.ecozone + " (" + EA.ecozonefr + ")" : EA.ecozone;
+    let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-us', { 'maximumFractionDigits': 2 });
+    let terrProp = EA.terrestrialproportion * 100;
+    let huc = state.data.hucForSpeciesData;
+    let presence = ' '
+    let hucNotes = ' '
+    // Only have presence or notes for previously modelled ecoshapes, ones to be added do not have presence
+    if (huc.length > 0) {
+      hucNotes = huc[0].rangemapecoshapenotes;
+      if (config.PRESENCE) {
+        config.PRESENCE.map(d => {
+          if (d.code == huc[0].presence) {
+            presence = d.text;
+          }
+        });
+      }
+    }
+
+
     let outputHtml = `
     <div class='flex-container' style='margin-bottom:10px'>
     <div class='inline-block'>
@@ -154,52 +254,72 @@ export default function FeedbackControlPanel() {
         <strong>Parent Ecoregion:</strong> ${parentEco} <br>
         <strong>Ecozone:</strong> ${ecoZone}<br>
         <strong>Terrestrial Area:</strong> ${terrArea} km&sup2;<br>
-        <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>     
+        <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>  
+        <strong>Presence:</strong> ${presence}  <br>     
+        <strong>Metadata:</strong> ${hucNotes} <br>     
       </p>  
     </div>
     </div>       
     `
+    let range = [];
 
-    outputHtml += `
-        <div class='flex-container'>
-        <div class='inline-block'>
-          <span class="toggle-switch-label font-size--3 action-message">
-            ${statusLookup[+getStatusByIsInModeledRange()]}:
-          </span>
 
-                <label class="toggle-switch">
-                    <input type="checkbox" class="toggle-switch-input" ${
-                      state.isSumbitCommentOnly ? "" : "checked"
-                    }>
-                    <span class="toggle-switch-track margin-right-1"></span>
-                </label>
-            </div> 
-        </div>
-    `;
+    if (state && state.data) {
+      range.push({ code: "null", text: "None set", status: true });
 
-    // Add a removal reason drop down only when removing a species
-    if (status == 2){
-      outputHtml += `<label><span class='font-size--3'>Removal Reason:</span>
-        <select id="additional-field-removalreason" class="additional-field-select additional-field-input">`
+      config.PRESENCE.map(d => {
 
-      const remReasons = config.REMOVAL;
-      remReasons.map(d => {
-        let c = d.attributes.removalcode
-        let t = d.attributes.removaltext
-        let s = "";
-        if (state.data.additionalFields.removalreason) {
-         if (c === state.data.additionalFields.removalreason) {
-           s = "selected"
-         }
+        if (state && state.data && state.data.isHucInModeledRange) {
+          if (state && state.data && state.data.hucForSpeciesData && state.data.hucForSpeciesData.length > 0 &&
+            state.data.hucForSpeciesData[0].presence.toUpperCase() != d.code.toUpperCase()) {
+            if (state && state.data && state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) {
+              range.push({ code: d.code, text: d.text, status: true });
+            } else {
+              range.push({ code: d.code, text: d.text, status: false });
+            }
+          }
+        } else {
+          if (state && state.data && state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) {
+            range.push({ code: d.code, text: d.text, status: true });
+          } else {
+            range.push({ code: d.code, text: d.text, status: false });
+          }
+
         }
-        outputHtml += `<option ${s} value="${c}">${t}</option>`
+
       });
-      
-      outputHtml += `</select></label>`
+      if (state && state.data && state.data.isHucInModeledRange) {
+        if (state.data.markup && state.data.markup.toUpperCase() === "R") {
+          range.push({ code: "R", text: "Remove", status: true });
+        }
+        else {
+          range.push({ code: "R", text: "Remove", status: false });
+        }
+      }
     }
 
+
+    outputHtml += `
+        <div class='flex-container'><label class="feedback"> <span class="font-size--3">Markup (required):</snap>
+            <select style="width:100%" id="field-markup" required>`;
+
+    range.map(item => {
+
+      if (item) {
+
+        if (item['status']) {
+          outputHtml += '<option style="background-color:lightgray;" value="' + item['code'] + '" disabled selected>' + item['text'] + '</option>';
+        }
+        else {
+          outputHtml += '<option value="' + item['code'] + '">' + item['text'] + '</option>';
+        }
+      }
+    });
+
+    outputHtml += `</select></label></div>`;
     return outputHtml;
   };
+
 
   // Adds select, textarea, text, and label entries to the feedback container depending on configuration
   const getHtmlForAdditionalFields = () => {
@@ -214,16 +334,17 @@ export default function FeedbackControlPanel() {
       let fieldValue = null;
       config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
 
-        if (addField.field == "removalreason") { return;}
+        if (addField.field == "removalreason") { return; }
+        if (!addField.visible) { return; }
 
         fieldValue =
           state.data.additionalFields[addField.field] ||
-          (addField.editable ? "" : ( (typeof addField.editable === "object")?{code:"null",desc:"None set"}:"None set"));
+          (addField.editable ? "" : ((typeof addField.editable === "object") ? { code: "null", desc: "None set" } : "None set"));
         outputHtml += `
-                <label>
+                <label class="feedback">
                     <span class='font-size--3'>${
-                      addField.display ? addField.display : addField.field
-                    }:</span>
+          addField.display ? addField.display : addField.field
+          }:</span>
                 `;
 
         if (addField.editable) {
@@ -233,13 +354,13 @@ export default function FeedbackControlPanel() {
           ) {
             outputHtml += `
                   <select id="additional-field-${
-                    addField.field
-                  }" class="additional-field-select additional-field-input" disabled>
+              addField.field
+              }" class="additional-field-select additional-field-input" >
                     ${
-                      fieldValue === ""
-                        ? '<option value="null" selected>None set</option>'
-                        : ""
-                    }
+              fieldValue === ""
+                ? '<option value="null" selected>None set</option>'
+                : ""
+              }
                 `;
 
             addField.editable.forEach(value => {
@@ -247,7 +368,7 @@ export default function FeedbackControlPanel() {
               outputHtml += `
                  <option value="${value.code}" ${
                 fieldValue === value.code ? "selected" : ""
-              }>${value.desc}</option>
+                }>${value.desc}</option>
                     `;
             });
 
@@ -257,18 +378,18 @@ export default function FeedbackControlPanel() {
           } else if (addField.editable === "textarea") {
             outputHtml += `
               <textarea id="additional-field-${
-                addField.field
+              addField.field
               }" class="additional-field-textarea additional-field-input" ${
               addField.maxlength ? `maxlength="${addField.maxlength}"` : ""
-            }>${fieldValue ? fieldValue : ""}</textarea>
+              }>${fieldValue ? fieldValue : ""}</textarea>
             `;
           } else {
             outputHtml += `
                     <input type="text" id="additional-field-${
-                      addField.field
-                    }" class="additional-field-text additional-field-input" ${
+              addField.field
+              }" class="additional-field-text additional-field-input" ${
               addField.maxlength ? `maxlength="${addField.maxlength}"` : ""
-            } value="${fieldValue ? fieldValue : ""}"/>
+              } value="${fieldValue ? fieldValue : ""}"/>
             `;
           }
         } else {
@@ -286,32 +407,69 @@ export default function FeedbackControlPanel() {
 
   const getHtmlForBtns = isSaved => {
     // const newStatus = isHucInModeledRange ? 2 : 1;
-    const saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half"> Save </button>`;
+    let saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave"> Save </button>`;
+
+    if (!state.isMultiSelection) {
+      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+    }
+    else {
+      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+    }
+
     // const updateBtn = `<button class="btn btn-fill js-submit-feedback trailer-half"> Save </button>`;
     // const removeBtn = `<button class="btn btn-fill js-remove-feedback trailer-half"> Reset </button>`;
 
-    const btnsForExistingItem = `
+    let btnsForExistingItem = `
             <nav class='trailer-half'>
-                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback"> Reset </button>
-                <button class="btn btn-half btn-grouped js-submit-feedback"> Save </button>
-            </nav>
-        `;
+                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback"> Reset </button>`;
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback" id="fbSave"> Save </button>`;
+    
+    if (!state.isMultiSelection)
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+    else
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS"  style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+
+    btnsForExistingItem += `</nav>`;
 
     return isSaved ? btnsForExistingItem : saveBtn;
   };
 
-  const addSwitcherOnChangeHandler = () => {
-    container
-      .querySelector(".toggle-switch-input")
-      .addEventListener("change", evt => {
-        console.log("toggle-switch-input on change");        
-        toggleIsSumbitCommentOnly();
-        render();
-      });
+
+  const addSwitcherOnMultiSelectionHandler = () => {
+    var element = document.getElementById('toggleMS');
+    element.addEventListener("change", evt => {
+      console.log("toggle-switch-input MS on change", evt);
+      toggleIsMultiSelection();
+    });
+  }
+
+  const getNewStatus = () => {
+    return state.data.isHucInModeledRange ? 2 : 1;
   };
 
+  const enableSaveButton = () => {
+    try {
+      var enable = true;
+      feedbackObjects.map(el => {
+        if (
+          (el.req && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
+          || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
+        ) enable = false;
+      });
+      console.log('enable', enable)
+      const btn = document.getElementsByClassName("js-submit-feedback");
+      if (btn) {
+        if (!enable) {
+          btn[0].disabled = true;
+        } else {
+          btn[0].disabled = false;
+        }
+      }
+    } catch{ }
+  }
+
   const initEventHandler = () => {
-    container.addEventListener("click", function(event) {
+    container.addEventListener("click", function (event) {
       if (event.target.classList.contains("js-close")) {
         // console.log('close feedback control panel');
         if (onCloseHandler) {
@@ -329,56 +487,90 @@ export default function FeedbackControlPanel() {
           onRemoveHandler();
         }
       }
-      // else if (event.target.classList.contains('js-toggle-is-comment-only')){
-      //     toggleIsSumbitCommentOnly();
-      //     render();
-      // }
-      else {
-        //
+      else if (event.target.classList.contains("js-submit-feedbackMS")) {
+        if (onSubmitMSHandler) {
+          onSubmitMSHandler();
+        }
       }
     });
 
-    // container.addEventListener('click', function (event){
-    //     if (event.target.type === 'radio') {
-    //         // console.log('click radio btn', event.target.value);
-    //         if(statusOnChange){
-    //             statusOnChange(event.target.value);
-    //         }
-    //     }
-    // });
 
-    container.addEventListener("input", function(event) {
-      // console.log(event.target);
-      if (event.target.classList.contains("comment-textarea")) {
-        //console.log('textarea on input', event.target.value);
-        const btn = document.getElementsByClassName("js-submit-feedback");
-        if (btn) {
-          if (event.target.value){
-            btn[0].disabled = false;
-           } else {
-            btn[0].disabled = true;
-           }
-          }
-        
-        if (commentOnChange) {
-          commentOnChange(event.target.value);
-        }
-      } else if (event.target.classList.contains("additional-field-input")) {
-        // add special case to event listener on changing one of the additonal fields
-        if (additionalFieldInputOnChange) {
-          if (
-            event.target &&
-            event.target.classList &&
-            event.target.classList.contains("additional-field-input")
-          ) {
-            const targetField = event.target.id.replace(
-              "additional-field-",
-              ""
-            );
-            additionalFieldInputOnChange(targetField, event.target.value);
+    container.addEventListener("input", function (event) {
+      if (!(event && event.target)) return;
+
+      var fieldMarkupVal = null;
+      var targetField = "";
+      feedbackObjects.map(el => {
+
+        if (el.id == event.target.id) {
+          el.value = event.target.value;
+          targetField = event.target.id.replace(
+            el.rep,
+            ""
+          );
+          switch (el.rep) {
+            case 'field-':
+              var fieldName = el.id.replace('field-', '');
+              if (entityFieldInputOnChange) {
+                entityFieldInputOnChange(fieldName, event.target.value);
+              }
+              break;
+            case 'additional-field-':
+              if (additionalFieldInputOnChange) {
+                additionalFieldInputOnChange(targetField, event.target.value);
+              }
+              break;
+            default:
           }
         }
+        if (el.id == "field-markup") fieldMarkupVal = el.value;
+
+      });
+      console.log('feedbackObjects', feedbackObjects)
+
+      enableSaveButton();
+    });
+
+
+
+
+    container.addEventListener('change', function (event) {
+      if (!(event && event.target && event.target.id)) return;
+      if (event.target.id != "field-markup") return;
+
+      var selValue = event.srcElement.value;
+      var removeReason = document.getElementById('removeReason');
+
+      if (selValue == "R") {
+
+        if (document.getElementById('esriRemovalReason') != null) return;
+        // Add a removal reason drop down only when removing a species
+        var outputHtml = '<div id="esriRemovalReason">';
+        outputHtml += `<span class='font-size--3'>Removal Reason (required):</span>
+      <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
+        outputHtml += `<option value="null">Not set</option>`;
+        const remReasons = config.REMOVAL;
+        remReasons.map(d => {
+          let c = d.attributes.removalcode;
+          let t = d.attributes.removaltext;
+          let s = "";
+          if (state.data.additionalFields.removalreason) {
+            if (c === state.data.additionalFields.removalreason) {
+              s = "selected";
+            }
+          }
+          outputHtml += `<option ${s} value="${c}">${t}</option>`;
+        });
+
+        // outputHtml += `</select></label></div>`;
+        outputHtml += `</select></div>`;
+        removeReason.innerHTML = outputHtml;
       }
+      else {
+        removeReason.innerHTML = '';
+      }
+
+
     });
 
     // container.addEventListener('click', function (event){
@@ -402,6 +594,10 @@ export default function FeedbackControlPanel() {
     container.innerHTML = "";
   };
 
+  const setTotal = (data = []) => {
+
+  };
+
   // const setStatusData = (data=[])=>{
   //     statusData = data;
   //     // console.log('setStatusData', statusData);
@@ -410,7 +606,8 @@ export default function FeedbackControlPanel() {
   return {
     init,
     open,
-    close
+    close,
+    setTotal
     // setStatusData
   };
 }
