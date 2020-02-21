@@ -9,7 +9,8 @@ export default function (options = {}) {
     onClose: null,
     onSubmit: null,
     onRemove: null,
-    onSubmitMS:null
+    onSubmitMS: null,
+    onRemoveMS: null
   };
 
   const init = (options = {}) => {
@@ -18,6 +19,7 @@ export default function (options = {}) {
     eventHandlers["onSubmit"] = options.onSubmitHandler || null;
     eventHandlers["onRemove"] = options.onRemoveHandler || null;
     eventHandlers["onSubmitMS"] = options.onSubmitMSHandler || null;
+    eventHandlers["onRemoveMS"] = options.onRemoveMSHandler || null;
   };
 
   // const getTotalSelection = (data = []) => {
@@ -54,37 +56,37 @@ export default function (options = {}) {
 
   const submitMS = dataList => {
     if (eventHandlers["onSubmitMS"]) {
-     // const feedbackData = feedbackDataModel.getFeedbackData();
-     // let datalist=[];
-     // datalist.push(feedbackData);
+      // const feedbackData = feedbackDataModel.getFeedbackData();
+      // let datalist=[];
+      // datalist.push(feedbackData);
       console.log('MAINEED feedbackData', dataList);
       dataList.forEach(element => {
         save(element);
       });
-      
+
       eventHandlers["onSubmitMS"](dataList);
     }
   };
 
-  const getfeedbackData=()=>{
+  const getfeedbackData = () => {
     return feedbackDataModel.getFeedbackData();
   }
 
   const submit = () => {
     if (eventHandlers["onSubmit"]) {
       // debugger
-    const feedbackData = feedbackDataModel.getFeedbackData();
-    ////=======TEMP do not save migrantstatus data====
-   // console.log('MAI feedbackData', feedbackData);
-    //delete feedbackData.additionalFields.migrantstatus;
-    console.log('MAI2 feedbackData', feedbackData);
+      const feedbackData = feedbackDataModel.getFeedbackData();
+      ////=======TEMP do not save migrantstatus data====
+      // console.log('MAI feedbackData', feedbackData);
+      //delete feedbackData.additionalFields.migrantstatus;
+      console.log('MAI2 feedbackData', feedbackData);
 
-    save(feedbackData);
+      save(feedbackData);
 
-    //if (eventHandlers["onSubmit"]) {
+      //if (eventHandlers["onSubmit"]) {
       eventHandlers["onSubmit"](feedbackData);
     }
-   
+
   };
 
   const save = feedbackData => {
@@ -112,6 +114,15 @@ export default function (options = {}) {
 
     if (eventHandlers["onRemove"]) {
       eventHandlers["onRemove"](feedbackData);
+    }
+  };
+
+  const removeMS = dataList => {
+    dataList.forEach(element => {
+      removeFromDataStore(element.species, element.ecoID);
+    });
+    if (eventHandlers["onRemoveMS"]) {
+      eventHandlers["onRemoveMS"](dataList);
     }
   };
 
@@ -172,7 +183,8 @@ export default function (options = {}) {
     batchAddToDataStore,
     getFeedbackDataBySpecies,
     submitMS,
-    getfeedbackData
+    getfeedbackData,
+    removeMS
     //  getTotalSelection
   };
 }

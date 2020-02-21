@@ -10,6 +10,7 @@ export default function FeedbackControlPanel() {
   let additionalFieldInputOnChange = null;
   let onSubmitHandler = null;
   let onRemoveHandler = null;
+  let onRemoveMSHandler = null;
   let entityFieldInputOnChange = null;
   let feedbackObjects = [];
   let clearMultiSelectGraphics = null;
@@ -51,6 +52,7 @@ export default function FeedbackControlPanel() {
     onRemoveHandler = options.onRemoveHandler || null;
     clearMultiSelectGraphics = options.clearMultiSelectGraphics || null;
     onSubmitMSHandler = options.onSubmitMSHandler || null;
+    onRemoveMSHandler = options.onRemoveMSHandler || null
 
     if (!container) {
       console.error("containerID is required for FeedbackControlPanel");
@@ -88,6 +90,7 @@ export default function FeedbackControlPanel() {
       document.getElementById("fbSave").style.display = "none";
       document.getElementById("markupLabel").style.display = "none";
       document.getElementById("fbReset").style.display = "none";
+      document.getElementById("fbResetMS").style.display = "block";
     }
     else {
       document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "none";
@@ -99,6 +102,7 @@ export default function FeedbackControlPanel() {
       document.getElementById("fbSave").style.display = "block";
       document.getElementById("markupLabel").style.display = "block";
       document.getElementById("fbReset").style.display = "block";
+      document.getElementById("fbResetMS").style.display = "none";
       //need to clear graphics
     }
 
@@ -136,7 +140,7 @@ export default function FeedbackControlPanel() {
     const hucName = state.data.ecoAtts.ecoshapename || "";
     const comment = state.data.comment || "";
 
-    const componentHtml = `
+    let componentHtml = `
             <div id='feedbackControlPanelContainer' class='panel panel-black'>
 
                 <div class='trailer-0 text-right close-btn'>
@@ -145,14 +149,17 @@ export default function FeedbackControlPanel() {
                     <span class='icon-ui-left-arrow js-close'></span>
                 </div>
 
-                <div class='leader-half trailer-half' style='margin-top:0px'>
-                    <span class='font-size-0'>Ecoshape: ${hucName}</span>
+                <div class='leader-half trailer-half' style='margin-top:0px'>`;
+    componentHtml += (state.isMultiSelection) ? `<span class='font-size-0'>Multiple Ecoshapes selected</span>` : `<span class='font-size-0'>Ecoshape: ${hucName}</span>`;
+    componentHtml += `  
                     <hr>
                 </div>
 
                 <div class='feedbackControlPanelData'>
-                    <div id='actionDialogWrap'>
-                        ${getHtmlForActions()}
+                    <div id='actionDialogWrap'>`;
+    componentHtml += (state.isMultiSelection) ? `<span class='font-size-0'>Ecoshape: ${hucName}</span>` : ``;
+
+    componentHtml += `${getHtmlForActions()}
                     </div>
 
                     <div id='removeReason'>
@@ -417,7 +424,8 @@ export default function FeedbackControlPanel() {
       saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
     }
     else {
-      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>
+      <button class="btn btn-half btn-grouped js-remove-feedbackMS" style="display:none;width:100%" id="fbResetMS"> Reset Multi-Selection</button>`;
     }
 
     // const updateBtn = `<button class="btn btn-fill js-submit-feedback trailer-half"> Save </button>`;
@@ -425,13 +433,17 @@ export default function FeedbackControlPanel() {
 
     let btnsForExistingItem = `
             <nav class='trailer-half'>
-                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback" id="fbReset" style="display:${state.isMultiSelection ? "none" : "block"};"> Reset </button>`;
-      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback" id="fbSave" style="display:${state.isMultiSelection ? "none" : "block"};"> Save </button>`;
-    
+                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback trailer-half" id="fbReset" style="display:${state.isMultiSelection ? "none" : "block"};"> Reset </button>`;
+    btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ? "none" : "block"};"> Save </button>`;
+
     if (!state.isMultiSelection)
-      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>
+      <button class="btn btn-half btn-grouped js-remove-feedbackMS trailer-half" style="display:none;width:100%" id="fbResetMS"> Reset Multi-Selection</button>
+      `;
     else
-      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS"  style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half"  style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>
+      <button class="btn btn-half btn-grouped js-remove-feedbackMS trailer-half" style="display:block;width:100%" id="fbResetMS"> Reset Multi-Selection</button>
+      `;
 
     btnsForExistingItem += `</nav>`;
 
@@ -494,6 +506,11 @@ export default function FeedbackControlPanel() {
       else if (event.target.classList.contains("js-submit-feedbackMS")) {
         if (onSubmitMSHandler) {
           onSubmitMSHandler();
+        }
+      }
+      else if (event.target.classList.contains("js-remove-feedbackMS")) {
+        if (onRemoveMSHandler) {
+          onRemoveMSHandler();
         }
       }
     });

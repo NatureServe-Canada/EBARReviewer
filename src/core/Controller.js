@@ -90,6 +90,7 @@ export default function Controller(props = {}) {
       onCloseHandler: () => {
         // console.log('feedbackManager is closed');
         controllerProps.feedbackManagerOnClose();
+        document.getElementsByClassName('esri-sketch')[0].style.display = "none";
       },
 
       onSubmitHandler: data => {
@@ -125,7 +126,16 @@ export default function Controller(props = {}) {
         deleteFeedback(data);
         showEcoFeatureOnMap(data.ecoID);
         resetSelectedEcoFeature();
+      },
+      onRemoveMSHandler: data => {
+        // console.log('feedback manager onRemoveHandler', data);
+        deleteFeedbackMS(data);
+        data.forEach(element => {
+          showEcoFeatureOnMap(element.ecoID);
+        });
+        resetSelectedEcoFeature();
       }
+
     });
   };
 
@@ -445,6 +455,12 @@ export default function Controller(props = {}) {
       console.error(err);
     }
   };
+
+  const deleteFeedbackMS = async dataList => {
+    dataList.forEach(element => {
+      deleteFeedback(element);
+    });
+  }
 
   const deleteFeedback = async (data = {}) => {
     // query feedback table to see if such feature already exists, if so, call update feature operation, otherwise, call add feature operation
