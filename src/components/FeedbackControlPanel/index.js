@@ -210,6 +210,7 @@ export default function FeedbackControlPanel() {
     container.innerHTML = componentHtml;
     addSwitcherOnMultiSelectionHandler();
     enableSaveButton();
+    enableSaveMSButton();
     // console.log('render feedback control panel', state.data);
   };
 
@@ -472,7 +473,6 @@ export default function FeedbackControlPanel() {
           || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
         ) enable = false;
       });
-      console.log('enable', enable)
       const btn = document.getElementsByClassName("js-submit-feedback");
       if (btn) {
         if (!enable) {
@@ -483,6 +483,27 @@ export default function FeedbackControlPanel() {
       }
     } catch{ }
   }
+
+  const enableSaveMSButton = () => {
+    try {
+      var enable = true;
+      feedbackObjects.map(el => {
+        if (
+          (el.req && el.id!="field-markup" && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
+         // || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
+        ) enable = false;
+      });
+      const btn = document.getElementsByClassName("js-submit-feedbackMS");
+      if (btn) {
+        if (!enable) {
+          btn[0].disabled = true;
+        } else {
+          btn[0].disabled = false;
+        }
+      }
+    } catch{ }
+  }
+
 
   const initEventHandler = () => {
     container.addEventListener("click", function (event) {
@@ -550,6 +571,7 @@ export default function FeedbackControlPanel() {
       console.log('feedbackObjects', feedbackObjects)
 
       enableSaveButton();
+      enableSaveMSButton();
     });
 
 

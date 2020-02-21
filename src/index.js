@@ -278,10 +278,19 @@ const initApp = async oauthManager => {
         let _feedBack = _deepCopy(fb);
         _feedBack.ecoID = el.attributes.ecoshapeid;
         _feedBack.ecoAtts = el.attributes;
-        //const isHucInModeledRange = dataModel.isHucInModeledRange(_feedBack.ecoID, _feedBack.species);
-
+        _feedBack.status = 1;
         let fb_current = controller.feedbackManager.getSavedItemFromDataStore(_feedBack);
-        _feedBack.status = fb_current ? 2 : 1;
+        if (fb_current) {
+          _feedBack.status = fb_current.isHucInModeledRange ? 2 : 1; //1- Add/change; 2- remove
+          if (_feedBack.status == 2) {
+            _feedBack.markup = "R";
+            _feedBack.additionalFields.removalreason = "O";
+          } else {
+            _feedBack.markup = "P";
+          }
+        } else {
+          _feedBack.markup = "P";
+        }
         dataList.push(_feedBack);
 
       });

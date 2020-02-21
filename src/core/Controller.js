@@ -779,6 +779,9 @@ export default function Controller(props = {}) {
   };
 
   const openFeedbackManager = (ecoAtts = {}) => {
+    if(document.getElementById('overallFeedbackControlPanelContainer')){
+      document.getElementById('overallFeedbackControlPanelContainer').style.display="none";
+    }
 
     const userID = oauthManager.getUserID();
     const species = parseInt(dataModel.getSelectedSpecies());

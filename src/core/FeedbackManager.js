@@ -91,8 +91,6 @@ export default function (options = {}) {
     feedbackDataStore[species][ecoId] = JSON.parse(
       JSON.stringify(feedbackData)
     );
-
-    // console.log(feedbackDataStore);
   };
 
   const remove = () => {
