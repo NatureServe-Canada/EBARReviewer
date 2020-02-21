@@ -231,7 +231,78 @@ const initApp = async oauthManager => {
       mapControl.clearEcoPreviewGraphicLayer();
     },
     onSubmitMSHandler: () => {
-      alert('save');
+      console.debug('save');
+      let dataList = [];
+      let fb = controller.feedbackManager.getfeedbackData();
+      console.debug('FB', fb);
+      let res = mapControl.getMultiSelectionList();
+      console.debug('RES', res);
+      fb.status = 1;
+
+      // const feedBack = {
+      //   userID: "gisadmin",
+      //   reviewid: 5,
+      //   ecoID: 1367,
+      //   species: 5,
+      //   status: 1,
+      //   comment: "test",
+      //   hucName: null,
+      //   isHucInModeledRange: null,
+      //   isSaved: true,
+      //   markup: "P",
+
+      //   hucForSpeciesData: [],
+
+
+      //   additionalFields: {
+      //     reference: null,
+      //     removalreason: null,
+      //     migrantstatus: null,
+
+      //   },
+      //   ecoAtts: {
+      //     objectid: 1367,
+      //     jurisdictionid: 1,
+      //     ecoshapesourceid: 12,
+      //     ecoshapename: "920",
+      //     parentecoregion: "Yukon Southern Lakes",
+      //     parentecoregionfr: null,
+      //     ecozone: "Boreal Cordillera",
+      //     ecozonefr: "Cordillère boréale",
+      //     mosaicversion: "1.4",
+      //     terrestrialarea: 869993304.939159,
+      //     terrestrialproportion: 0.95742736,
+      //     ecoshapeid: 1367,
+      //     totalarea: 908678136.477648,
+      //     Shape__Area: 908678136.4776452,
+      //     Shape__Length: 162060.5160234853,
+      //   },
+
+      // };
+
+      const _deepCopy = (feedBack) => {
+        return {
+          ...feedBack,
+          hucForSpeciesData: feedBack.hucForSpeciesData.map((_hucForSpeciesData, _hucForSpeciesDataIndex) => { return { ..._hucForSpeciesData } }),
+          additionalFields: { ...feedBack.additionalFields },
+          ecoAtts: { ...feedBack.ecoAtts },
+        }
+      };
+
+      res.forEach(el => {
+
+        let _feedBack = _deepCopy(fb);
+        console.log('_feedBack', _feedBack);
+        _feedBack.ecoID = el.attributes.ecoshapeid;
+        _feedBack.ecoAtts = el.attributes;
+        dataList.push(_feedBack);
+
+      });
+
+      controller.feedbackManager.submitMS(dataList);
+      
+      mapControl.clearMSelection();
+      mapControl.clearEcoPreviewGraphicLayer();
     }
   });
 

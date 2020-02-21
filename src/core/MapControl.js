@@ -721,7 +721,7 @@ const MapControl = function ({
     // ecoPreviewGraphicLayer.removeAll();//current selected asset
     multiSelectionList = [];
     const modal = document.getElementById("myModal");
-    modal.setAttribute('multi_selection',false);
+    modal.setAttribute('multi_selection', false);
     addtoMSlist(currentSelectedFeature);
     showMS();
   }
@@ -983,8 +983,8 @@ const MapControl = function ({
 
   };
 
-  const fbMsTotal = () => {
-
+  const getMultiSelectionList = () => {
+    return multiSelectionList;
   }
 
   const clearMapGraphics = (targetLayer = "") => {
@@ -1180,7 +1180,8 @@ const MapControl = function ({
     fullExtent,
     fullExtentClear,
     showMS,
-    clearEcoPreviewGraphicLayer
+    clearEcoPreviewGraphicLayer,
+    getMultiSelectionList
   };
 };
 

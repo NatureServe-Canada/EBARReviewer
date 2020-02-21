@@ -86,6 +86,8 @@ export default function FeedbackControlPanel() {
       modal.setAttribute('multi_selection', 'true');
       document.getElementById("fbSaveMS").style.display = "block";
       document.getElementById("fbSave").style.display = "none";
+      document.getElementById("markupLabel").style.display = "none";
+      document.getElementById("fbReset").style.display = "none";
     }
     else {
       document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "none";
@@ -95,6 +97,8 @@ export default function FeedbackControlPanel() {
       modal.setAttribute('multi_selection', 'false');
       document.getElementById("fbSaveMS").style.display = "none";
       document.getElementById("fbSave").style.display = "block";
+      document.getElementById("markupLabel").style.display = "block";
+      document.getElementById("fbReset").style.display = "block";
       //need to clear graphics
     }
 
@@ -300,7 +304,7 @@ export default function FeedbackControlPanel() {
 
 
     outputHtml += `
-        <div class='flex-container'><label class="feedback"> <span class="font-size--3">Markup (required):</snap>
+        <div class='flex-container'><label class="feedback" id="markupLabel" style="display:${state.isMultiSelection ? "none" : "block"};"> <span class="font-size--3">Markup (required):</snap>
             <select style="width:100%" id="field-markup" required>`;
 
     range.map(item => {
@@ -341,7 +345,7 @@ export default function FeedbackControlPanel() {
           state.data.additionalFields[addField.field] ||
           (addField.editable ? "" : ((typeof addField.editable === "object") ? { code: "null", desc: "None set" } : "None set"));
         outputHtml += `
-                <label class="feedback">
+                <label class="markup"  >
                     <span class='font-size--3'>${
           addField.display ? addField.display : addField.field
           }:</span>
@@ -407,7 +411,7 @@ export default function FeedbackControlPanel() {
 
   const getHtmlForBtns = isSaved => {
     // const newStatus = isHucInModeledRange ? 2 : 1;
-    let saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave"> Save </button>`;
+    let saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ? "none" : "block"};"> Save </button>`;
 
     if (!state.isMultiSelection) {
       saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
@@ -421,8 +425,8 @@ export default function FeedbackControlPanel() {
 
     let btnsForExistingItem = `
             <nav class='trailer-half'>
-                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback"> Reset </button>`;
-      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback" id="fbSave"> Save </button>`;
+                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback" id="fbReset" style="display:${state.isMultiSelection ? "none" : "block"};"> Reset </button>`;
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback" id="fbSave" style="display:${state.isMultiSelection ? "none" : "block"};"> Save </button>`;
     
     if (!state.isMultiSelection)
       btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;

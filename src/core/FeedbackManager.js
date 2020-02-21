@@ -8,7 +8,8 @@ export default function (options = {}) {
     onAdd: null,
     onClose: null,
     onSubmit: null,
-    onRemove: null
+    onRemove: null,
+    onSubmitMS:null
   };
 
   const init = (options = {}) => {
@@ -16,6 +17,7 @@ export default function (options = {}) {
     eventHandlers["onClose"] = options.onCloseHandler || null;
     eventHandlers["onSubmit"] = options.onSubmitHandler || null;
     eventHandlers["onRemove"] = options.onRemoveHandler || null;
+    eventHandlers["onSubmitMS"] = options.onSubmitMSHandler || null;
   };
 
   // const getTotalSelection = (data = []) => {
@@ -50,7 +52,27 @@ export default function (options = {}) {
     }
   };
 
+  const submitMS = dataList => {
+    if (eventHandlers["onSubmitMS"]) {
+     // const feedbackData = feedbackDataModel.getFeedbackData();
+     // let datalist=[];
+     // datalist.push(feedbackData);
+      console.log('MAINEED feedbackData', dataList);
+      dataList.forEach(element => {
+        save(element);
+      });
+      
+      eventHandlers["onSubmitMS"](dataList);
+    }
+  };
+
+  const getfeedbackData=()=>{
+    return feedbackDataModel.getFeedbackData();
+  }
+
   const submit = () => {
+    if (eventHandlers["onSubmit"]) {
+      // debugger
     const feedbackData = feedbackDataModel.getFeedbackData();
     ////=======TEMP do not save migrantstatus data====
    // console.log('MAI feedbackData', feedbackData);
@@ -59,9 +81,10 @@ export default function (options = {}) {
 
     save(feedbackData);
 
-    if (eventHandlers["onSubmit"]) {
+    //if (eventHandlers["onSubmit"]) {
       eventHandlers["onSubmit"](feedbackData);
     }
+   
   };
 
   const save = feedbackData => {
@@ -148,6 +171,8 @@ export default function (options = {}) {
     feedbackDataModel,
     batchAddToDataStore,
     getFeedbackDataBySpecies,
+    submitMS,
+    getfeedbackData
     //  getTotalSelection
   };
 }

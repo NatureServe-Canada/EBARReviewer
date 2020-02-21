@@ -100,6 +100,15 @@ export default function Controller(props = {}) {
 
         controllerProps.onDeatiledFeedbackSubmit(data);
       },
+      onSubmitMSHandler: data => {
+        console.log('MS DATA feedback manager onSubmitHandler', data);
+        postFeedbackMS(data);
+        data.forEach(element => {
+          showEcoFeatureOnMap(element.ecoID, element.status, element);
+        });
+
+        resetSelectedEcoFeature();
+      },
 
       onSubmitSaveHandler: data => {
         console.log('feedback manager onSubmitSaveHandler', data);
@@ -460,9 +469,20 @@ export default function Controller(props = {}) {
     }
   };
 
+
+  const postFeedbackMS = async (dataList = []) => {
+    try {
+      dataList.forEach(data => {
+        console.log(data);
+        postFeedback(data);
+      });
+    }
+    catch (e) { console.error(e); }
+  }
+
   // add data load date
   const postFeedback = async (data = {}) => {
-    console.log('data.species',data.species);
+    console.log('data.species', data.species);
     //alert(data.species);
 
     try {
@@ -490,7 +510,8 @@ export default function Controller(props = {}) {
             data.additionalFields[addField.field] !== null &&
             data.additionalFields[addField.field] !== "null"
           ) {
-            if (addField.editable) {
+            // if (addField.editable) {
+            if (addField.visible) {
               feedbackFeature.attributes[addField.field] =
                 data.additionalFields[addField.field];
             }
@@ -523,6 +544,7 @@ export default function Controller(props = {}) {
       apiManager
         .applyEditToFeatureTable(requestUrl, [feedbackFeature])
         .then(res => {
+
           console.log("post edit to Feedback table", res);
         })
         .catch(err => {
@@ -780,7 +802,7 @@ export default function Controller(props = {}) {
     }
 
     // console.log('isHucInModeledRange', isHucInModeledRange);
-   // console.log("openFeedbackManager", userID, species, ecoID);
+    // console.log("openFeedbackManager", userID, species, ecoID);
 
     if (userID && species && ecoID) {
       var obj = {

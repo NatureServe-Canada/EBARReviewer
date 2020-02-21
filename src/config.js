@@ -74,7 +74,7 @@ module.exports = {
             { code: "T", desc: "T - Transient" }
           ],
           required: false,
-          visible: true
+          visible: false
         }
       ]
     },
