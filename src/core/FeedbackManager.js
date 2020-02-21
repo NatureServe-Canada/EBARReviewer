@@ -55,15 +55,11 @@ export default function (options = {}) {
   };
 
   const submitMS = dataList => {
-    if (eventHandlers["onSubmitMS"]) {
-      // const feedbackData = feedbackDataModel.getFeedbackData();
-      // let datalist=[];
-      // datalist.push(feedbackData);
-      console.log('MAINEED feedbackData', dataList);
-      dataList.forEach(element => {
-        save(element);
-      });
+    dataList.forEach(element => {
+      save(element);
+    });
 
+    if (eventHandlers["onSubmitMS"]) {
       eventHandlers["onSubmitMS"](dataList);
     }
   };
@@ -73,17 +69,11 @@ export default function (options = {}) {
   }
 
   const submit = () => {
+
+    const feedbackData = feedbackDataModel.getFeedbackData();
+
+    save(feedbackData);
     if (eventHandlers["onSubmit"]) {
-      // debugger
-      const feedbackData = feedbackDataModel.getFeedbackData();
-      ////=======TEMP do not save migrantstatus data====
-      // console.log('MAI feedbackData', feedbackData);
-      //delete feedbackData.additionalFields.migrantstatus;
-      console.log('MAI2 feedbackData', feedbackData);
-
-      save(feedbackData);
-
-      //if (eventHandlers["onSubmit"]) {
       eventHandlers["onSubmit"](feedbackData);
     }
 
@@ -184,7 +174,7 @@ export default function (options = {}) {
     getFeedbackDataBySpecies,
     submitMS,
     getfeedbackData,
-    removeMS
-    //  getTotalSelection
+    removeMS,
+    getSavedItemFromDataStore
   };
 }

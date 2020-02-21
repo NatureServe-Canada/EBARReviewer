@@ -234,7 +234,7 @@ const initApp = async oauthManager => {
       let dataList = [];
       let fb = controller.feedbackManager.getfeedbackData();
       let res = mapControl.getMultiSelectionList();
-     // fb.status = 1;
+      // fb.status = 1;
 
       const _deepCopy = (feedBack) => {
         return {
@@ -261,7 +261,7 @@ const initApp = async oauthManager => {
       let dataList = [];
       let fb = controller.feedbackManager.getfeedbackData();
       let res = mapControl.getMultiSelectionList();
-      fb.status = 1;
+
 
       const _deepCopy = (feedBack) => {
         return {
@@ -273,15 +273,21 @@ const initApp = async oauthManager => {
       };
 
       res.forEach(el => {
+
+
         let _feedBack = _deepCopy(fb);
         _feedBack.ecoID = el.attributes.ecoshapeid;
         _feedBack.ecoAtts = el.attributes;
+        //const isHucInModeledRange = dataModel.isHucInModeledRange(_feedBack.ecoID, _feedBack.species);
+
+        let fb_current = controller.feedbackManager.getSavedItemFromDataStore(_feedBack);
+        _feedBack.status = fb_current ? 2 : 1;
         dataList.push(_feedBack);
 
       });
 
       controller.feedbackManager.submitMS(dataList);
-      
+
       mapControl.clearMSelection();
       mapControl.clearEcoPreviewGraphicLayer();
     }
