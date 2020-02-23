@@ -162,12 +162,11 @@ export default function () {
   };
 
   const checkState = data => {
-   //debugger
-   console.log('data.datecompleted',data.datecompleted);
+   //console.log('data.datecompleted',data.datecompleted);
  
     if (data.datecompleted) {
-      // document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "none";
-      // document.getElementById("ofcClose").style.pointerEvents = "auto";
+      document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "none";
+      document.getElementById("ofcClose").style.pointerEvents = "auto";
     }
     else{
       document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "auto";

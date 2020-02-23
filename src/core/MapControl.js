@@ -529,9 +529,7 @@ const MapControl = function ({
 
   const queryEcoLayerByMSMouseEvent = event => {
     if (!ecoShpLayer) return;
-    // debugger
     if (!(event && event.graphic && event.graphic.geometry)) return;
-    //debugger
     const query = ecoShpLayer.createQuery();
     query.geometry = event.graphic.geometry; // the point location of the pointer
     query.spatialRelationship = "intersects"; // this is the default

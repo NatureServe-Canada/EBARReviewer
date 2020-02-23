@@ -329,9 +329,7 @@ const initApp = async oauthManager => {
     onSubmitSaveHandler: data => {
 
       // if (data && !data.datestarted)
-      //   data.datestarted = new Date().toISOString().split('T')[0];
-      // data.datecompleted = new Date().toISOString().split('T')[0];
-      data.datecompleted = "20200206";
+       data.datecompleted = (new Date().toISOString().split('T')[0]).toString();
 
       console.log('submit with save overall feedback', data);
 

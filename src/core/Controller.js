@@ -364,7 +364,7 @@ export default function Controller(props = {}) {
         [config.FIELD_NAME.overallFeedback.comment]: data.comment,
         [config.FIELD_NAME.overallFeedback.username]: data.userID,
         //[config.FIELD_NAME.overallFeedback.datestarted]: data.datestarted,
-        [config.FIELD_NAME.overallFeedback.datecompleted]: data.datecompleted,//new Date(0)
+        [config.FIELD_NAME.overallFeedback.datecompleted]: data.datecompleted
       }
     };
 
@@ -391,7 +391,7 @@ export default function Controller(props = {}) {
         feature.attributes.ObjectId = feedbacks[0].attributes.objectid;
       }
       else {
-        feature.attributes.datestarted = new Date().toISOString().split('T')[0];
+        feature.attributes.datestarted = (new Date().toISOString().split('T')[0]).toString();
       }
       // REVIEWER TABLE HAS NO DATE FIELDS...
       /* 
