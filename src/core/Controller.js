@@ -90,7 +90,9 @@ export default function Controller(props = {}) {
       onCloseHandler: () => {
         // console.log('feedbackManager is closed');
         controllerProps.feedbackManagerOnClose();
-        document.getElementsByClassName('esri-sketch')[0].style.display = "none";
+        try {
+          document.getElementsByClassName('esri-sketch')[0].style.display = "none";
+        } catch (e) { }
       },
 
       onSubmitHandler: data => {
@@ -405,6 +407,22 @@ export default function Controller(props = {}) {
         .applyEditToFeatureTable(requestUrl, [feature])
         .then(res => {
           console.log("post edit to OverallFeedback table", res);
+          try {
+            if (res['data']['addResults']) {
+              let resArray = res['data']['addResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to OverallFeedback table", resArray);
+              }
+            }
+            if (res['data']['updateResults']) {
+              let resArray = res['data']['updateResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to OverallFeedback table", resArray);
+              }
+            }
+          } catch{ }
         })
         .catch(err => {
           console.log(`${feedbackFailMessage}`);
@@ -562,6 +580,22 @@ export default function Controller(props = {}) {
         .then(res => {
 
           console.log("post edit to Feedback table", res);
+          try {
+            if (res['data']['addResults']) {
+              let resArray = res['data']['addResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+            if (res['data']['updateResults']) {
+              let resArray = res['data']['updateResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+          } catch{ }
         })
         .catch(err => {
           alert(`${feedbackFailMessage}`);
@@ -635,7 +669,22 @@ export default function Controller(props = {}) {
         .applyEditToFeatureTable(requestUrl, [feedbackFeature])
         .then(res => {
           console.log("post edit to Feedback table", res);
-          // controllerProps.clearMSelection();
+          try {
+            if (res['data']['addResults']) {
+              let resArray = res['data']['addResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+            if (res['data']['updateResults']) {
+              let resArray = res['data']['updateResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+          } catch{ }
         })
         .catch(err => {
           alert(`${feedbackFailMessage}`);
@@ -742,12 +791,12 @@ export default function Controller(props = {}) {
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
-    
+
 
     if (data) {
-    var dataCount = Object.keys(data).length;
-    const modal = document.getElementById("myModal");
-    modal.style.display = "block";
+      var dataCount = Object.keys(data).length;
+      const modal = document.getElementById("myModal");
+      modal.style.display = "block";
 
       Object.keys(data).forEach(function (key) {
         // console.log(key, data[key]);
@@ -758,9 +807,9 @@ export default function Controller(props = {}) {
         showEcoFeatureOnMap(ecoID, status, data[key], dataCount);
       });
     }
-    else{
-      
-       controllerProps.runSetpEcoByStatusLoaded();
+    else {
+
+      controllerProps.runSetpEcoByStatusLoaded();
     }
   };
 
@@ -786,8 +835,8 @@ export default function Controller(props = {}) {
   };
 
   const openFeedbackManager = (ecoAtts = {}) => {
-    if(document.getElementById('overallFeedbackControlPanelContainer')){
-      document.getElementById('overallFeedbackControlPanelContainer').style.display="none";
+    if (document.getElementById('overallFeedbackControlPanelContainer')) {
+      document.getElementById('overallFeedbackControlPanelContainer').style.display = "none";
     }
 
     const userID = oauthManager.getUserID();

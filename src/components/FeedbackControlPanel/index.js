@@ -93,8 +93,8 @@ export default function FeedbackControlPanel() {
       try { document.getElementById("fbResetMS").style.display = "block"; } catch{ }
       document.getElementById('curEcoSelected').style.display = "none";
       document.getElementById('fbTitle').innerText = 'Multiple Ecoshapes selected';
-      try { document.getElementById('field-comment').value  = ""; } catch{ }
-      try { document.getElementById('additional-field-reference').value  = ""; } catch{ }
+      try { document.getElementById('field-comment').value = ""; } catch{ }
+      try { document.getElementById('additional-field-reference').value = ""; } catch{ }
       document.getElementById("field-markup").selectedIndex = "0";
 
     }
@@ -112,10 +112,10 @@ export default function FeedbackControlPanel() {
       document.getElementById('curEcoSelected').style.display = "block";
       const hucName = state.data.ecoAtts.ecoshapename || "";
       document.getElementById('fbTitle').innerText = `Ecoshape: ${hucName}`;
-      try { document.getElementById('field-comment').value  = ""; } catch{ }
-      try { document.getElementById('additional-field-reference').value  = ""; } catch{ }
-      try { document.getElementById('field-comment').value  = document.getElementById('field-comment').getAttribute('defaultvalue'); } catch{ }
-      try { document.getElementById('additional-field-reference').value  = document.getElementById('additional-field-reference').getAttribute('defaultvalue'); } catch{ }
+      try { document.getElementById('field-comment').value = ""; } catch{ }
+      try { document.getElementById('additional-field-reference').value = ""; } catch{ }
+      try { document.getElementById('field-comment').value = document.getElementById('field-comment').getAttribute('defaultvalue'); } catch{ }
+      try { document.getElementById('additional-field-reference').value = document.getElementById('additional-field-reference').getAttribute('defaultvalue'); } catch{ }
       document.getElementById("field-markup").selectedIndex = "0";
       //need to clear graphics
       //defaultvalue
@@ -274,8 +274,8 @@ export default function FeedbackControlPanel() {
 
     let outputHtml = ``;
 
-    if(!state.isMultiSelection){
-      outputHtml +=`<div class='flex-container' style='margin-bottom:10px'>
+    if (!state.isMultiSelection) {
+      outputHtml += `<div class='flex-container' style='margin-bottom:10px'>
     <div class='inline-block' id="curEcoSelected">
       <p class="font-size--3 meta">
         <!--<strong>Ecoshape:</strong> ${EA.ecoshapename} <br>-->
@@ -303,7 +303,7 @@ export default function FeedbackControlPanel() {
           if (state && state.data && state.data.hucForSpeciesData && state.data.hucForSpeciesData.length > 0 &&
             state.data.hucForSpeciesData[0].presence.toUpperCase() != d.code.toUpperCase()) {
             if (state && state.data && state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) {
-              range.push({ code: d.code, text: d.text, status: false });
+              range.push({ code: d.code, text: d.text, status: true });
             } else {
               range.push({ code: d.code, text: d.text, status: false });
             }
@@ -484,7 +484,8 @@ export default function FeedbackControlPanel() {
   }
 
   const getNewStatus = () => {
-    return state.data.isHucInModeledRange ? 2 : 1;
+    let markup = feedbackObjects.find(el => { return el.id == 'field-markup' });
+    return state.data.isHucInModeledRange && markup && markup.value == 'R' ? 2 : 1;
   };
 
   const enableSaveButton = () => {
