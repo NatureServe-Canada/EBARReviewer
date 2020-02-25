@@ -310,7 +310,7 @@ export default function FeedbackControlPanel() {
           }
         } else {
           if (state && state.data && state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) {
-            //range.push({ code: d.code, text: d.text, status: true });
+            range.push({ code: d.code, text: d.text, status: true });
           } else {
             range.push({ code: d.code, text: d.text, status: false });
           }
@@ -320,7 +320,7 @@ export default function FeedbackControlPanel() {
       });
       if (state && state.data && state.data.isHucInModeledRange) {
         if (state.data.markup && state.data.markup.toUpperCase() === "R") {
-          //range.push({ code: "R", text: "Remove", status: true });
+          range.push({ code: "R", text: "Remove", status: true });
         }
         else {
           range.push({ code: "R", text: "Remove", status: false });

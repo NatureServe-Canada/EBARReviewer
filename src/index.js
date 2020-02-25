@@ -124,6 +124,15 @@ const initApp = async oauthManager => {
     showMSdata: () => {
       mapControl.showMS();
     },
+    runSetpEcoByStatusLoaded: () => {
+      mapControl.setpEcoByStatusLoaded();
+    },
+    runSetpEcoByPresenceLoaded: () => {
+      mapControl.setpEcoByPresenceLoaded();
+    },
+    runFullExtent: () => {
+      mapControl.fullExtent();
+    },
     /*     
     highligtEcosOnMap: ecoIds => {
       console.log('highligtEcosOnMap', data);
@@ -151,6 +160,8 @@ const initApp = async oauthManager => {
       //console.log('showEcoFeatureOnMap', ecoId, status);
       mapControl.showEcoFeatureByStatus(ecoId, status, len);
     },
+
+
 
     showEcoPresenceOnMap: (ecoId = "", presence = "", len) => {
       // Lock the UI as we draw pink graphics
@@ -329,7 +340,7 @@ const initApp = async oauthManager => {
     onSubmitSaveHandler: data => {
 
       // if (data && !data.datestarted)
-       data.datecompleted = (new Date().toISOString().split('T')[0]).toString();
+      data.datecompleted = (new Date().toISOString().split('T')[0]).toString();
 
       console.log('submit with save overall feedback', data);
 

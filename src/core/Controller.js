@@ -742,10 +742,13 @@ export default function Controller(props = {}) {
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
+    
+
+    if (data) {
     var dataCount = Object.keys(data).length;
     const modal = document.getElementById("myModal");
     modal.style.display = "block";
-    if (data) {
+
       Object.keys(data).forEach(function (key) {
         // console.log(key, data[key]);
 
@@ -754,6 +757,10 @@ export default function Controller(props = {}) {
         console.log("renderEcoWithFeedbackDataOnMap ::  ecoid: " + ecoID + " status: " + status)
         showEcoFeatureOnMap(ecoID, status, data[key], dataCount);
       });
+    }
+    else{
+      
+       controllerProps.runSetpEcoByStatusLoaded();
     }
   };
 

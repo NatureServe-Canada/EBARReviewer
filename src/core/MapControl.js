@@ -742,6 +742,10 @@ const MapControl = function ({
     });
   }
 
+  const setpEcoByStatusLoaded=() => {
+    pEcoByStatusLoaded = true;
+  }
+
   const showEcoFeatureByStatus = (
     ecoId,
     status,
@@ -763,7 +767,7 @@ const MapControl = function ({
         if (len) {
           if (pEcoByStatusCount == len) {
             pEcoByStatusLoaded = true;
-            if (pEcoByStatusLoaded && pEcoByPresenceLoaded) fullExtent();
+            if (pEcoByStatusLoaded && pEcoByPresenceLoaded) setTimeout(function(){fullExtent();},300); 
           }
         }
       });
@@ -774,11 +778,16 @@ const MapControl = function ({
       if (len) {
         if (pEcoByStatusCount == len) {
           pEcoByStatusLoaded = true;
-          if (pEcoByStatusLoaded && pEcoByPresenceLoaded) fullExtent();
+          if (pEcoByStatusLoaded && pEcoByPresenceLoaded) 
+          setTimeout(function(){fullExtent();},300); 
         }
       }
     }
   };
+
+  const setpEcoByPresenceLoaded=() => {
+    pEcoByPresenceLoaded = true;
+  }
 
   const showEcoFeatureByPresence = (ecoId, presence, len) => {
     queryEcoShpsLayerByEcoID(ecoId).then(features => {
@@ -790,7 +799,7 @@ const MapControl = function ({
       if (len) {
         if (pEcoByPresenceCount == len) {
           pEcoByPresenceLoaded = true;
-          if (pEcoByStatusLoaded && pEcoByPresenceLoaded) fullExtent();
+          if (pEcoByStatusLoaded && pEcoByPresenceLoaded) setTimeout(function(){fullExtent();},300); 
         }
       }
 
@@ -1179,7 +1188,9 @@ const MapControl = function ({
     fullExtentClear,
     showMS,
     clearEcoPreviewGraphicLayer,
-    getMultiSelectionList
+    getMultiSelectionList,
+    setpEcoByStatusLoaded,
+    setpEcoByPresenceLoaded
   };
 };
 
