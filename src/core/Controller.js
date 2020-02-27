@@ -526,7 +526,7 @@ export default function Controller(props = {}) {
         attributes: {
           [config.FIELD_NAME.feedbackTable.userID]: data.reviewid, //data.userID,
           [config.FIELD_NAME.feedbackTable.ecoShapeID]: data.ecoID,
-          [config.FIELD_NAME.feedbackTable.status]: data.status,
+         // [config.FIELD_NAME.feedbackTable.status]: data.status,
           [config.FIELD_NAME.feedbackTable.comment]: data.comment,
           [config.FIELD_NAME.feedbackTable.species]: data.species,
           [config.FIELD_NAME.feedbackTable.username]: data.userID,

@@ -181,6 +181,7 @@ export default function FeedbackControlPanel() {
 
                     <div class='comment-dialog'>
                         <label class="feedback">
+                            <br>
                             <span class='font-size--3'>Comment (required):</span>
                             <textarea type="text" id="field-comment" placeholder="" class="comment-textarea" maxlength="4095" defaultValue="${comment}">${comment}</textarea>
                         </label>
@@ -190,7 +191,7 @@ export default function FeedbackControlPanel() {
                         ${getHtmlForAdditionalFields()}
                     </div>
 
-
+<!--
                     <div class='flex-container' style="margin-left:2px;">
                       <div class='inline-block'>
                       <span class="toggle-switch-label font-size--3 action-message">
@@ -204,7 +205,7 @@ export default function FeedbackControlPanel() {
                       </label>
                      </div> 
                     </div>
-
+-->
                     <div id="feedbackControlPanelMultiSelectInfo" style="flex;flex-direction:row;display:${state.isMultiSelection ? "block" : "none"};" class="font-size--3 meta">
                     <span style="color:lightpink">WARNING: existing Markup for the selected Ecoshapes will be replaced on Save.</span>
                        <div>Ecoshape(s):<span id="feedbackControlPanelMSIecoshapes" style="margin-left:5px;"></span></div>
@@ -275,7 +276,7 @@ export default function FeedbackControlPanel() {
     let outputHtml = ``;
 
     if (!state.isMultiSelection) {
-      outputHtml += `<div class='flex-container' style='margin-bottom:10px'>
+      outputHtml += `<div class='flex-container'>
     <div class='inline-block' id="curEcoSelected">
       <p class="font-size--3 meta">
         <!--<strong>Ecoshape:</strong> ${EA.ecoshapename} <br>-->
@@ -332,7 +333,7 @@ export default function FeedbackControlPanel() {
     // outputHtml += `
     //     <div class='flex-container'><label class="feedback" id="markupLabel" style="display:${state.isMultiSelection ? "none" : "block"};"> <span class="font-size--3">Markup (required):</snap>
     //         <select style="width:100%" id="field-markup" required>`;
-    outputHtml += `
+    outputHtml += `<br>
     <div class='flex-container'><label class="feedback" id="markupLabel" > <span class="font-size--3">Markup (required):</snap>
         <select style="width:100%" id="field-markup" required>`;
 
@@ -373,7 +374,7 @@ export default function FeedbackControlPanel() {
         fieldValue =
           state.data.additionalFields[addField.field] ||
           (addField.editable ? "" : ((typeof addField.editable === "object") ? { code: "null", desc: "None set" } : "None set"));
-        outputHtml += `
+        outputHtml += `<br>
                 <label class="markup"  >
                     <span class='font-size--3'>${
           addField.display ? addField.display : addField.field

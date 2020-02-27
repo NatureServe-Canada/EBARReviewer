@@ -176,7 +176,7 @@ const MapControl = function ({
           },
           title: config.reference_layers.vt.title,
           opacity: defaultOpacity,
-          visible: false,
+          visible: true,
           popupEnabled: false
         });
 
@@ -308,7 +308,7 @@ const MapControl = function ({
       .loadModules(["esri/layers/GraphicsLayer"], esriLoaderOptions)
       .then(([GraphicsLayer]) => {
         ecoShpByStatusGraphicLayer = new GraphicsLayer({
-          opacity: 0.6,
+          //opacity: 0.6,
           listMode: "hide"
         });
 
@@ -325,7 +325,7 @@ const MapControl = function ({
           title: "Selection"
         });
 
-        mapView.map.addMany([ecoShpByStatusGraphicLayer, ecoPreviewGraphicLayer, ecoPresenceGraphicLayer, ecoMultiSelection]);
+        mapView.map.addMany([ ecoPreviewGraphicLayer, ecoPresenceGraphicLayer, ecoShpByStatusGraphicLayer,ecoMultiSelection]);
 
       });
   };
@@ -874,10 +874,10 @@ const MapControl = function ({
         //width: "24px",
         //height: "24px",
         type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        color: "green",
+        color: "[76,230,0,1]",
         style: "forward-diagonal",
         outline: {
-          color: "green",//config.COLOR.ecoBorderIsModeled,
+          color: [76,230,0,1],//config.COLOR.ecoBorderIsModeled,
           width: "3px"
         }
       },

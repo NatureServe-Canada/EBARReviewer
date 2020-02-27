@@ -178,11 +178,11 @@ module.exports = {
 
   reference_layers: {
     vt: {
-      itemId: "0fa1002f17b44c54b7c54b8256a50d46", //itemId: "e6f212bbd10b417c990928b46f78a64b",
+      itemId: "e6f212bbd10b417c990928b46f78a64b",
       title: "Ecoshapes"
     },
     nawater: {
-      itemId: "50a865f144e2437da3918b66e97f17e9", //itemId: "0598b4723e07429eac809dbb43fc7c32",
+      itemId: "0598b4723e07429eac809dbb43fc7c32",
       title: "Major Lakes and Reservoirs of North America (CEC)"
     },
     protectedAreas: {
