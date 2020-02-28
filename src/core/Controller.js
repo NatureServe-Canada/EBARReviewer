@@ -271,7 +271,7 @@ export default function Controller(props = {}) {
           reviewid: d.attributes[config.FIELD_NAME.feedbackTable.userID],
           //userID: d.attributes[config.FIELD_NAME.feedbackTable.userID],
           ecoID: d.attributes[config.FIELD_NAME.feedbackTable.ecoShapeID],
-          species: d.attributes[config.FIELD_NAME.feedbackTable.species],
+          //species: d.attributes[config.FIELD_NAME.feedbackTable.species],
           status: d.attributes[config.FIELD_NAME.feedbackTable.status],
           comment: d.attributes[config.FIELD_NAME.feedbackTable.comment],
           markup: d.attributes[config.FIELD_NAME.feedbackTable.markup],
@@ -487,7 +487,7 @@ export default function Controller(props = {}) {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
         //where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
-        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
+        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.reviewid}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
       });
 
       if (feedbacks[0]) {
@@ -526,9 +526,9 @@ export default function Controller(props = {}) {
         attributes: {
           [config.FIELD_NAME.feedbackTable.userID]: data.reviewid, //data.userID,
           [config.FIELD_NAME.feedbackTable.ecoShapeID]: data.ecoID,
-         // [config.FIELD_NAME.feedbackTable.status]: data.status,
+          [config.FIELD_NAME.feedbackTable.status]: data.status,
           [config.FIELD_NAME.feedbackTable.comment]: data.comment,
-          [config.FIELD_NAME.feedbackTable.species]: data.species,
+          //[config.FIELD_NAME.feedbackTable.species]: data.species,
           [config.FIELD_NAME.feedbackTable.username]: data.userID,
           [config.FIELD_NAME.feedbackTable.markup]: data.markup,
         }
@@ -556,7 +556,7 @@ export default function Controller(props = {}) {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
         //where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
-        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
+        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.reviewid}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
       });
 
       const requestUrl = feedbacks[0]
@@ -646,7 +646,7 @@ export default function Controller(props = {}) {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
         //where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
-        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
+        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.reviewid}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
       });
 
       const requestUrl = feedbacks[0]
@@ -756,7 +756,8 @@ export default function Controller(props = {}) {
     controllerProps.clearEcoPresenceGraphics();
     if (ecoIds.length === 0) {
       const species = dataModel.getSelectedSpecies();
-      const feedbackData = feedbackManager.getFeedbackDataBySpecies(species);
+      const reviewId = dataModel.getReviewId(species)
+      const feedbackData = feedbackManager.getFeedbackDataBySpecies(reviewId);
       if (feedbackData) {
         Object.keys(feedbackData).forEach(function (key) {
           ecoIds.push(feedbackData[key].ecoID);
@@ -785,9 +786,12 @@ export default function Controller(props = {}) {
     console.log("THIS IS WHERE THE FEEDBACK DRAW ALL BEGINS....")
     let species = dataModel.getSelectedSpecies();
     if (species) {
-      species = parseInt(species)
+      species = parseInt(species);
+      const reviewId = dataModel.getReviewId(species);
+      data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
     }
-    data = data || feedbackManager.getFeedbackDataBySpecies(species);
+
+    //data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
@@ -845,6 +849,7 @@ export default function Controller(props = {}) {
     const hucName =
       state.selectedHucFeature.attributes[config.FIELD_NAME.hucLayerHucName];
     const isHucInModeledRange = dataModel.isHucInModeledRange(ecoID, species);
+    const reviewid = dataModel.getReviewId(species);
 
     // this was in additional fields, but need hucForSpeciesData Presence and Notes to put on UI
     const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
@@ -883,6 +888,7 @@ export default function Controller(props = {}) {
       var obj = {
         userID,
         species,
+        reviewid, 
         ecoID,
         hucName,
         isHucInModeledRange,

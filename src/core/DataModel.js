@@ -69,6 +69,12 @@ export default class DataModel {
     return this.ecoShapesBySpecies[species];
   }
 
+  getReviewId(species){
+    return this.speciesLookup.filter(d => {
+      return d["rangemapid"] === +species      
+    })[0]['reviewid'];
+  }
+
   getStatusByIndex(index) {
     return index && this.status[+index] ? this.status[+index] : null;
   }

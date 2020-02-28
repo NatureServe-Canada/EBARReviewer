@@ -714,14 +714,16 @@ const MapControl = function ({
   }
 
   const clearMSelection = () => {
-    console.log("clearMSelection");
+    // REVISIT - mutli select has been commented out but need the cyan clear
+    ecoMultiSelection.removeAll();
+/*     console.log("clearMSelection");
     ecoMultiSelection.removeAll(); //all selected assets for multi-selection
     // ecoPreviewGraphicLayer.removeAll();//current selected asset
     multiSelectionList = [];
     const modal = document.getElementById("myModal");
     modal.setAttribute('multi_selection', false);
     addtoMSlist(currentSelectedFeature);
-    showMS();
+    showMS(); */
   }
   const clearEcoPreviewGraphicLayer = () => {
     ecoPreviewGraphicLayer.removeAll();//current selected asset
@@ -874,7 +876,7 @@ const MapControl = function ({
         //width: "24px",
         //height: "24px",
         type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        color: "[76,230,0,1]",
+        color: [76,230,0,1],
         style: "forward-diagonal",
         outline: {
           color: [76,230,0,1],//config.COLOR.ecoBorderIsModeled,

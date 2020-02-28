@@ -478,10 +478,13 @@ export default function FeedbackControlPanel() {
 
   const addSwitcherOnMultiSelectionHandler = () => {
     var element = document.getElementById('toggleMS');
-    element.addEventListener("change", evt => {
-      console.log("toggle-switch-input MS on change", evt);
-      toggleIsMultiSelection();
-    });
+    // protect for now as MS toggle is hidden
+    if (element){
+      element.addEventListener("change", evt => {
+        console.log("toggle-switch-input MS on change", evt);
+        toggleIsMultiSelection();
+      });
+   }
   }
 
   const getNewStatus = () => {
@@ -614,9 +617,9 @@ export default function FeedbackControlPanel() {
         if (document.getElementById('esriRemovalReason') != null) return;
         // Add a removal reason drop down only when removing a species
         var outputHtml = '<div id="esriRemovalReason">';
-        outputHtml += `<span class='font-size--3'>Removal Reason (required):</span>
+        outputHtml += `<br><span class='font-size--3'>Removal Reason (required):</span>
       <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
-        outputHtml += `<option value="null">Not set</option>`;
+      outputHtml += `<option value="null">Not set</option>`;
         const remReasons = config.REMOVAL;
         remReasons.map(d => {
           let c = d.attributes.removalcode;
