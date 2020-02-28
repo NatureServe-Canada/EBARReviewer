@@ -357,7 +357,7 @@ export default function FeedbackControlPanel() {
 
   const getHtmlForAdditionalFieldsRemoveReason = () => {
     let outputHtml = "";
-
+    if (!state.data.markup || (state.data.markup && state.data.markup != 'R')) return outputHtml;
     if (
       config.FIELD_NAME.feedbackTable.additionalFields &&
       config.FIELD_NAME.feedbackTable.additionalFields.length > 0
@@ -370,7 +370,7 @@ export default function FeedbackControlPanel() {
             outputHtml = '<div id="esriRemovalReason">';
             outputHtml += `<br><span class='font-size--3'>Removal Reason (required):</span>
           <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
-            outputHtml += `<option disabled value="null">None set</option>`;
+            outputHtml += `<option style="background-color:lightgray;" disabled selected value="null">None set</option>`;
             const remReasons = config.REMOVAL;
             remReasons.map(d => {
               let c = d.attributes.removalcode;
@@ -399,7 +399,6 @@ export default function FeedbackControlPanel() {
   // Adds select, textarea, text, and label entries to the feedback container depending on configuration
   const getHtmlForAdditionalFields = () => {
     let outputHtml = "";
-    console.log(state.data);
 
     if (
       config.FIELD_NAME.feedbackTable.additionalFields &&
@@ -537,6 +536,7 @@ export default function FeedbackControlPanel() {
   const enableSaveButton = () => {
     try {
       var enable = true;
+      var fieldMarkupVal = (feedbackObjects.find(el => { return el.id == "field-markup"; })).value;
       feedbackObjects.map(el => {
         if (
           (el.req && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
@@ -557,10 +557,11 @@ export default function FeedbackControlPanel() {
   const enableSaveMSButton = () => {
     try {
       var enable = true;
+      var fieldMarkupVal = (feedbackObjects.find(el => { return el.id == "field-markup"; })).value;
       feedbackObjects.map(el => {
         if (
           (el.req && el.id != "field-markup" && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
-          // || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
+          || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
         ) enable = false;
       });
       const btn = document.getElementsByClassName("js-submit-feedbackMS");
@@ -610,7 +611,6 @@ export default function FeedbackControlPanel() {
     container.addEventListener("input", function (event) {
       if (!(event && event.target)) return;
 
-      var fieldMarkupVal = null;
       var targetField = "";
       feedbackObjects.map(el => {
 
@@ -626,6 +626,12 @@ export default function FeedbackControlPanel() {
               if (entityFieldInputOnChange) {
                 entityFieldInputOnChange(fieldName, event.target.value);
               }
+              if (el.id == "field-markup") {
+                feedbackObjects.map(e => {
+                  if (e.id == "additional-field-removalreason")
+                    e.value = null;
+                });
+              }
               break;
             case 'additional-field-':
               if (additionalFieldInputOnChange) {
@@ -635,7 +641,6 @@ export default function FeedbackControlPanel() {
             default:
           }
         }
-        if (el.id == "field-markup") fieldMarkupVal = el.value;
 
       });
       console.log('feedbackObjects', feedbackObjects)
@@ -661,7 +666,7 @@ export default function FeedbackControlPanel() {
         var outputHtml = '<div id="esriRemovalReason">';
         outputHtml += `<br><span class='font-size--3'>Removal Reason (required):</span>
       <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
-        outputHtml += `<option disabled value="null">None set</option>`;
+        outputHtml += `<option style="background-color:lightgray;" disabled selected value="null">None set</option>`;
         const remReasons = config.REMOVAL;
         remReasons.map(d => {
           let c = d.attributes.removalcode;

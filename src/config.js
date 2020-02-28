@@ -54,7 +54,7 @@ module.exports = {
           display: "removalreason",
           editable: "textarea",
           length: 1,
-          required: false,
+          required: true,
           visible: true
         },
         {
