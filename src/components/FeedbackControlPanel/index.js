@@ -176,7 +176,7 @@ export default function FeedbackControlPanel() {
                     </div>
 
                     <div id='removeReason'>
-                    
+                    ${getHtmlForAdditionalFieldsRemoveReason()}
                     </div>
 
                     <div class='comment-dialog'>
@@ -355,9 +355,51 @@ export default function FeedbackControlPanel() {
   };
 
 
+  const getHtmlForAdditionalFieldsRemoveReason = () => {
+    let outputHtml = "";
+
+    if (
+      config.FIELD_NAME.feedbackTable.additionalFields &&
+      config.FIELD_NAME.feedbackTable.additionalFields.length > 0
+    ) {
+
+      config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
+        if (addField.field == "removalreason") {
+
+          if (state.data.additionalFields.removalreason && state.data.additionalFields.removalreason.length > 0) {
+            outputHtml = '<div id="esriRemovalReason">';
+            outputHtml += `<br><span class='font-size--3'>Removal Reason (required):</span>
+          <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
+            outputHtml += `<option disabled value="null">None set</option>`;
+            const remReasons = config.REMOVAL;
+            remReasons.map(d => {
+              let c = d.attributes.removalcode;
+              let t = d.attributes.removaltext;
+              let s = "";
+              if (state.data.additionalFields.removalreason) {
+                if (c === state.data.additionalFields.removalreason) {
+                  s = "selected";
+                }
+              }
+              outputHtml += `<option ${s} value="${c}">${t}</option>`;
+            });
+
+            outputHtml += `</select></div>`;
+          }
+        }
+      });
+    }
+    return outputHtml;
+  }
+
+
+
+
+
   // Adds select, textarea, text, and label entries to the feedback container depending on configuration
   const getHtmlForAdditionalFields = () => {
     let outputHtml = "";
+    console.log(state.data);
 
     if (
       config.FIELD_NAME.feedbackTable.additionalFields &&
@@ -392,7 +434,7 @@ export default function FeedbackControlPanel() {
               }" class="additional-field-select additional-field-input"  defaultValue="">
                     ${
               fieldValue === ""
-                ? '<option value="null" selected>None set</option>'
+                ? '<option disabled value="null" selected>None set</option>'
                 : ""
               }
                 `;
@@ -479,12 +521,12 @@ export default function FeedbackControlPanel() {
   const addSwitcherOnMultiSelectionHandler = () => {
     var element = document.getElementById('toggleMS');
     // protect for now as MS toggle is hidden
-    if (element){
+    if (element) {
       element.addEventListener("change", evt => {
         console.log("toggle-switch-input MS on change", evt);
         toggleIsMultiSelection();
       });
-   }
+    }
   }
 
   const getNewStatus = () => {
@@ -619,7 +661,7 @@ export default function FeedbackControlPanel() {
         var outputHtml = '<div id="esriRemovalReason">';
         outputHtml += `<br><span class='font-size--3'>Removal Reason (required):</span>
       <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
-      outputHtml += `<option value="null">Not set</option>`;
+        outputHtml += `<option disabled value="null">None set</option>`;
         const remReasons = config.REMOVAL;
         remReasons.map(d => {
           let c = d.attributes.removalcode;
