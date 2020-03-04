@@ -1181,13 +1181,6 @@ const MapControl = function ({
     pEcoByPresenceCount = 0;
   }
 
-  const fullExtentClear = () => {
-    const modal = document.getElementById("myModal");
-    modal.style.display = "block";
-    pEcoByStatusCount = 0;
-    pEcoByPresenceCount = 0;
-  }
-
   return {
     init,
     //highlightEcos,

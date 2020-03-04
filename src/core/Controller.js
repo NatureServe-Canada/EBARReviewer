@@ -865,14 +865,6 @@ export default function Controller(props = {}) {
         hucData =>
           hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID) : [];
 
-
-    // this was in additional fields, but need hucForSpeciesData Presence and Notes to put on UI
-    const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
-    const hucForSpeciesData = hucsBySpeciesData
-      ? hucsBySpeciesData.filter(
-        hucData =>
-          hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID) : [];
-
     // Adding addditional fields to feedback table for view/edit, pulling initial values from hucs by species extent table
     let additionalFields = {};
     if (
