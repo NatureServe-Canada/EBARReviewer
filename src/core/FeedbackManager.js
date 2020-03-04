@@ -1,6 +1,6 @@
 import FeedbackDataModel from "./FeedbackDataModel";
 
-export default function(options = {}) {
+export default function (options = {}) {
   const feedbackDataStore = {};
   const feedbackDataModel = new FeedbackDataModel();
 
@@ -8,7 +8,9 @@ export default function(options = {}) {
     onAdd: null,
     onClose: null,
     onSubmit: null,
-    onRemove: null
+    onRemove: null,
+    onSubmitMS: null,
+    onRemoveMS: null
   };
 
   const init = (options = {}) => {
@@ -16,9 +18,17 @@ export default function(options = {}) {
     eventHandlers["onClose"] = options.onCloseHandler || null;
     eventHandlers["onSubmit"] = options.onSubmitHandler || null;
     eventHandlers["onRemove"] = options.onRemoveHandler || null;
+    eventHandlers["onSubmitMS"] = options.onSubmitMSHandler || null;
+    eventHandlers["onRemoveMS"] = options.onRemoveMSHandler || null;
   };
 
+  // const getTotalSelection = (data = []) => {
+
+  //   console.log("getTotalSelection", data);
+  // }
+
   const open = (data = {}) => {
+    console.log("feedback open", data);
     // if data is already in dataStore, use the item from data store instead because it has the status and comments info
     const savedData = getSavedItemFromDataStore(data);
 
@@ -44,36 +54,49 @@ export default function(options = {}) {
     }
   };
 
+  const submitMS = dataList => {
+    dataList.forEach(element => {
+      save(element);
+    });
+
+    if (eventHandlers["onSubmitMS"]) {
+      eventHandlers["onSubmitMS"](dataList);
+    }
+  };
+
+  const getfeedbackData = () => {
+    return feedbackDataModel.getFeedbackData();
+  }
+
   const submit = () => {
+
     const feedbackData = feedbackDataModel.getFeedbackData();
 
     save(feedbackData);
-
     if (eventHandlers["onSubmit"]) {
       eventHandlers["onSubmit"](feedbackData);
     }
+
   };
 
   const save = feedbackData => {
     const ecoId = feedbackData.ecoID;
     console.log("save feedback: ", feedbackData.ecoID)
-    const species = feedbackData.species;
-
-    if (!feedbackDataStore[species]) {
-      feedbackDataStore[species] = {};
+    //const species = feedbackData.species;
+    const reviewid = feedbackData.reviewid;
+    if (!feedbackDataStore[reviewid]) {
+      feedbackDataStore[reviewid] = {};
     }
 
-    feedbackDataStore[species][ecoId] = JSON.parse(
+    feedbackDataStore[reviewid][ecoId] = JSON.parse(
       JSON.stringify(feedbackData)
     );
-
-    // console.log(feedbackDataStore);
   };
 
   const remove = () => {
     const feedbackData = feedbackDataModel.getFeedbackData();
 
-    removeFromDataStore(feedbackData.species, feedbackData.ecoID);
+    removeFromDataStore(feedbackData.reviewid, feedbackData.ecoID);
 
     // console.log('remove feedback', feedbackData);
 
@@ -82,23 +105,32 @@ export default function(options = {}) {
     }
   };
 
-  const removeFromDataStore = (species, ecoId) => {
-    if (feedbackDataStore[species][ecoId]) {
-      delete feedbackDataStore[species][ecoId];
+  const removeMS = dataList => {
+    dataList.forEach(element => {
+      removeFromDataStore(element.reviewid, element.ecoID);
+    });
+    if (eventHandlers["onRemoveMS"]) {
+      eventHandlers["onRemoveMS"](dataList);
+    }
+  };
+
+  const removeFromDataStore = (reviewId, ecoId) => {
+    if (feedbackDataStore[reviewId][ecoId]) {
+      delete feedbackDataStore[reviewId][ecoId];
     }
   };
 
   const getSavedItemFromDataStore = data => {
     const ecoId = data.ecoID;
-    const reviewid = data.reviewid;
+    const reviewId = data.reviewid;
     const species = data.species;
     const hucName = data.hucName;
 
     // console.log('get Saved Item From DataStore', species, ecoId, feedbackDataStore[species]);
     const savedItem =
-      typeof feedbackDataStore[species] !== "undefined" &&
-      typeof feedbackDataStore[species][ecoId] !== "undefined"
-        ? feedbackDataStore[species][ecoId]
+      typeof feedbackDataStore[reviewId] !== "undefined" &&
+        typeof feedbackDataStore[reviewId][ecoId] !== "undefined"
+        ? feedbackDataStore[reviewId][ecoId]
         : null;
 
     if (savedItem && typeof savedItem.hucName === "undefined" && hucName) {
@@ -123,9 +155,9 @@ export default function(options = {}) {
     // console.log(feedbackDataStore);
   };
 
-  const getFeedbackDataBySpecies = species => {
+  const getFeedbackDataBySpecies = reviewId => {
     // console.log('getFeedbackDataBySpecies', species);
-    return feedbackDataStore[species];
+    return feedbackDataStore[reviewId];
   };
 
   return {
@@ -137,6 +169,10 @@ export default function(options = {}) {
     remove,
     feedbackDataModel,
     batchAddToDataStore,
-    getFeedbackDataBySpecies
+    getFeedbackDataBySpecies,
+    submitMS,
+    getfeedbackData,
+    removeMS,
+    getSavedItemFromDataStore
   };
 }

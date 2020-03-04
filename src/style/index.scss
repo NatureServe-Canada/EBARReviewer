@@ -11,6 +11,30 @@ body {
   width: 100%;
 }
 
+
+button.esri-sketch__button.esri-icon-pan{
+  display: none;
+}
+button.esri-sketch__button.esri-icon-cursor{
+  display: none;
+}
+
+button.esri-sketch__button.esri-icon-undo{
+  display: none;
+}
+button.esri-sketch__button.esri-icon-redo{
+  display: none;
+}
+
+div.esri-component.esri-sketch.esri-widget{
+  display: none;
+}
+
+label.feedback {
+  margin: 0px;
+  width: 100%;
+}
+
 #viewDiv {
   position: absolute;
   top: 0;
@@ -54,7 +78,6 @@ body {
   height: 22px;
 }
 
-
 .legend-icon[data-index="0"] {
   background: url("../static/ecoshapes.png") center center no-repeat;
   background-size: 90%;
@@ -67,31 +90,31 @@ body {
 }
 
 /* Comment */
-.legend-icon[data-index="2"] {
-  background: url("../static/Outline_Red2.png") center center no-repeat;
-  background-size: 90%;
-}
+// .legend-icon[data-index="2"] {
+//   background: url("../static/Outline_Red2.png") center center no-repeat;
+//   background-size: 90%;
+// }
 
 /* Remove from Range */
-.legend-icon[data-index="3"] {
+.legend-icon[data-index="2"] {
   background: url("../static/removeLegend.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Present */
-.legend-icon[data-index="4"] {
+.legend-icon[data-index="3"] {
   background: url("../static/Present.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Presence Expected */
-.legend-icon[data-index="5"] {
+.legend-icon[data-index="4"] {
   background: url("../static/PresenceExpected.png") center center no-repeat;
   background-size: 90%;
 }
 
 /* Historical */
-.legend-icon[data-index="6"] {
+.legend-icon[data-index="5"] {
   background: url("../static/Historical.png") center center no-repeat;
   background-size: 90%;
 }
@@ -274,7 +297,7 @@ body {
   line-height: 1.3em;
 }
 
-p.meta{
+p.meta {
   margin: 0;
 }
 /* .meta:disabled{
@@ -292,8 +315,8 @@ p.meta{
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
   z-index: 100;
 }
 
@@ -310,3 +333,4 @@ p.meta{
   top: 50%;
   transform: translateY(-50%);
 }
+

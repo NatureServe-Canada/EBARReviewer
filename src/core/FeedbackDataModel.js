@@ -9,10 +9,11 @@ export default class FeedbackManager {
     this.hucName = null;
     this.isHucInModeledRange = null;
     this.isSaved = null;
+    this.markup = null;
   }
 
   init(options) {
-    console.log("INIT: options: ",options)
+    console.log("INIT: options: ", options)
     this.userID = options.userID || null;
     this.reviewid = options.reviewid || null;
     this.ecoID = options.ecoID || null;
@@ -25,6 +26,8 @@ export default class FeedbackManager {
     this.additionalFields = options.additionalFields || {};
     this.ecoAtts = options.ecoAtts || {};
     this.hucForSpeciesData = options.hucForSpeciesData || {};
+    this.markup = options.markup || null;
+
   }
 
   // setUserID(val=''){
@@ -46,6 +49,9 @@ export default class FeedbackManager {
   setComment(val = "") {
     this.comment = val;
   }
+  setMarkup(val = "") {
+    this.markup = val;
+  }
 
   setAdditionalField(field = null, value = "") {
     if (field != null) this.additionalFields[field] = value;
@@ -64,6 +70,7 @@ export default class FeedbackManager {
     this.additionalFields = {};
     this.ecoAtts = {};
     this.hucForSpeciesData = {};
+    this.markup = null;
   }
 
   getFeedbackData() {
@@ -79,7 +86,9 @@ export default class FeedbackManager {
       isSaved: this.isSaved,
       additionalFields: this.additionalFields,
       ecoAtts: this.ecoAtts,
-      hucForSpeciesData: this.hucForSpeciesData
+      hucForSpeciesData: this.hucForSpeciesData,
+      markup: this.markup
+
     };
   }
 }

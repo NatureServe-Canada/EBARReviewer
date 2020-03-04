@@ -16,7 +16,6 @@ import PolyfillForIE from "./utils/PolyfillForIE";
 
 (async function initOAuthManager() {
 
-
   const logo = document.getElementById("logo");
   const nsImage = new Image();
   nsImage.src = ns;
@@ -53,7 +52,8 @@ const initApp = async oauthManager => {
   const navLogo = document.getElementById("navlogo");
   const nsImageNav = new Image();
   nsImageNav.src = ns_white;
-  nsImageNav.width="120"
+
+  nsImageNav.width = "120"
   navLogo.appendChild(nsImageNav);
 
   const controller = new Controller({
@@ -122,7 +122,18 @@ const initApp = async oauthManager => {
         controller.getFeedbacksByHucForReviewMode(feature);
       }
     },
-
+    showMSdata: () => {
+      mapControl.showMS();
+    },
+    runSetpEcoByStatusLoaded: () => {
+      mapControl.setpEcoByStatusLoaded();
+    },
+    runSetpEcoByPresenceLoaded: () => {
+      mapControl.setpEcoByPresenceLoaded();
+    },
+    runFullExtent: () => {
+      mapControl.fullExtent();
+    },
     /*     
     highligtEcosOnMap: ecoIds => {
       console.log('highligtEcosOnMap', data);
@@ -142,21 +153,24 @@ const initApp = async oauthManager => {
       // console.log('clearMapGraphics', targetLayer);
       mapControl.clearMapGraphics(targetLayer);
     },
-    clearEcoPresenceGraphics: () =>{
+    clearEcoPresenceGraphics: () => {
       mapControl.clearEcoPresenceGraphics();
     },
 
     showEcoFeatureOnMap: (ecoId = "", status, len) => {
-      //console.log('showEcoFeatureOnMap', ecoId, status, len);
+
+      //console.log('showEcoFeatureOnMap', ecoId, status);
       mapControl.showEcoFeatureByStatus(ecoId, status, len);
     },
 
-    showEcoPresenceOnMap: (ecoId = "", presence = "",len) => {
+
+    showEcoPresenceOnMap: (ecoId = "", presence = "", len) => {
       // Lock the UI as we draw pink graphics
-     // const modal = document.getElementById("myModal");
-     // modal.style.display = "block";
-     console.log('showEcoPresenceOnMap');
-      mapControl.showEcoFeatureByPresence(ecoId, presence,len)
+      // const modal = document.getElementById("myModal");
+      // modal.style.display = "block";
+
+      mapControl.showEcoFeatureByPresence(ecoId, presence, len)
+
     },
 
     //addPreviewHucByID
@@ -171,11 +185,12 @@ const initApp = async oauthManager => {
 
   view.speciesSelector.init({
     onChange: val => {
-      console.log(val);
+
       mapControl.clearAllGraphics();
       mapControl.fullExtentClear();
       const modal = document.getElementById("myModal");
-         modal.style.display = "block";
+      modal.style.display = "block";
+
       controller.setSelectedSpecies(val);
       let m = controller.getMetadata(val);
       view.updateSpeciesMetadata(m);     
@@ -186,6 +201,11 @@ const initApp = async oauthManager => {
     containerID: config.DOM_ID.feedbackControl,
     onCloseHandler: () => {
       controller.resetSelectedEcoFeature();
+      mapControl.clearMSelection();
+      mapControl.clearEcoPreviewGraphicLayer();
+    },
+    clearMultiSelectGraphics: () => {
+      mapControl.clearMSelection();
     },
     commentOnChange: val => {
       // console.log(val);
@@ -197,15 +217,102 @@ const initApp = async oauthManager => {
         value
       );
     },
+    entityFieldInputOnChange: (field, value) => {
+      switch (field) {
+        case "comment":
+          controller.feedbackManager.feedbackDataModel.setComment(value);
+          break;
+        case "markup":
+          controller.feedbackManager.feedbackDataModel.setMarkup(value);
+          break;
+        default:
+          break;
+      }
+    },
     onSubmitHandler: status => {
       // console.log('submit btn on click, new status >', status);
       if (status) {
         controller.feedbackManager.feedbackDataModel.setStatus(status);
       }
       controller.feedbackManager.submit();
+
+      mapControl.clearMSelection();
+      mapControl.clearEcoPreviewGraphicLayer();
     },
     onRemoveHandler: () => {
       controller.feedbackManager.remove();
+      mapControl.clearMSelection();
+      mapControl.clearEcoPreviewGraphicLayer();
+    },
+    onRemoveMSHandler: () => {
+      let dataList = [];
+      let fb = controller.feedbackManager.getfeedbackData();
+      let res = mapControl.getMultiSelectionList();
+      // fb.status = 1;
+
+      const _deepCopy = (feedBack) => {
+        return {
+          ...feedBack,
+          hucForSpeciesData: feedBack.hucForSpeciesData.map((_hucForSpeciesData, _hucForSpeciesDataIndex) => { return { ..._hucForSpeciesData } }),
+          additionalFields: { ...feedBack.additionalFields },
+          ecoAtts: { ...feedBack.ecoAtts },
+        }
+      };
+
+      res.forEach(el => {
+        let _feedBack = _deepCopy(fb);
+        _feedBack.ecoID = el.attributes.ecoshapeid;
+        _feedBack.ecoAtts = el.attributes;
+        dataList.push(_feedBack);
+
+      });
+
+      controller.feedbackManager.removeMS(dataList);
+      mapControl.clearMSelection();
+      mapControl.clearEcoPreviewGraphicLayer();
+    },
+    onSubmitMSHandler: () => {
+      let dataList = [];
+      let fb = controller.feedbackManager.getfeedbackData();
+      let res = mapControl.getMultiSelectionList();
+
+
+      const _deepCopy = (feedBack) => {
+        return {
+          ...feedBack,
+          hucForSpeciesData: feedBack.hucForSpeciesData.map((_hucForSpeciesData, _hucForSpeciesDataIndex) => { return { ..._hucForSpeciesData } }),
+          additionalFields: { ...feedBack.additionalFields },
+          ecoAtts: { ...feedBack.ecoAtts },
+        }
+      };
+
+      res.forEach(el => {
+
+
+        let _feedBack = _deepCopy(fb);
+        _feedBack.ecoID = el.attributes.ecoshapeid;
+        _feedBack.ecoAtts = el.attributes;
+        _feedBack.status = 1;
+        let fb_current = controller.feedbackManager.getSavedItemFromDataStore(_feedBack);
+        if (fb_current) {
+          _feedBack.status = fb_current.isHucInModeledRange ? 2 : 1; //1- Add/change; 2- remove
+          if (_feedBack.status == 2) {
+            _feedBack.markup = "R";
+            _feedBack.additionalFields.removalreason = "O";
+          } else {
+            _feedBack.markup = "P";
+          }
+        } else {
+          _feedBack.markup = "P";
+        }
+        dataList.push(_feedBack);
+
+      });
+
+      controller.feedbackManager.submitMS(dataList);
+
+      mapControl.clearMSelection();
+      mapControl.clearEcoPreviewGraphicLayer();
     }
   });
 
@@ -220,8 +327,25 @@ const initApp = async oauthManager => {
       });
     },
     onSubmitHandler: data => {
-      // console.log('submit overall feedback', data);
       // view.toggleOverallFeeback(false);
+      // if (data && !data.datestarted)
+      //   data.datestarted = new Date().toISOString().split('T')[0];
+
+      console.log('submit overall feedback', data);
+
+      view.toggleControlPanel({
+        target: view.overallFeedbackControlPanel,
+        isVisible: false
+      });
+
+      controller.postOverallFeedback(data);
+    },
+    onSubmitSaveHandler: data => {
+
+      // if (data && !data.datestarted)
+      data.datecompleted = (new Date().toISOString().split('T')[0]).toString();
+
+      console.log('submit with save overall feedback', data);
 
       view.toggleControlPanel({
         target: view.overallFeedbackControlPanel,
@@ -239,11 +363,15 @@ const initApp = async oauthManager => {
     openOverallBtnOnclick: () => {
       // const data = controller.getOverallFeedback();
       // view.toggleOverallFeeback(true, data);
+
       view.toggleControlPanel({
         target: view.overallFeedbackControlPanel,
         isVisible: true,
         data: controller.getOverallFeedback()
       });
+      //   console.log(view);
+
+
     },
     layerOpacitySliderOnUpdate: val => {
       // console.log(val);
@@ -289,7 +417,7 @@ const initApp = async oauthManager => {
   csvLoader.init();
 
   const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
-  if(userDiv){
+  if (userDiv) {
     let componentHTML = "<div><span class='font-size--2'>Logged in as:<b> " + oauthManager.getUserID() + "</b></span></div>"
     userDiv.innerHTML = componentHTML
   }
@@ -306,17 +434,20 @@ const initApp = async oauthManager => {
     }
   }
 
+
+
   const zoomToSpeciesRange = document.getElementById('zoomToSpeciesRange');
   if (zoomToSpeciesRange) {
-   
+
     zoomToSpeciesRange.addEventListener("click", function () {
 
-        //if (event && event.target)
-        mapControl.fullExtent();
-      });
-   
+      //if (event && event.target)
+      mapControl.fullExtent();
+    });
+
   }
-  
+
+
   // window.appDebugger = {
   //     signOut: oauthManager.signOut
   // };

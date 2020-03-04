@@ -80,18 +80,43 @@ export default function Controller(props = {}) {
   const initFeedbackManager = () => {
     feedbackManager.init({
       onOpenHandler: data => {
-        // console.log('feedbackManager onOpenHandler', data);
+        console.log('feedbackManager onOpenHandler', data);
         controllerProps.feedbackManagerOnOpen(data);
+        console.log('feedbackManager 2 onOpenHandler', data);
+        if (document.getElementsByClassName('esri-icon-trash')[0]) { var elem = document.getElementsByClassName('esri-icon-trash')[0].click(); }
+
       },
 
       onCloseHandler: () => {
         // console.log('feedbackManager is closed');
         controllerProps.feedbackManagerOnClose();
+        try {
+          document.getElementsByClassName('esri-sketch')[0].style.display = "none";
+        } catch (e) { }
       },
 
       onSubmitHandler: data => {
         console.log('feedback manager onSubmitHandler', data);
         postFeedback(data);
+        showEcoFeatureOnMap(data.ecoID, data.status, data);
+        resetSelectedEcoFeature();
+
+        controllerProps.onDeatiledFeedbackSubmit(data);
+      },
+      onSubmitMSHandler: data => {
+        console.log('MS DATA feedback manager onSubmitHandler', data);
+        postFeedbackMS(data);
+        data.forEach(element => {
+          showEcoFeatureOnMap(element.ecoID, element.status, element);
+        });
+
+        resetSelectedEcoFeature();
+      },
+
+      onSubmitSaveHandler: data => {
+        console.log('feedback manager onSubmitSaveHandler', data);
+
+        postFeedbackWithSave(data);
         showEcoFeatureOnMap(data.ecoID, data.status, data);
         resetSelectedEcoFeature();
 
@@ -103,7 +128,16 @@ export default function Controller(props = {}) {
         deleteFeedback(data);
         showEcoFeatureOnMap(data.ecoID);
         resetSelectedEcoFeature();
+      },
+      onRemoveMSHandler: data => {
+        // console.log('feedback manager onRemoveHandler', data);
+        deleteFeedbackMS(data);
+        data.forEach(element => {
+          showEcoFeatureOnMap(element.ecoID);
+        });
+        resetSelectedEcoFeature();
       }
+
     });
   };
 
@@ -117,12 +151,12 @@ export default function Controller(props = {}) {
 
     const speciesWithOverallFeedback = {};
     const speciesWithDeatiledFeedback = {};
-    console.log("deatiledFeedbacks foreach: ",deatiledFeedbacks)
+    console.log("deatiledFeedbacks foreach: ", deatiledFeedbacks)
     deatiledFeedbacks.forEach(d => {
       const species = d.attributes[config.FIELD_NAME.feedbackTable.species];
       speciesWithDeatiledFeedback[species] = true;
     });
-    console.log("overallFeedbacks foreach: ",overallFeedbacks)
+    console.log("overallFeedbacks foreach: ", overallFeedbacks)
     overallFeedbacks.forEach(d => {
       const species = d.attributes[config.FIELD_NAME.overallFeedback.species];
 
@@ -153,6 +187,8 @@ export default function Controller(props = {}) {
 
 
   const initStatusTable = data => {
+    console.log('initStatusTable', data);
+
     data = data.map(d => {
       const lineBreakPattern = /(\r\n\t|\n|\r\t)/g;
       let statusType = d.attributes[config.FIELD_NAME.statusType];
@@ -183,7 +219,7 @@ export default function Controller(props = {}) {
         data = data.map(d => {
           return d.attributes;
         });
-        console.log("this is from the try of searchEcoShapesBySpecies: ",data)
+        console.log("this is from the try of searchEcoShapesBySpecies: ", data)
         dataModel.setEcoShpsBySpecies(speciesKey, data);
 
         renderEcoShpsBySpeciesDataOnMap({ data, speciesKey });
@@ -236,9 +272,10 @@ export default function Controller(props = {}) {
           reviewid: d.attributes[config.FIELD_NAME.feedbackTable.userID],
           //userID: d.attributes[config.FIELD_NAME.feedbackTable.userID],
           ecoID: d.attributes[config.FIELD_NAME.feedbackTable.ecoShapeID],
-          species: d.attributes[config.FIELD_NAME.feedbackTable.species],
+          //species: d.attributes[config.FIELD_NAME.feedbackTable.species],
           status: d.attributes[config.FIELD_NAME.feedbackTable.status],
-          comment: d.attributes[config.FIELD_NAME.feedbackTable.comment]
+          comment: d.attributes[config.FIELD_NAME.feedbackTable.comment],
+          markup: d.attributes[config.FIELD_NAME.feedbackTable.markup],
         };
         console.log("this is the result of formattedfeedbackdata: ", formattedFeedbackData)
         // If additional fields, then we need to set them for the feedbackDatastore
@@ -264,7 +301,7 @@ export default function Controller(props = {}) {
       } else {
         feedbackManager.batchAddToDataStore(formattedFeedbackData);
       }
-      console.log("this is  the feedbacks: ",feedbacks)
+      console.log("this is  the feedbacks: ", feedbacks)
       return feedbacks;
     } catch (err) {
       console.log("ERROR!! IN queryFeedbacksByUser")
@@ -275,7 +312,7 @@ export default function Controller(props = {}) {
   const queryOverallFeedbacksByUser = async () => {
     /// xxx
     //FIX THIS
-    const userID =oauthManager.getUserID();
+    const userID = oauthManager.getUserID();
 
     try {
       const feedbacks = await apiManager.fetchFeedback({
@@ -284,6 +321,9 @@ export default function Controller(props = {}) {
       });
       console.log("This is the queryOverallFeedbacksByUser feedback: ", feedbacks)
       saveOverallFeedbackToDataModel(feedbacks);
+
+
+      console.log(feedbacks);
 
       return feedbacks;
     } catch (err) {
@@ -298,7 +338,7 @@ export default function Controller(props = {}) {
     try {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.overallFeedback + "/query",
-        where: `${config.FIELD_NAME.overallFeedback.species} = '${species}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} is NULL`
+        where: `${config.FIELD_NAME.overallFeedback.species} = '${species}' AND ${config.FIELD_NAME.overallFeedback.datecompleted} is NULL`
       });
       console.log("in getOverallFeedbacksForReviewMode ...but why in here?  feedbacks: ", feedbacks)
       controllerProps.overallFeedbackForReviewModeOnReady(feedbacks);
@@ -311,19 +351,23 @@ export default function Controller(props = {}) {
   const postOverallFeedback = async (
     data = {
       rating: 0,
-      comment: ""
+      comment: ""//,
+      // datecompleted: new Date(0),
+      // datestarted: new Date().toISOString().split('T')[0]
     }
   ) => {
+
     const userID = oauthManager.getUserID();
     const species = dataModel.getSelectedSpecies();
-
     const feature = {
       attributes: {
         [config.FIELD_NAME.overallFeedback.userID]: data.reviewid, //userID,
         [config.FIELD_NAME.overallFeedback.species]: species,
         [config.FIELD_NAME.overallFeedback.rating]: data.rating,
         [config.FIELD_NAME.overallFeedback.comment]: data.comment,
-        [config.FIELD_NAME.overallFeedback.username]: data.userID
+        [config.FIELD_NAME.overallFeedback.username]: data.userID,
+        //[config.FIELD_NAME.overallFeedback.datestarted]: data.datestarted,
+        [config.FIELD_NAME.overallFeedback.datecompleted]: data.datecompleted
       }
     };
 
@@ -336,21 +380,27 @@ export default function Controller(props = {}) {
 
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.overallFeedback + "/query",
-        where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}' AND ${config.FIELD_NAME.overallFeedback.species} = '${species}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} is null`
+        where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}' AND ${config.FIELD_NAME.overallFeedback.species} = '${species}'` //AND ${config.FIELD_NAME.overallFeedback.datecompleted} is null`
       });
+      console.log(feedbacks[0]);
+      //alert(data.reviewid);
 
       const requestUrl = feedbacks[0]
         ? config.URL.overallFeedback + "/updateFeatures"
         : config.URL.overallFeedback + "/addFeatures";
+      //alert(requestUrl);
 
       if (feedbacks[0]) {
         feature.attributes.ObjectId = feedbacks[0].attributes.objectid;
+      }
+      else {
+        feature.attributes.datestarted = (new Date().toISOString().split('T')[0]).toString();
       }
       // REVIEWER TABLE HAS NO DATE FIELDS...
       /* 
       if (dataLoadDate) {
         feature.attributes[
-          config.FIELD_NAME.overallFeedback.data_load_date
+          config.FIELD_NAME.overallFeedback.datestarted
         ] = dataLoadDate;
       }
      */
@@ -358,8 +408,25 @@ export default function Controller(props = {}) {
         .applyEditToFeatureTable(requestUrl, [feature])
         .then(res => {
           console.log("post edit to OverallFeedback table", res);
+          try {
+            if (res['data']['addResults']) {
+              let resArray = res['data']['addResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to OverallFeedback table", resArray);
+              }
+            }
+            if (res['data']['updateResults']) {
+              let resArray = res['data']['updateResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to OverallFeedback table", resArray);
+              }
+            }
+          } catch{ }
         })
         .catch(err => {
+          console.log(`${feedbackFailMessage}`);
           alert(`${feedbackFailMessage}`);
         });
 
@@ -408,6 +475,12 @@ export default function Controller(props = {}) {
     }
   };
 
+  const deleteFeedbackMS = async dataList => {
+    dataList.forEach(element => {
+      deleteFeedback(element);
+    });
+  }
+
   const deleteFeedback = async (data = {}) => {
     // query feedback table to see if such feature already exists, if so, call update feature operation, otherwise, call add feature operation
 
@@ -415,7 +488,7 @@ export default function Controller(props = {}) {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
         //where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
-        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
+        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.reviewid}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
       });
 
       if (feedbacks[0]) {
@@ -431,8 +504,112 @@ export default function Controller(props = {}) {
     }
   };
 
+
+  const postFeedbackMS = async (dataList = []) => {
+    try {
+      dataList.forEach(data => {
+        console.log(data);
+        postFeedback(data);
+      });
+    }
+    catch (e) { console.error(e); }
+  }
+
   // add data load date
   const postFeedback = async (data = {}) => {
+    console.log('data.species', data.species);
+    //alert(data.species);
+
+    try {
+      //const dataLoadDate = await apiManager.getDataLoadDate(data.species);
+
+      let feedbackFeature = {
+        attributes: {
+          [config.FIELD_NAME.feedbackTable.userID]: data.reviewid, //data.userID,
+          [config.FIELD_NAME.feedbackTable.ecoShapeID]: data.ecoID,
+          [config.FIELD_NAME.feedbackTable.status]: data.status,
+          [config.FIELD_NAME.feedbackTable.comment]: data.comment,
+          //[config.FIELD_NAME.feedbackTable.species]: data.species,
+          [config.FIELD_NAME.feedbackTable.username]: data.userID,
+          [config.FIELD_NAME.feedbackTable.markup]: data.markup,
+        }
+      };
+
+      // If additional fields, then we need to set them
+      if (
+        config.FIELD_NAME.feedbackTable.additionalFields &&
+        config.FIELD_NAME.feedbackTable.additionalFields.length > 0
+      ) {
+        config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
+          if (
+            data.additionalFields[addField.field] !== null &&
+            data.additionalFields[addField.field] !== "null"
+          ) {
+            // if (addField.editable) {
+            if (addField.visible) {
+              feedbackFeature.attributes[addField.field] =
+                data.additionalFields[addField.field];
+            }
+          }
+        });
+      }
+
+      const feedbacks = await apiManager.fetchFeedback({
+        requestUrl: config.URL.feedbackTable + "/query",
+        //where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
+        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.reviewid}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
+      });
+
+      const requestUrl = feedbacks[0]
+        ? config.URL.feedbackTable + "/updateFeatures"
+        : config.URL.feedbackTable + "/addFeatures";
+
+      if (feedbacks[0]) {
+        feedbackFeature.attributes.objectid = feedbacks[0].attributes.objectid;   // objectid cAsE must match the FS field
+      }
+
+      // REVIEWER TABLE HAS NO DATE FIELDS...
+      /*
+      if (dataLoadDate) {
+        feedbackFeature.attributes[
+          config.FIELD_NAME.feedbackTable.datestarted
+        ] = dataLoadDate;
+      } */
+
+      apiManager
+        .applyEditToFeatureTable(requestUrl, [feedbackFeature])
+        .then(res => {
+
+          console.log("post edit to Feedback table", res);
+          try {
+            if (res['data']['addResults']) {
+              let resArray = res['data']['addResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+            if (res['data']['updateResults']) {
+              let resArray = res['data']['updateResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+          } catch{ }
+        })
+        .catch(err => {
+          alert(`${feedbackFailMessage}`);
+        });
+
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+  const postFeedbackWithSave = async (data = {}) => {
 
     try {
       //const dataLoadDate = await apiManager.getDataLoadDate(data.species);
@@ -444,7 +621,8 @@ export default function Controller(props = {}) {
           [config.FIELD_NAME.feedbackTable.status]: data.status,
           [config.FIELD_NAME.feedbackTable.comment]: data.comment,
           [config.FIELD_NAME.feedbackTable.species]: data.species,
-          [config.FIELD_NAME.feedbackTable.username]: data.userID
+          [config.FIELD_NAME.feedbackTable.username]: data.userID,
+          [config.FIELD_NAME.feedbackTable.datecompleted]: data.datecompleted,
         }
       };
 
@@ -469,7 +647,7 @@ export default function Controller(props = {}) {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
         //where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
-        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
+        where: `${config.FIELD_NAME.feedbackTable.species} = '${data.reviewid}' AND ${config.FIELD_NAME.feedbackTable.ecoShapeID} = '${data.ecoID}'`
       });
 
       const requestUrl = feedbacks[0]
@@ -484,7 +662,7 @@ export default function Controller(props = {}) {
       /*
       if (dataLoadDate) {
         feedbackFeature.attributes[
-          config.FIELD_NAME.feedbackTable.data_load_date
+          config.FIELD_NAME.feedbackTable.datestarted
         ] = dataLoadDate;
       } */
 
@@ -492,6 +670,22 @@ export default function Controller(props = {}) {
         .applyEditToFeatureTable(requestUrl, [feedbackFeature])
         .then(res => {
           console.log("post edit to Feedback table", res);
+          try {
+            if (res['data']['addResults']) {
+              let resArray = res['data']['addResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+            if (res['data']['updateResults']) {
+              let resArray = res['data']['updateResults'];
+              if (resArray[0]['success'] == false) {
+                alert(resArray[0]['error']['description']);
+                console.error("post edit to Feedback table", resArray);
+              }
+            }
+          } catch{ }
         })
         .catch(err => {
           alert(`${feedbackFailMessage}`);
@@ -500,6 +694,7 @@ export default function Controller(props = {}) {
       console.error(err);
     }
   };
+
 
   const getHucsWithFeedbacksForReviewMode = async () => {
     const species = dataModel.getSelectedSpecies();
@@ -562,24 +757,27 @@ export default function Controller(props = {}) {
     controllerProps.clearEcoPresenceGraphics();
     if (ecoIds.length === 0) {
       const species = dataModel.getSelectedSpecies();
-      const feedbackData = feedbackManager.getFeedbackDataBySpecies(species);
+      const reviewId = dataModel.getReviewId(species)
+      const feedbackData = feedbackManager.getFeedbackDataBySpecies(reviewId);
       if (feedbackData) {
-        Object.keys(feedbackData).forEach(function(key) {
+        Object.keys(feedbackData).forEach(function (key) {
           ecoIds.push(feedbackData[key].ecoID);
         });
       }
     }
     // controllerProps.zoomToEcoShpsOnMap(ecoIds);
-   var dataCount = Object.keys(ecos).length;
-   const modal = document.getElementById("myModal");
-   modal.style.display = "block";
+    var dataCount = Object.keys(ecos).length;
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
+
     if (ecos) {
       Object.keys(ecos).forEach(function (key) {
         const ecoID = ecos[key].ecoshapeid;
         const presence = ecos[key].presence;
         //showEcoFeatureOnMap(ecoID, status, data[key]);     
-        controllerProps.showEcoPresenceOnMap(ecoID, presence,dataCount);
-        // controllerProps.zoomToEcoShpsOnMap(ecoIds);
+        controllerProps.showEcoPresenceOnMap(ecoID, presence, dataCount);
+        //controllerProps.zoomToEcoShpsOnMap(ecoIds);
+
       });
     }
     if (!isReviewMode) {
@@ -590,10 +788,13 @@ export default function Controller(props = {}) {
   const renderEcoWithFeedbackDataOnMap = data => {
     console.log("THIS IS WHERE THE FEEDBACK DRAW ALL BEGINS....")
     let species = dataModel.getSelectedSpecies();
-    if (species){
-      species = parseInt(species)
+    if (species) {
+      species = parseInt(species);
+      const reviewId = dataModel.getReviewId(species);
+      data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
     }
-    data = data || feedbackManager.getFeedbackDataBySpecies(species);
+
+    //data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
@@ -601,22 +802,29 @@ export default function Controller(props = {}) {
     const modal = document.getElementById("myModal");
     modal.style.display = "block";
 
+
     if (data) {
-      Object.keys(data).forEach(function(key) {
+      var dataCount = Object.keys(data).length;
+      const modal = document.getElementById("myModal");
+      modal.style.display = "block";
+
+      Object.keys(data).forEach(function (key) {
         // console.log(key, data[key]);
 
         const ecoID = data[key].ecoID;
         const status = data[key].status;
         console.log("renderEcoWithFeedbackDataOnMap ::  ecoid: " + ecoID + " status: " + status)
-   
         showEcoFeatureOnMap(ecoID, status, data[key], dataCount);
       });
+    }
+    else {
+
+      controllerProps.runSetpEcoByStatusLoaded();
     }
   };
 
   const setSelectedHucFeature = (feature = null) => {
     state.selectedHucFeature = feature;
-
     const ecoID =
       state.selectedHucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
     console.log("setSelectedHucFeature ", ecoID)
@@ -633,16 +841,14 @@ export default function Controller(props = {}) {
   const resetSelectedEcoFeature = () => {
     state.selectedHucFeature = null;
 
-    dataModel.setSelectedEcoShp();
-
-    // mapControl.cleanPreviewEcoGraphic();
-
-    controllerProps.clearMapGraphics("ecoPreview");
-
     feedbackManager.close();
   };
 
   const openFeedbackManager = (ecoAtts = {}) => {
+
+    if (document.getElementById('overallFeedbackControlPanelContainer')) {
+      document.getElementById('overallFeedbackControlPanelContainer').style.display = "none";
+    }
 
     const userID = oauthManager.getUserID();
     const species = parseInt(dataModel.getSelectedSpecies());
@@ -650,6 +856,15 @@ export default function Controller(props = {}) {
     const hucName =
       state.selectedHucFeature.attributes[config.FIELD_NAME.hucLayerHucName];
     const isHucInModeledRange = dataModel.isHucInModeledRange(ecoID, species);
+    const reviewid = dataModel.getReviewId(species);
+
+    // this was in additional fields, but need hucForSpeciesData Presence and Notes to put on UI
+    const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
+    const hucForSpeciesData = hucsBySpeciesData
+      ? hucsBySpeciesData.filter(
+        hucData =>
+          hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID) : [];
+
 
     // this was in additional fields, but need hucForSpeciesData Presence and Notes to put on UI
     const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
@@ -665,7 +880,13 @@ export default function Controller(props = {}) {
       config.FIELD_NAME.feedbackTable.additionalFields.length > 0
     ) {
 
-      //hucsBySpeciesData was here
+      const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
+      const hucForSpeciesData = hucsBySpeciesData
+        ? hucsBySpeciesData.filter(
+          hucData =>
+            hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID
+        )
+        : [];
 
       if (hucForSpeciesData && hucForSpeciesData.length > 0) {
         config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
@@ -677,18 +898,23 @@ export default function Controller(props = {}) {
     }
 
     // console.log('isHucInModeledRange', isHucInModeledRange);
-    console.log("openFeedbackManager", userID, species, ecoID)
+    // console.log("openFeedbackManager", userID, species, ecoID);
+
     if (userID && species && ecoID) {
-      feedbackManager.open({
+      var obj = {
         userID,
         species,
+        reviewid, 
         ecoID,
         hucName,
         isHucInModeledRange,
         additionalFields,
         ecoAtts,
         hucForSpeciesData
-      });
+      };
+
+      feedbackManager.open(obj);
+      controllerProps.showMSdata();
     } else {
       console.error(
         "userID, species name and eco id are required to open the feedback manager..."
@@ -701,15 +927,18 @@ export default function Controller(props = {}) {
     const species = dataModel.getSelectedSpecies();
 
     const prevFeedbackData = dataModel.getOverallFeedback(species);
-    // console.log(prevFeedbackData);
+    console.log(prevFeedbackData);
 
     const data = prevFeedbackData
       ? {
         rating: prevFeedbackData[config.FIELD_NAME.overallFeedback.rating],
-        comment: prevFeedbackData[config.FIELD_NAME.overallFeedback.comment]
+        comment: prevFeedbackData[config.FIELD_NAME.overallFeedback.comment],
+        datecompleted: prevFeedbackData[config.FIELD_NAME.overallFeedback.datecompleted]
       }
       : {};
-
+    // if (!data.datecompleted) {
+    //   document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "none";
+    // }
     return data;
   };
 
@@ -722,7 +951,9 @@ export default function Controller(props = {}) {
         [config.FIELD_NAME.overallFeedback.rating]:
           feature.attributes[config.FIELD_NAME.overallFeedback.rating],
         [config.FIELD_NAME.overallFeedback.comment]:
-          feature.attributes[config.FIELD_NAME.overallFeedback.comment]
+          feature.attributes[config.FIELD_NAME.overallFeedback.comment],
+        [config.FIELD_NAME.overallFeedback.datecompleted]:
+          feature.attributes[config.FIELD_NAME.overallFeedback.datecompleted]
       };
 
       dataModel.saveToOverallFeedback(key, val);
@@ -746,7 +977,8 @@ export default function Controller(props = {}) {
     });
   };
 
-  const showEcoFeatureOnMap = (ecoId = "", status = 0, data = null, len=0) => {
+  const showEcoFeatureOnMap = (ecoId = "", status = 0, data = null, len = 0) => {
+
     console.log("showEcoFeatureOnMap ecoId:", ecoId)
     if (!ecoId) {
       console.error("ecoID is missing...");
@@ -757,7 +989,8 @@ export default function Controller(props = {}) {
   };
 
   const setSelectedSpecies = async val => {
-    console.log("setSelectedSpecies was called using the value:  "+ val)
+    console.log("setSelectedSpecies was called using the value:  " + val)
+
     dataModel.setSelectedSpecies(val);
 
     searchEcoShapesBySpecies(val);
