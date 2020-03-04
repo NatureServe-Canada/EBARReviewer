@@ -27,6 +27,7 @@ export default class FeedbackManager {
     this.ecoAtts = options.ecoAtts || {};
     this.hucForSpeciesData = options.hucForSpeciesData || {};
     this.markup = options.markup || null;
+
   }
 
   // setUserID(val=''){
@@ -87,6 +88,7 @@ export default class FeedbackManager {
       ecoAtts: this.ecoAtts,
       hucForSpeciesData: this.hucForSpeciesData,
       markup: this.markup
+
     };
   }
 }

@@ -257,10 +257,12 @@ export default function FeedbackControlPanel() {
     let ecoZone = EA.ecozonefr ? EA.ecozone + " (" + EA.ecozonefr + ")" : EA.ecozone;
     let terrArea = (EA.terrestrialarea / 1000000).toLocaleString('en-us', { 'maximumFractionDigits': 2 });
     let terrProp = EA.terrestrialproportion * 100;
+
     let huc = state.data.hucForSpeciesData;
     let presence = ' '
     let hucNotes = ' '
     // Only have presence or notes for previously modelled ecoshapes, ones to be added do not have presence
+
     if (huc.length > 0) {
       hucNotes = huc[0].rangemapecoshapenotes;
       if (config.PRESENCE) {
@@ -278,14 +280,17 @@ export default function FeedbackControlPanel() {
     if (!state.isMultiSelection) {
       outputHtml += `<div class='flex-container'>
     <div class='inline-block' id="curEcoSelected">
+
       <p class="font-size--3 meta">
         <!--<strong>Ecoshape:</strong> ${EA.ecoshapename} <br>-->
         <strong>Parent Ecoregion:</strong> ${parentEco} <br>
         <strong>Ecozone:</strong> ${ecoZone}<br>
         <strong>Terrestrial Area:</strong> ${terrArea} km&sup2;<br>
+
         <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>  
         <strong>Presence:</strong> ${presence}  <br>     
         <strong>Metadata:</strong> ${hucNotes} <br>     
+
       </p>  
     </div>
     </div>       

@@ -11,15 +11,16 @@ import CsvLoader from "./core/CsvLoader";
 
 import ns from "./static/ns.png";
 import ns_white from "./static/ns_white.png";
+
 import PolyfillForIE from "./utils/PolyfillForIE";
 
 (async function initOAuthManager() {
+
   const logo = document.getElementById("logo");
   const nsImage = new Image();
   nsImage.src = ns;
   nsImage.width = "220";
   logo.appendChild(nsImage);
-
 
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
@@ -51,9 +52,9 @@ const initApp = async oauthManager => {
   const navLogo = document.getElementById("navlogo");
   const nsImageNav = new Image();
   nsImageNav.src = ns_white;
+
   nsImageNav.width = "120"
   navLogo.appendChild(nsImageNav);
-
 
   const controller = new Controller({
     oauthManager,
@@ -157,10 +158,10 @@ const initApp = async oauthManager => {
     },
 
     showEcoFeatureOnMap: (ecoId = "", status, len) => {
+
       //console.log('showEcoFeatureOnMap', ecoId, status);
       mapControl.showEcoFeatureByStatus(ecoId, status, len);
     },
-
 
 
     showEcoPresenceOnMap: (ecoId = "", presence = "", len) => {
@@ -169,6 +170,7 @@ const initApp = async oauthManager => {
       // modal.style.display = "block";
 
       mapControl.showEcoFeatureByPresence(ecoId, presence, len)
+
     },
 
     //addPreviewHucByID
@@ -188,9 +190,10 @@ const initApp = async oauthManager => {
       mapControl.fullExtentClear();
       const modal = document.getElementById("myModal");
       modal.style.display = "block";
+
       controller.setSelectedSpecies(val);
       let m = controller.getMetadata(val);
-      view.updateSpeciesMetadata(m);
+      view.updateSpeciesMetadata(m);     
     }
   });
 
@@ -432,6 +435,7 @@ const initApp = async oauthManager => {
   }
 
 
+
   const zoomToSpeciesRange = document.getElementById('zoomToSpeciesRange');
   if (zoomToSpeciesRange) {
 
@@ -442,6 +446,7 @@ const initApp = async oauthManager => {
     });
 
   }
+
 
   // window.appDebugger = {
   //     signOut: oauthManager.signOut

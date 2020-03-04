@@ -124,12 +124,19 @@ module.exports = {
     { "code": "H", "text": "Historical" }
   ],
 
+  PRESENCE: [
+    {"code": "P", "text": "Present"},
+    {"code": "X", "text": "Presence Expected"},
+    {"code": "H", "text": "Historical"}
+  ],
+
   REMOVAL: [
     { "attributes": { "removalcode": "X", "removaltext": "Presumed Extirpated" } },
     { "attributes": { "removalcode": "N", "removaltext": "Never Was There" } },
     { "attributes": { "removalcode": "F", "removaltext": "Reported But False" } },
     { "attributes": { "removalcode": "T", "removaltext": "Transient/Vagrant" } },
     { "attributes": { "removalcode": "O", "removaltext": "Other" } }
+
   ],
 
   URL: {
@@ -213,6 +220,7 @@ module.exports = {
     present: [168, 0, 132, 0.55], //Cattleya Orchid 
     presenceexpected: [255, 115, 223, 0.55], //, Fuchsia Pink 
     historical: [255, 190, 232, 0.55], //Rhodolite Rose
+
   },
 
   fireflyStyle: {

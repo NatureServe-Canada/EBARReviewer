@@ -188,6 +188,7 @@ export default function Controller(props = {}) {
 
   const initStatusTable = data => {
     console.log('initStatusTable', data);
+
     data = data.map(d => {
       const lineBreakPattern = /(\r\n\t|\n|\r\t)/g;
       let statusType = d.attributes[config.FIELD_NAME.statusType];
@@ -768,6 +769,7 @@ export default function Controller(props = {}) {
     var dataCount = Object.keys(ecos).length;
     const modal = document.getElementById("myModal");
     modal.style.display = "block";
+
     if (ecos) {
       Object.keys(ecos).forEach(function (key) {
         const ecoID = ecos[key].ecoshapeid;
@@ -775,6 +777,7 @@ export default function Controller(props = {}) {
         //showEcoFeatureOnMap(ecoID, status, data[key]);     
         controllerProps.showEcoPresenceOnMap(ecoID, presence, dataCount);
         //controllerProps.zoomToEcoShpsOnMap(ecoIds);
+
       });
     }
     if (!isReviewMode) {
@@ -795,6 +798,9 @@ export default function Controller(props = {}) {
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
+    var dataCount = Object.keys(data).length;
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
 
 
     if (data) {
@@ -839,6 +845,7 @@ export default function Controller(props = {}) {
   };
 
   const openFeedbackManager = (ecoAtts = {}) => {
+
     if (document.getElementById('overallFeedbackControlPanelContainer')) {
       document.getElementById('overallFeedbackControlPanelContainer').style.display = "none";
     }
@@ -858,13 +865,13 @@ export default function Controller(props = {}) {
         hucData =>
           hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID) : [];
 
-
     // Adding addditional fields to feedback table for view/edit, pulling initial values from hucs by species extent table
     let additionalFields = {};
     if (
       config.FIELD_NAME.feedbackTable.additionalFields &&
       config.FIELD_NAME.feedbackTable.additionalFields.length > 0
     ) {
+
       const hucsBySpeciesData = dataModel.getEcoShpsBySpecies(species);
       const hucForSpeciesData = hucsBySpeciesData
         ? hucsBySpeciesData.filter(
@@ -872,6 +879,7 @@ export default function Controller(props = {}) {
             hucData[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoID
         )
         : [];
+
       if (hucForSpeciesData && hucForSpeciesData.length > 0) {
         config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
           // Pull from huc either by special hucField in the feedback additional fields, or by the same field name as in the feedback table
@@ -962,6 +970,7 @@ export default function Controller(props = {}) {
   };
 
   const showEcoFeatureOnMap = (ecoId = "", status = 0, data = null, len = 0) => {
+
     console.log("showEcoFeatureOnMap ecoId:", ecoId)
     if (!ecoId) {
       console.error("ecoID is missing...");
@@ -973,6 +982,7 @@ export default function Controller(props = {}) {
 
   const setSelectedSpecies = async val => {
     console.log("setSelectedSpecies was called using the value:  " + val)
+
     dataModel.setSelectedSpecies(val);
 
     searchEcoShapesBySpecies(val);

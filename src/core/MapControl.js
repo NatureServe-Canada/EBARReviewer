@@ -36,6 +36,7 @@ const MapControl = function ({
   let multiSelectionList = [];
   let currentSelectedFeature = null;
 
+
   // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
   const outline = {
     color: config.COLOR.presenceOutline,
@@ -96,7 +97,6 @@ const MapControl = function ({
         //   const modal = document.getElementById("myModal");
         //   modal.style.display = "none";
         // });
-
 
       });
   };
@@ -187,7 +187,8 @@ const MapControl = function ({
           },
           title: config.reference_layers.nawater.title,
           opacity: defaultOpacity,
-          visible: false
+          visible: false,
+          popupEnabled: false
         });
 
         const protectedAreas = new MapImageLayer({
@@ -678,6 +679,7 @@ const MapControl = function ({
           if (response.features && response.features.length) {
             // console.log(response.features[0]);
             resolve(response.features);
+
           } else {
             reject("no eco feature is found");
           }
@@ -692,6 +694,7 @@ const MapControl = function ({
     let whereText = "";
     let tempEcoIds = ecoIds.slice(0);
     let maxHit = false;
+
     whereText =
       whereText +
       `${maxHit ? " OR " : ""}${
@@ -748,6 +751,7 @@ const MapControl = function ({
     pEcoByStatusLoaded = true;
   }
 
+
   const showEcoFeatureByStatus = (
     ecoId,
     status,
@@ -759,6 +763,7 @@ const MapControl = function ({
   ) => {
 
     removeEcoGraphicByStatus(ecoId);
+
     console.log("in showEcoFeatureByStatus")
     if (+status > 0) {
       queryEcoShpsLayerByEcoID(ecoId).then(features => {
@@ -770,6 +775,7 @@ const MapControl = function ({
           if (pEcoByStatusCount == len) {
             pEcoByStatusLoaded = true;
             if (pEcoByStatusLoaded && pEcoByPresenceLoaded) setTimeout(function(){fullExtent();},300); 
+
           }
         }
       });
@@ -786,6 +792,7 @@ const MapControl = function ({
       }
     }
   };
+
 
   const setpEcoByPresenceLoaded=() => {
     pEcoByPresenceLoaded = true;
@@ -810,6 +817,7 @@ const MapControl = function ({
 
 
   const fullExtent = () => {
+
     console.log('FULL Extent');
     var fullExtent = null;
     for (var i = 0; i < ecoShpByStatusGraphicLayer.graphics.items.length; i++) {
@@ -819,6 +827,7 @@ const MapControl = function ({
       else
         fullExtent.union(features.geometry.extent)
     }
+
     for (var i = 0; i < ecoPresenceGraphicLayer.graphics.items.length; i++) {
       var features = ecoPresenceGraphicLayer.graphics.items[i];
       if (!fullExtent)
@@ -826,6 +835,7 @@ const MapControl = function ({
       else
         fullExtent.union(features.geometry.extent)
     }
+
 
     mapView.goTo(fullExtent).then(function () {
       if (!mapView.extent.contains(fullExtent))
@@ -931,6 +941,9 @@ const MapControl = function ({
         //console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
         ecoShpByStatusGraphicLayer.add(graphic);
         document.getElementById('graphicsLayersDiv').style.display = "block";
+
+
+
       })
       .catch(err => {
         console.error(err);
@@ -983,6 +996,7 @@ const MapControl = function ({
         ecoMultiSelection.add(graphicForSelectedEco);
 
         console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
+
 
       });
     try {
@@ -1121,12 +1135,14 @@ const MapControl = function ({
         mapView.whenLayerView(csvLayer).then(function (csvLayerView) {
           csvLayerView.watch("updating", function (val) {
             if (!val) {  // wait for the layer view to finish updating
+
               modal.style.display = "none";
             }
           })
         });
 
         document.getElementById('graphicsLayersDiv').style.display = "block";
+
       })
       .catch(err => {
         modal.style.display = "none";
@@ -1157,7 +1173,6 @@ const MapControl = function ({
     }
 
   };
-
 
   const fullExtentClear = () => {
     const modal = document.getElementById("myModal");
@@ -1193,6 +1208,7 @@ const MapControl = function ({
     getMultiSelectionList,
     setpEcoByStatusLoaded,
     setpEcoByPresenceLoaded
+
   };
 };
 
