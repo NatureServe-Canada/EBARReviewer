@@ -52,7 +52,7 @@ export default function(options={
         const headerHtml = `
             <div class='trailer-quarter'>
                 <span class='icon-ui-left cursor-pointer js-close'></span>
-                <span class='font-size--1'>All feedbacks by ${userID}</span>
+                <span class='font-size--1'>${$.i18n('all_feedbacks_by')} ${userID}</span>
             </div>
         `;
 

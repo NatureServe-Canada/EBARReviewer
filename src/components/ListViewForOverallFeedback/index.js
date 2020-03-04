@@ -47,7 +47,7 @@ export default function(options={
 
     const render = (data)=>{
 
-        const headerHtml = `<h6>Overall Feedback from all users</h6>`
+        const headerHtml = `<h6>${$.i18n('overall_fb')}</h6>`
 
         const listViewCardsHtml = data.length ? 
         data.map(d=>{
@@ -66,7 +66,7 @@ export default function(options={
                 </div>
             `
         }).join('') : 
-        `<p class='font-size--2'>No overall feedback for selected species</p>`
+        `<p class='font-size--2'>${$.i18n('no_overall_fb')}</p>`
 
         const componentHtml = `
             <div class='leader-1'>
