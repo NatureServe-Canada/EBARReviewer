@@ -796,11 +796,11 @@ export default function Controller(props = {}) {
     //data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
     const modal = document.getElementById("myModal");
     modal.style.display = "block";
+    
     // Very first time a user logins, they'll have 0 feedback and data will be undefined.
     if (data) {
       console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
-      console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
-      var dataCount = Object.keys(data).length;
+      console.log('renderEcoWithFeedbackDataOnMap >>> data', data);      
 
       var dataCount = Object.keys(data).length;
       const modal = document.getElementById("myModal");
@@ -808,7 +808,6 @@ export default function Controller(props = {}) {
 
       Object.keys(data).forEach(function (key) {
         // console.log(key, data[key]);
-
         const ecoID = data[key].ecoID;
         const status = data[key].status;
         console.log("renderEcoWithFeedbackDataOnMap ::  ecoid: " + ecoID + " status: " + status)
@@ -816,7 +815,6 @@ export default function Controller(props = {}) {
       });
     }
     else {
-
       controllerProps.runSetpEcoByStatusLoaded();
     }
   };
