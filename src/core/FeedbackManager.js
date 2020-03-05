@@ -147,12 +147,11 @@ export default function (options = {}) {
 
   const batchAddToDataStore = data => {
     console.log("in batchAddToDataStore (feedbackmanager) and this is data: ", data);
-
-    data.forEach(d => {
-      save(d);
-    });
-
-    // console.log(feedbackDataStore);
+    if (data){
+      data.forEach(d => {
+        save(d);
+      });
+    }
   };
 
   const getFeedbackDataBySpecies = reviewId => {
