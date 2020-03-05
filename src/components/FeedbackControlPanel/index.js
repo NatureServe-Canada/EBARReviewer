@@ -660,7 +660,7 @@ export default function FeedbackControlPanel() {
         if (document.getElementById('esriRemovalReason') != null) return;
         // Add a removal reason drop down only when removing a species
         var outputHtml = '<div id="esriRemovalReason">';
-        outputHtml += `< br > <span class='font-size--3'>${$.i18n('rem_reason_req')}:</span>
+        outputHtml += `<br> <span class='font-size--3'>${$.i18n('rem_reason_req')}:</span>
   <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
         outputHtml += `<option style="background-color:lightgray;" disabled selected value="null">None set</option>`;
         const remReasons = config.REMOVAL;
