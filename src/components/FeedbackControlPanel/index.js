@@ -91,11 +91,11 @@ export default function FeedbackControlPanel() {
       // document.getElementById("markupLabel").style.display = "none";
       try { document.getElementById("fbReset").style.display = "none"; } catch{ }
       try { document.getElementById("fbResetMS").style.display = "block"; } catch{ }
-      document.getElementById('curEcoSelected').style.display = "none";
-      document.getElementById('fbTitle').innerText = 'Multiple Ecoshapes selected';
+      try { document.getElementById('curEcoSelected').style.display = "none"; } catch{ }
+      try { document.getElementById('fbTitle').innerText = 'Multiple Ecoshapes selected'; } catch{ }
       try { document.getElementById('field-comment').value = ""; } catch{ }
       try { document.getElementById('additional-field-reference').value = ""; } catch{ }
-      document.getElementById("field-markup").selectedIndex = "0";
+      try { document.getElementById("field-markup").selectedIndex = "0"; } catch{ }
 
     }
     else {
@@ -109,14 +109,16 @@ export default function FeedbackControlPanel() {
       // document.getElementById("markupLabel").style.display = "block";
       try { document.getElementById("fbReset").style.display = "block"; } catch{ }
       try { document.getElementById("fbResetMS").style.display = "none"; } catch{ }
-      document.getElementById('curEcoSelected').style.display = "block";
-      const hucName = state.data.ecoAtts.ecoshapename || "";
-      document.getElementById('fbTitle').innerText = `Ecoshape: ${hucName}`;
+      try { document.getElementById('curEcoSelected').style.display = "block"; } catch{ }
+      try {
+        const hucName = state.data.ecoAtts.ecoshapename || "";
+        document.getElementById('fbTitle').innerText = `Ecoshape: ${hucName}`;
+      } catch{ }
       try { document.getElementById('field-comment').value = ""; } catch{ }
       try { document.getElementById('additional-field-reference').value = ""; } catch{ }
       try { document.getElementById('field-comment').value = document.getElementById('field-comment').getAttribute('defaultvalue'); } catch{ }
       try { document.getElementById('additional-field-reference').value = document.getElementById('additional-field-reference').getAttribute('defaultvalue'); } catch{ }
-      document.getElementById("field-markup").selectedIndex = "0";
+      try { document.getElementById("field-markup").selectedIndex = "0"; } catch{ }
       //need to clear graphics
       //defaultvalue
     }
@@ -133,7 +135,7 @@ export default function FeedbackControlPanel() {
     try {
       const modal = document.getElementById("myModal");
       var ms = modal.getAttribute('multi_selection');
-      if (ms && ms == "true") state.isMultiSelection = true;
+      if (ms && ms == "true") { state.isMultiSelection = true; document.getElementsByClassName('esri-sketch')[0].style.display = "block"; }
     }
     catch (e) {
       console.log(e);
@@ -191,8 +193,8 @@ export default function FeedbackControlPanel() {
                          ${getHtmlForAdditionalFields()} 
                     </div>
 
-<!--
-                    <div class='flex-container' style="margin-left:2px;">
+
+                    <div class='flex-container' style="margin-left:2px;display:${config.isMultiSelection ? "block" : "none"};">
                       <div class='inline-block'>
                       <span class="toggle-switch-label font-size--3 action-message">
                        Multi-Selection 
@@ -205,12 +207,12 @@ export default function FeedbackControlPanel() {
                       </label>
                      </div> 
                     </div>
--->
+
                     <div id="feedbackControlPanelMultiSelectInfo" style="flex;flex-direction:row;display:${state.isMultiSelection ? "block" : "none"};" class="font-size--3 meta">
                     <span style="color:lightpink">${$.i18n('warning_markup')}</span>
                        <div>Ecoshape(s):<span id="feedbackControlPanelMSIecoshapes" style="margin-left:5px;"></span></div>
                        <div>${$.i18n('ter_area')}<span id="feedbackControlPanelMSIarea" style="margin-left:5px;"></span></div>
-                        <div>>${$.i18n('ter_proportion')}<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
+                        <div>${$.i18n('ter_proportion')}<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
                    
                         </div>
 
@@ -476,8 +478,8 @@ export default function FeedbackControlPanel() {
     let reset = $.i18n('reset');
     let save = $.i18n('save');
     let btnsForExistingItem = ``;
-   
-    let saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection?'none':'block'}" > ${save} </button > `;
+
+    let saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ? 'none' : 'block'}" > ${save} </button > `;
 
 
     // let saveBtn = `< button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection} ? 'none' : 'block';" > ${save} </button > `;
@@ -494,7 +496,7 @@ export default function FeedbackControlPanel() {
     // const removeBtn = `< button class="btn btn-fill js-remove-feedback trailer-half" > Reset </button > `;
 
     btnsForExistingItem = `<nav class='trailer-half' > <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback trailer-half;color: lightblue;" id="fbReset" style="display:${state.isMultiSelection ? 'none' : 'block'};" > ${reset} </button> `;
-    btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ?'none':'block'};" > ${save} </button> `;
+    btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ? 'none' : 'block'};" > ${save} </button> `;
 
     if (!state.isMultiSelection)
       btnsForExistingItem += `<button class="btn btn-half btn-grouped js-remove-feedbackMS btn-transparent trailer-half" style = "display:none;width:50%;color:lightblue;padding: 5px;" id="fbResetMS" > ${reset} ${MS}</button>
@@ -507,7 +509,7 @@ export default function FeedbackControlPanel() {
 
     console.log(btnsForExistingItem);
     return isSaved ? btnsForExistingItem : saveBtn;
-   
+
   };
 
 

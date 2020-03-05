@@ -181,4 +181,5 @@ function translation(event) {
     $("[data-i18n=drag_and_drop_msg").text($.i18n('drag_and_drop_msg'));
     $("[data-i18n=overall_feedback").text($.i18n('overall_feedback'));
     $("[data-i18n=multi_sel_title").text($.i18n('multi_sel_title'));
+
 }

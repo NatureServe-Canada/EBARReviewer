@@ -24,6 +24,8 @@ import PolyfillForIE from "./utils/PolyfillForIE";
 
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
+  if (config.i18n)
+  $("[data-i18n=lang").css('display', 'block');
 
   document.querySelector(".js-accept-terms").addEventListener("click", evt => {
     // console.log('agress');
