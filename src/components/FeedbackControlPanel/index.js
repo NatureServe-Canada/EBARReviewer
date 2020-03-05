@@ -626,6 +626,7 @@ export default function FeedbackControlPanel() {
                 feedbackObjects.map(e => {
                   if (e.id == "additional-field-removalreason")
                     e.value = null;
+                  state.data.additionalFields.removalreason = null;
                 });
               }
               break;
