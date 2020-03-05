@@ -163,7 +163,7 @@ export default function FeedbackControlPanel() {
                 </div>
 
                 <div class='leader-half trailer-half' style='margin-top:0px'>`;
-    componentHtml += (state.isMultiSelection) ? `<span class='font-size-0' id="fbTitle">Multiple Ecoshapes selected</span>` : `<span class='font-size-0' id="fbTitle">Ecoshape: ${hucName}</span>`;
+    componentHtml += (state.isMultiSelection) ? `<span class='font-size-0' id="fbTitle" data-i18n="multi_sel_title">${$.i18n('multi_sel_title')}</span>` : `<span class='font-size-0' id="fbTitle">Ecoshape: ${hucName}</span>`;
     componentHtml += `  
                     <hr>
                 </div>
@@ -182,13 +182,13 @@ export default function FeedbackControlPanel() {
                     <div class='comment-dialog'>
                         <label class="feedback">
                             <br>
-                            <span class='font-size--3'>Comment (required):</span>
+                            <span class='font-size--3'>${$.i18n('comment')}</span>
                             <textarea type="text" id="field-comment" placeholder="" class="comment-textarea" maxlength="4095" defaultValue="${comment}">${comment}</textarea>
                         </label>
                     </div>
 
                     <div class='additional-field-dialog'>
-                        ${getHtmlForAdditionalFields()}
+                         ${getHtmlForAdditionalFields()} 
                     </div>
 
 <!--
@@ -207,10 +207,10 @@ export default function FeedbackControlPanel() {
                     </div>
 -->
                     <div id="feedbackControlPanelMultiSelectInfo" style="flex;flex-direction:row;display:${state.isMultiSelection ? "block" : "none"};" class="font-size--3 meta">
-                    <span style="color:lightpink">WARNING: existing Markup for the selected Ecoshapes will be replaced on Save.</span>
+                    <span style="color:lightpink">${$.i18n('warning_markup')}</span>
                        <div>Ecoshape(s):<span id="feedbackControlPanelMSIecoshapes" style="margin-left:5px;"></span></div>
-                       <div>Terrestrial Area:<span id="feedbackControlPanelMSIarea" style="margin-left:5px;"></span></div>
-                        <div>Terrestrial Proportion:<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
+                       <div>${$.i18n('ter_area')}<span id="feedbackControlPanelMSIarea" style="margin-left:5px;"></span></div>
+                        <div>>${$.i18n('ter_proportion')}<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
                    
                         </div>
 
@@ -283,13 +283,13 @@ export default function FeedbackControlPanel() {
 
       <p class="font-size--3 meta">
         <!--<strong>Ecoshape:</strong> ${EA.ecoshapename} <br>-->
-        <strong>Parent Ecoregion:</strong> ${parentEco} <br>
-        <strong>Ecozone:</strong> ${ecoZone}<br>
-        <strong>Terrestrial Area:</strong> ${terrArea} km&sup2;<br>
+        <strong>${$.i18n('parent_ecoregion')}:</strong> ${parentEco} <br>
+        <strong>${$.i18n('ecozone')}:</strong> ${ecoZone}<br>
+        <strong>${$.i18n('ter_area')}:</strong> ${terrArea} km&sup2;<br>
 
-        <strong>Terrestrial Proportion:</strong> ${terrProp.toFixed(1)}%    <br>  
-        <strong>Presence:</strong> ${presence}  <br>     
-        <strong>Metadata:</strong> ${hucNotes} <br>     
+        <strong>${$.i18n('ter_proportion')}:</strong> ${terrProp.toFixed(1)}%    <br>  
+        <strong>${$.i18n('presence')}:</strong> ${presence}  <br>     
+        <strong>${$.i18n('metadata')}:</strong> ${hucNotes} <br>     
 
       </p>  
     </div>
@@ -339,7 +339,7 @@ export default function FeedbackControlPanel() {
     //     <div class='flex-container'><label class="feedback" id="markupLabel" style="display:${state.isMultiSelection ? "none" : "block"};"> <span class="font-size--3">Markup (required):</snap>
     //         <select style="width:100%" id="field-markup" required>`;
     outputHtml += `<br>
-    <div class='flex-container'><label class="feedback" id="markupLabel" > <span class="font-size--3">Markup (required):</snap>
+    <div class='flex-container'><label class="feedback" id="markupLabel" > <span class="font-size--3">${$.i18n('markup_req')}:</snap>
         <select style="width:100%" id="field-markup" required>`;
 
     range.map(item => {
@@ -373,7 +373,7 @@ export default function FeedbackControlPanel() {
 
           if (state.data.additionalFields.removalreason && state.data.additionalFields.removalreason.length > 0) {
             outputHtml = '<div id="esriRemovalReason">';
-            outputHtml += `<br><span class='font-size--3'>Removal Reason (required):</span>
+            outputHtml += `<br><span class='font-size--3'>${$.i18n('rem_reason_req')}:</span>
           <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
             outputHtml += `<option style="background-color:lightgray;" disabled selected value="null">None set</option>`;
             const remReasons = config.REMOVAL;
@@ -420,12 +420,11 @@ export default function FeedbackControlPanel() {
         fieldValue =
           state.data.additionalFields[addField.field] ||
           (addField.editable ? "" : ((typeof addField.editable === "object") ? { code: "null", desc: "None set" } : "None set"));
-        outputHtml += `<br>
-                <label class="markup"  >
-                    <span class='font-size--3'>${
-          addField.display ? addField.display : addField.field
-          }:</span>
-                `;
+
+        var display = addField.display ? $.i18n(addField.display) : addField.field;
+
+        // outputHtml += `<br><label class="markup" ><span class='font-size--3'>${addField.display ? addField.display : addField.field}:</span >`;
+        outputHtml += `<br><label class="markup" ><span class='font-size--3'>${display}:</span >`;
 
         if (addField.editable) {
           if (
@@ -433,92 +432,82 @@ export default function FeedbackControlPanel() {
             addField.editable.length
           ) {
             outputHtml += `
-                  <select id="additional-field-${
+      < select id = "additional-field-${
               addField.field
-              }" class="additional-field-select additional-field-input"  defaultValue="">
-                    ${
+              } " class="additional - field - select additional - field - input"  defaultValue="">
+    ${
               fieldValue === ""
                 ? '<option disabled value="null" selected>None set</option>'
                 : ""
               }
-                `;
+    `;
 
             addField.editable.forEach(value => {
 
               outputHtml += `
-                 <option value="${value.code}" ${
+      < option value = "${value.code}" ${
                 fieldValue === value.code ? "selected" : ""
-                }>${value.desc}</option>
-                    `;
+                }> ${value.desc}</option >
+      `;
             });
 
             outputHtml += `
-                  </select>
-                `;
+                  </select >
+    `;
           } else if (addField.editable === "textarea") {
-            outputHtml += `
-              <textarea id="additional-field-${
-              addField.field
-              }" class="additional-field-textarea additional-field-input" ${
-              addField.maxlength ? `maxlength="${addField.maxlength}"` : ""
-              } defaultvalue="${fieldValue ? fieldValue : ""}">${fieldValue ? fieldValue : ""}</textarea>
-            `;
+            outputHtml += `<textarea id="additional-field-${addField.field}" class="additional-field-textarea additional-field-input" ${addField.maxlength ? `maxlength="${addField.maxlength}"` : ""} defaultvalue="${fieldValue ? fieldValue : ""}" > ${fieldValue ? fieldValue : ""}</textarea>`;
           } else {
-            outputHtml += `
-                    <input type="text" id="additional-field-${
-              addField.field
-              }" class="additional-field-text additional-field-input" ${
-              addField.maxlength ? `maxlength="${addField.maxlength}"` : ""
-              } value="${fieldValue ? fieldValue : ""}"/>
-            `;
+            outputHtml += `<input type = "text" id = "additional-field-${addField.field}" class="additional-field-text additional-field-input" ${addField.maxlength ? `maxlength="${addField.maxlength}"` : ""} value = "${fieldValue ? fieldValue : ""}" />`;
           }
         } else {
-          outputHtml += `
-                    <span class='font-size--2'>${fieldValue}</span>
-            `;
+          outputHtml += `<span class='font-size--2' > ${fieldValue}</span>`;
         }
-        outputHtml += `</label>`;
+        outputHtml += `</label > `;
       });
 
-      outputHtml += `</div>`;
+      outputHtml += `</div > `;
     }
     return outputHtml;
   };
 
   const getHtmlForBtns = isSaved => {
     // const newStatus = isHucInModeledRange ? 2 : 1;
-    let saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ? "none" : "block"};"> Save </button>`;
+    let MS = $.i18n('multi_sel');
+    let reset = $.i18n('reset');
+    let save = $.i18n('save');
+    let btnsForExistingItem = ``;
+   
+    let saveBtn = `<button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection?'none':'block'}" > ${save} </button > `;
+
+
+    // let saveBtn = `< button disabled class="btn btn-fill js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection} ? 'none' : 'block';" > ${save} </button > `;
 
     if (!state.isMultiSelection) {
-      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:none;width:100%" id="fbSaveMS"> Save Multi-Selection</button>`;
+      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style = "display:none;width:100%" id="fbSaveMS" > ${save} ${MS}</button> `;
     }
     else {
-      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style="display:block;width:100%" id="fbSaveMS"> Save Multi-Selection</button>
-      <button class="btn btn-half btn-grouped js-remove-feedbackMS" style="display:none;width:100%" id="fbResetMS"> Reset Multi-Selection</button>`;
+      saveBtn += ` <button class="btn btn-half btn-grouped js-submit-feedbackMS" style = "display:block;width:100%" id="fbSaveMS" > ${save} ${MS}</button>
+  <button class="btn btn-half btn-grouped js-remove-feedbackMS" style="display:none;width:100%" id="fbResetMS"> ${reset} ${MS}</button>`;
     }
 
-    // const updateBtn = `<button class="btn btn-fill js-submit-feedback trailer-half"> Save </button>`;
-    // const removeBtn = `<button class="btn btn-fill js-remove-feedback trailer-half"> Reset </button>`;
+    // const updateBtn = `< button class="btn btn-fill js-submit-feedback trailer-half" > Save </button > `;
+    // const removeBtn = `< button class="btn btn-fill js-remove-feedback trailer-half" > Reset </button > `;
 
-    let btnsForExistingItem = `
-            <nav class='trailer-half'>
-                <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback trailer-half;color: lightblue;" id="fbReset" style="display:${state.isMultiSelection ? "none" : "block"};"> Reset </button>`;
-    btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ? "none" : "block"};"> Save </button>`;
+    btnsForExistingItem = `<nav class='trailer-half' > <button class="btn btn-half btn-grouped btn-transparent js-remove-feedback trailer-half;color: lightblue;" id="fbReset" style="display:${state.isMultiSelection ? 'none' : 'block'};" > ${reset} </button> `;
+    btnsForExistingItem += `<button class="btn btn-half btn-grouped js-submit-feedback trailer-half" id="fbSave" style="display:${state.isMultiSelection ?'none':'block'};" > ${save} </button> `;
 
     if (!state.isMultiSelection)
-      btnsForExistingItem += `
-      <button class="btn btn-half btn-grouped js-remove-feedbackMS btn-transparent trailer-half" style="display:none;width:50%;color: lightblue;padding: 5px;" id="fbResetMS"> Reset Multi-Selection</button>
-      <button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half" style="display:none;width:50%;padding: 5px;" id="fbSaveMS"> Save Multi-Selection</button>
-      `;
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-remove-feedbackMS btn-transparent trailer-half" style = "display:none;width:50%;color:lightblue;padding: 5px;" id="fbResetMS" > ${reset} ${MS}</button>
+    <button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half" style="display:none;width:50%;padding: 5px;" id="fbSaveMS"> ${save} ${MS}</button>`;
     else
-      btnsForExistingItem += `
-      <button class="btn btn-half btn-grouped js-remove-feedbackMS btn-transparent trailer-half" style="display:block;width:50%;color: lightblue;padding: 5px;" id="fbResetMS"> Reset Multi-Selection</button>
-      <button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half"  style="display:block;width:50%;margin-left:2px;padding: 5px;" id="fbSaveMS"> Save Multi-Selection</button>
-      `;
+      btnsForExistingItem += `<button class="btn btn-half btn-grouped js-remove-feedbackMS btn-transparent trailer-half" style="display:block;width:50%;color: lightblue;padding: 5px;" id="fbResetMS" > ${reset} ${MS}</button>
+    <button class="btn btn-half btn-grouped js-submit-feedbackMS trailer-half" style="display:block;width:50%;margin-left:2px;padding: 5px;" id="fbSaveMS"> ${save} ${MS}</button>`;
 
-    btnsForExistingItem += `</nav>`;
+    btnsForExistingItem += `</nav > `;
 
+    console.log(btnsForExistingItem);
     return isSaved ? btnsForExistingItem : saveBtn;
+   
   };
 
 
@@ -669,8 +658,8 @@ export default function FeedbackControlPanel() {
         if (document.getElementById('esriRemovalReason') != null) return;
         // Add a removal reason drop down only when removing a species
         var outputHtml = '<div id="esriRemovalReason">';
-        outputHtml += `<br><span class='font-size--3'>Removal Reason (required):</span>
-      <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
+        outputHtml += `< br > <span class='font-size--3'>${$.i18n('rem_reason_req')}:</span>
+  <select id="additional-field-removalreason" class="additional-field-select additional-field-input" style="width:100%;">`;
         outputHtml += `<option style="background-color:lightgray;" disabled selected value="null">None set</option>`;
         const remReasons = config.REMOVAL;
         remReasons.map(d => {
@@ -685,8 +674,8 @@ export default function FeedbackControlPanel() {
           outputHtml += `<option ${s} value="${c}">${t}</option>`;
         });
 
-        // outputHtml += `</select></label></div>`;
-        outputHtml += `</select></div>`;
+        // outputHtml += `</select></label ></div > `;
+        outputHtml += `</select ></div > `;
         removeReason.innerHTML = outputHtml;
       }
       else {

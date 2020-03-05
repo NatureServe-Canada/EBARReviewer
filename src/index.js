@@ -418,7 +418,7 @@ const initApp = async oauthManager => {
 
   const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
   if (userDiv) {
-    let componentHTML = "<div><span class='font-size--2'>Logged in as:<b> " + oauthManager.getUserID() + "</b></span></div>"
+    let componentHTML = `<div><span class="font-size--2">${$.i18n('logged_in_as')}:<b> ` + oauthManager.getUserID() + `</b></span></div>`
     userDiv.innerHTML = componentHTML
   }
 

@@ -31,6 +31,7 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "and": "and",
             "under": "under",
             "comment": "Comment (required):",
+            "logged_in_as": "Logged in as",
             "EBAR_Reviewer": "EBAR Reviewer",
             "bn_zoom": "Zoom to Species Range",
             "range_version": "Range Version:",
@@ -62,9 +63,13 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "all_feedback_for": "All feedbacks for",
             "no_overall_fb": "No overall feedback for selected species",
             "overall_fb": "Overall Feedback from all users",
-            // "Reference": "Reference",
-            // "removalreason": "Removal Reason",
-           // "Migrant Status": "Migrant Status"
+            "Reference": "Reference",
+            "removalreason": "Removal Reason",
+            "Migrant Status": "Migrant Status",
+            "overall_fb": "Please provide overall range feedback",
+            "overall_comment": "Overall comment",
+            "submit": "Submit",
+            "close": "Close"
         },
         "fr": {
             "welcome": `
@@ -93,6 +98,7 @@ Vos évaluations d'espèces seront conservées dans une base de données pour so
             "and": "et",
             "under": "sous",
             "comment": "Commentaire (obligatoire):",
+            "logged_in_as": "Connecté en tant que",
             "EBAR_Reviewer": "EBAR Critique",
             "bn_zoom": "Zoom sur l'aire de répartition des espèces",
             "range_version": "Version de la gamme:",
@@ -124,9 +130,13 @@ Vos évaluations d'espèces seront conservées dans une base de données pour so
             "all_feedback_for": "Tous les retours pour",
             "no_overall_fb": "Aucune rétroaction globale pour les espèces sélectionnées",
             "overall_fb": "Rétroaction globale de tous les utilisateurs",
-            // "Reference": "Référence",
-            // "removalreason": "Motif de suppression",
-           // "Migrant Status": "Statut de migrant"
+            "Reference": "Référence",
+            "removalreason": "Motif de suppression",
+            "Migrant Status": "Statut de migrant",
+            "overall_fb": "Veuillez fournir des commentaires sur la gamme globale",
+            "overall_comment": "Commentaire général",
+            "submit": "Submit",
+            "close": "Close"
         }
 
     }).done(function () {
@@ -171,6 +181,4 @@ function translation(event) {
     $("[data-i18n=drag_and_drop_msg").text($.i18n('drag_and_drop_msg'));
     $("[data-i18n=overall_feedback").text($.i18n('overall_feedback'));
     $("[data-i18n=multi_sel_title").text($.i18n('multi_sel_title'));
-    //$("[data-i18n=warning_markup").text($.i18n('warning_markup'));
-    //$("[data-i18n=ter_area").text($.i18n('ter_area'));
 }
