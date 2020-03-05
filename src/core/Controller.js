@@ -793,17 +793,15 @@ export default function Controller(props = {}) {
       const reviewId = dataModel.getReviewId(species);
       data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
     }
-
     //data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
-
-    console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
-    console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
-    var dataCount = Object.keys(data).length;
     const modal = document.getElementById("myModal");
     modal.style.display = "block";
-
-
+    // Very first time a user logins, they'll have 0 feedback and data will be undefined.
     if (data) {
+      console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
+      console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
+      var dataCount = Object.keys(data).length;
+
       var dataCount = Object.keys(data).length;
       const modal = document.getElementById("myModal");
       modal.style.display = "block";
