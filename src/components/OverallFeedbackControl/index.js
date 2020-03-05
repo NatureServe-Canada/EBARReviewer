@@ -50,23 +50,23 @@ export default function () {
     const compoenetHtml = `
             <div id='overallFeedbackControlPanelContainer' class='panel panel-black'>
                 <div class="text-center">
-                    <h4>Please provide overall range feedback</h4>
+                    <h4>${$.i18n('overall_fb')}</h4>
                 </div>
 
                 <div class="text-center">${getRatingStarHtml()}</div>
 
                 <div class='leader-half'>
                     <label>
-                        <span class='font-size--3'>Overall comment:</span>
+                        <span class='font-size--3'>${$.i18n('overall_comment')}:</span>
                         <textarea type="text" placeholder="" class="comment-textarea" rows="4" maxlength="4095">${comment}</textarea>
                     </label>
                 </div>
 
                 <div class='leader-half trailer-half action-btn-wrap' style="display: flex;
                 justify-content: space-between;">
-                    <btn class='btn btn-half js-close' style="margin:2px;" id="ofcClose">Close</btn>
-                    <btn class='btn btn-half js-submit' style="margin:2px;">Save</btn>
-                    <btn class='btn btn-half js-submitsave' style="margin:2px;">Submit</btn>
+                    <btn class='btn btn-half js-close' style="margin:2px;" id="ofcClose">${$.i18n('close')}</btn>
+                    <btn class='btn btn-half js-submit' style="margin:2px;">${$.i18n('save')}</btn>
+                    <btn class='btn btn-half js-submitsave' style="margin:2px;">${$.i18n('submit')}</btn>
                 </div>
             </div>
         `;

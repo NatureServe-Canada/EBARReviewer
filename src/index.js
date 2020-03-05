@@ -24,6 +24,8 @@ import PolyfillForIE from "./utils/PolyfillForIE";
 
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
+  if (config.i18n)
+  $("[data-i18n=lang").css('display', 'block');
 
   document.querySelector(".js-accept-terms").addEventListener("click", evt => {
     // console.log('agress');
@@ -327,10 +329,6 @@ const initApp = async oauthManager => {
       });
     },
     onSubmitHandler: data => {
-      // view.toggleOverallFeeback(false);
-      // if (data && !data.datestarted)
-      //   data.datestarted = new Date().toISOString().split('T')[0];
-
       console.log('submit overall feedback', data);
 
       view.toggleControlPanel({
@@ -343,7 +341,7 @@ const initApp = async oauthManager => {
     onSubmitSaveHandler: data => {
 
       // if (data && !data.datestarted)
-      data.datecompleted = (new Date().toISOString().split('T')[0]).toString();
+      data.datecompleted = new Date().getTime();
 
       console.log('submit with save overall feedback', data);
 
@@ -418,7 +416,7 @@ const initApp = async oauthManager => {
 
   const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
   if (userDiv) {
-    let componentHTML = "<div><span class='font-size--2'>Logged in as:<b> " + oauthManager.getUserID() + "</b></span></div>"
+    let componentHTML = `<div><span class="font-size--2">${$.i18n('logged_in_as')}:<b> ` + oauthManager.getUserID() + `</b></span></div>`
     userDiv.innerHTML = componentHTML
   }
 

@@ -44,7 +44,7 @@ export default function(options={
         const headerHtml = `
             <div class='trailer-quarter'>
                 <span class='icon-ui-left cursor-pointer js-close'></span>
-                <span class='font-size--1'>All feedbacks for ${options.hucName}</span>
+                <span class='font-size--1'>${$.i18n('all_feedback_for')} ${options.hucName}</span>
             </div>
         `;
 

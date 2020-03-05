@@ -2,8 +2,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports =  (env, options)=> {
+module.exports = (env, options) => {
 
     const devMode = options.mode === 'development' ? true : false;
 
@@ -20,7 +21,7 @@ module.exports =  (env, options)=> {
                     test: /\.js$/,
                     exclude: /node_modules/,
                     use: {
-                    loader: "babel-loader"
+                        loader: "babel-loader"
                     }
                 },
                 {
@@ -39,10 +40,10 @@ module.exports =  (env, options)=> {
                     ]
                 },
                 { test: /\.woff$/, loader: "url-loader?limit=10000&mimetype=application/font-woff" },
-                { test: /\.ttf$/,  loader: "url-loader?limit=10000&mimetype=application/octet-stream" },
-                { test: /\.eot$/,  loader: "file-loader" },
-                { test: /\.svg$/,  loader: "url-loader?limit=10000&mimetype=image/svg+xml" },
-                { test: /\.(png|jpg|gif)$/,  loader: "file-loader" },
+                { test: /\.ttf$/, loader: "url-loader?limit=10000&mimetype=application/octet-stream" },
+                { test: /\.eot$/, loader: "file-loader" },
+                { test: /\.svg$/, loader: "url-loader?limit=10000&mimetype=image/svg+xml" },
+                { test: /\.(png|jpg|gif)$/, loader: "file-loader" },
             ]
         },
         plugins: [
@@ -53,7 +54,10 @@ module.exports =  (env, options)=> {
             new HtmlWebpackPlugin({
                 template: './src/index.template.html',
                 filename: 'index.html'
-            })
+            }),
+            new CopyWebpackPlugin([
+                { from: 'js', to: 'js' }
+            ])
         ]
     }
 

@@ -1,124 +1,128 @@
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
-    <meta name="viewport" content="width=device-width, user-scalable=no" />
-    <meta name="keywords" content="" />
-    <meta name="description" content="" />
-    <meta name="author" content="Nature Serve Canada" />
-    <title>EBAR Reviewer</title>
-    <link rel="icon" href="//www.esri.com/favicon.ico" />
-  </head>
-  <body class="">  
 
-    <div id="myModal" class="ns_modal">
-      <div class="ns_modal-content"></div>        
-    </div>
+<head>
+  <meta charset="utf-8" />
+  <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="Nature Serve Canada" />
+  <title data-i18n="EBAR_Reviewer">EBAR Reviewer</title>
+  <link rel="icon" href="//www.esri.com/favicon.ico" />
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery.i18n.js"></script>
+  <script src="js/jquery.i18n.messagestore.js"></script>
+  <script src="js/translation.js"></script>
+</head>
 
-    <div id="agreementDiv" >
-      <div class="grid-container">
-        <div class="column-16 center-column padding-leader-5" style="padding-top: 3rem;">
-          <div>
-         <div id="logo"></div>
+<body class="">
+
+  <div id="myModal" class="ns_modal">
+    <div class="ns_modal-content"></div>
+  </div>
+
+  <div id="agreementDiv">
+    <div class="grid-container">
+      <div class="column-16 center-column padding-leader-5" style="padding-top: 3rem;">
+        <div>
+          <div id="logo"></div>
           <!-- <img src="static/ns.png" height="30%", width="30%">-->
-            <p class="font-size-2"><br>
-              Welcome to the NatureServe Canada EBAR Reviewer!
-              <br><br>
-              In using this tool, you will be accessing information based on locations of rare and threatened 
-              species, including species subject to persecution and harm. You agree to use this information only 
-              for the purposes of EBAR range maps review. Please contact the EBAR-KBA project at the email
-              address provided below to suggest additional reviewers.
-              <br><br>  
-              Range maps will be published through NatureServe Canada (<a href="http://www.natureserve.ca">http://www.natureserve.ca)</a>, NatureServe Explorer 
-              and partners at no cost.
-              <br><br>
-              This app uses cookies to remember some user interface selections.
-              <br><br>
-              Your species reviews will be kept in a database to support the EBAR-KBA project.           
-            </p>
-          </div>
-
-          <div class="text-right">
-            <btn class="btn btn-large js-accept-terms">
-              <span class="padding-left-1 padding-right-1"> I AGREE </span></btn>
-          </div>
-          <p>   
-          <div class="font-size-1"> User questions, additional reviewer suggestions, feedback and technical support: <a href="mailto:ebar-kba@natureserve.ca">ebar-kba@natureserve.ca</a>
-            <br><br>About the EBAR Reviewer app</div>
-           <div style="margin-left: 1rem;" class="font-size-1">                       
-           
-              Source code: <a href="https://github.com/NatureServe-Canada/EBARReviewer">https://github.com/NatureServe-Canada/EBARReviewer</a>
-              <br>
-              App development: Esri Canada
-              <br>
-              Based on: <a href="https://github.com/allenanselmo/species-reviewer-naba">https://github.com/allenanselmo/species-reviewer-naba</a> and <a href="https://github.com/vannizhang/species-reviewer">https://github.com/vannizhang/species-reviewer</a> under Apache 2.0 (<a href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a>)
-              <br>
-              © NatureServe Canada 2020 under CC BY 4.0 (<a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>)           
-          </div>
+          <p class="font-size-2"><br>
+            <span data-i18n="welcome"></span>
           </p>
         </div>
+
+        <div class="text-right">
+          <select class="language" onchange="translation(event)" data-i18n="lang" style="display:none">
+            <option value="en" data-i18n="lang_en">English</option>
+            <option value="fr" data-i18n="lang_fr">French</option>
+          </select>
+          <btn class="btn btn-large js-accept-terms">
+            <span class="padding-left-1 padding-right-1" data-i18n="i_agree">I AGREE </span></btn>
         </div>
+        <p>
+          <div class="font-size-1"> <span data-i18n="questions">User questions, additional reviewer suggestions,
+              feedback and technical support:</span> <a
+              href="mailto:ebar-kba@natureserve.ca" target="_blank">ebar-kba@natureserve.ca</a>
+            <br><br><span data-i18n="about">About the EBAR Reviewer app </span></div>
+          <div style="margin-left: 1rem;" class="font-size-1">
+
+            <span data-i18n="source_code">Source code:</span> <a
+              href="https://github.com/NatureServe-Canada/EBARReviewer" target="_blank">https://github.com/NatureServe-Canada/EBARReviewer</a>
+            <br>
+            <span data-i18n="app_dev"> App development: Esri Canada</span>
+            <br>
+            <span data-i18n="based_on"> Based on: </span><a
+              href="https://github.com/allenanselmo/species-reviewer-naba" target="_blank">https://github.com/allenanselmo/species-reviewer-naba</a>
+            <span data-i18n="and">and</span> <a
+              href="https://github.com/vannizhang/species-reviewer" target="_blank">https://github.com/vannizhang/species-reviewer</a>
+            <span data-i18n="under"> under</span> Apache 2.0 (<a
+              href="http://www.apache.org/licenses/" target="_blank">http://www.apache.org/licenses/</a>)
+            <br>
+            © NatureServe Canada 2020 <span data-i18n="under"> under</span> CC BY 4.0 (<a
+              href="https://creativecommons.org/licenses/by/4.0/" target="_blank">https://creativecommons.org/licenses/by/4.0/</a>)
+          </div>
+        </p>
       </div>
     </div>
+  </div>
+  </div>
 
-    <div id="mainControlDiv" class="panel panel-black fancy-scrollbar hide">
-      <div style="display: flex; flex-direction: row">
+  <div id="mainControlDiv" class="panel panel-black fancy-scrollbar hide">
+    <div style="display: flex; flex-direction: row">
       <div style="flex: 2;">
         <div class="trailer-half">
           <div class="inline-block">
-            <span class="font-size-2">EBAR Reviewer</span>
+            <span class="font-size-2" data-i18n="EBAR_Reviewer">EBAR Reviewer</span>
           </div>
-          <div id="loggedInDiv">...</div>     
+          <div id="loggedInDiv">...</div>
         </div>
       </div>
       <div>
-      <div style="display: flex; flex-direction: row;justify-content:space-between;height:99%;">
-        <a href="https://www.natureserve.org/natureserve-network/canada" target="_blank">
-          <div id="navlogo" style="flex:1;"></div>
-        </a>
+        <div style="display: flex; flex-direction: row;justify-content:space-between;height:99%;">
+          <a href="https://www.natureserve.org/natureserve-network/canada" target="_blank">
+            <div id="navlogo" style="flex:1;"></div>
+          </a>
+        </div>
       </div>
     </div>
-      </div>
 
-      <div class="">
-        <div id="selectorsDiv"></div>
-      </div>
-      <div>
-        <button id="zoomToSpeciesRange" class="btn btn-fill icon-ui-zoom-in-magnifying-glass" style="margin-bottom:5px;">Zoom to Species Range</button>
-      </div>
+    <div class="">
+      <div id="selectorsDiv"></div>
+    </div>
+    <div>
+      <button id="zoomToSpeciesRange" class="btn btn-fill icon-ui-zoom-in-magnifying-glass"
+        style="margin-bottom:5px;" data-i18n="bn_zoom">Zoom to Species Range</button>
+    </div>
 
-      <div class="">
-        <div id="metadataDiv">
-          <p class="font-size--3 meta">
-            <strong>Range Version:</strong> <span id="rversion"> </span> <br>
-            <strong>Stage:</strong> <span id="rstage"> </span> <br>
-            <strong>Date:</strong> <span id="rdate"> </span> <br>
-            <strong>Species Information:</strong>  <span id="rlink"></span> <br>
-            <strong>Metadata:</strong>  <span id="rmetadata"></span> <br>
-            <!-- <strong>Notes:</strong>--> <span id="rnotes"></span> 
-         </p>     
-        </div>
+    <div class="">
+      <div id="metadataDiv">
+        <p class="font-size--3 meta">
+          <strong data-i18n="range_version">Range Version:</strong> <span id="rversion"> </span> <br>
+          <strong data-i18n="stage">Stage:</strong> <span id="rstage"> </span> <br>
+          <strong>Date:</strong> <span id="rdate"> </span> <br>
+          <strong data-i18n="species_info">Species Information:</strong> <span id="rlink"></span> <br>
+          <strong data-i18n="metadata">Metadata:</strong> <span id="rmetadata"></span> <br>
+          <!-- <strong>Notes:</strong>--> <span id="rnotes"></span>
+        </p>
       </div>
+    </div>
 
-      <div id="settingsDiv">
-        <div
-          class="text-right js-toggle-ui-component"
-          data-target="settingControls"
-        >
-       
-          <span class="cursor-pointer text-light-gray margin-right-quarter font-size--2">Search/Add Data</span>
-          <span class="icon-ui-settings cursor-pointer text-light-gray icon-no-right-padding"
-          ></span>
-        </div>
-        <div id="settingControls" class="hide">
-          <div class="setting-control-item">
-            <div class="trailer-quarter">
-              <span class="font-size--2">Search by location</span>
-            </div>
-            <div id="searchWidgetDiv"></div>
+    <div id="settingsDiv">
+      <div class="text-right js-toggle-ui-component" data-target="settingControls">
+
+        <span class="cursor-pointer text-light-gray margin-right-quarter font-size--2" data-i18n="search_add">Search/Add Data</span>
+        <span class="icon-ui-settings cursor-pointer text-light-gray icon-no-right-padding"></span>
+      </div>
+      <div id="settingControls" class="hide">
+        <div class="setting-control-item">
+          <div class="trailer-quarter">
+            <span class="font-size--2" data-i18n="search_by_location">Search by location</span>
           </div>
+          <div id="searchWidgetDiv"></div>
+        </div>
 
-          <!-- <div class='setting-control-item hide'>
+        <!-- <div class='setting-control-item hide'>
                         <form class="calcite-slider">
                             <label class='trailer-quarter'>
                                 <span class='font-size--2'>change layers opacity</span>
@@ -127,78 +131,74 @@
                         </form>
                     </div> -->
 
-          <div class="setting-control-item">
-            <div class="trailer-quarter">
-              <span class="font-size--2">Reference Layers</span>
-            </div>
-            <div id="layerListDiv"></div>
-            <div>
-              <div class="addPointHeader">To Add Your Own Point Data:</div>
-              <div class="addPointText">
-                Drag and drop a csv file from Windows Explorer onto the map.
-                File should be formatted with “latitude” and “longitude”
-                columns.
-              </div>
-            </div>
+        <div class="setting-control-item">
+          <div class="trailer-quarter">
+            <span class="font-size--2" data-i18n="ref_layers">Reference Layers</span>
           </div>
-
-          <div class="setting-control-item text-right">
-            <span class="btn btn-fill js-sign-out">Switch Account</span>
+          <div id="layerListDiv"></div>
+          <div>
+            <div class="addPointHeader" data-i18n="to_add_your_point_data">To Add Your Own Point Data:</div>
+            <div class="addPointText"  data-i18n="drag_and_drop_msg">
+              Drag and drop a csv file from Windows Explorer onto the map.
+              File should be formatted with “latitude” and “longitude”
+              columns.
+            </div>
           </div>
         </div>
+
+        <div class="setting-control-item text-right">
+          <span class="btn btn-fill js-sign-out" data-i18n="switch_account">Switch Account</span>
+        </div>
       </div>
+    </div>
 
     <div style="display: flex; flex-direction: row">
       <div id="legendDiv" style="flex:2"></div>
-      <div >
+      <div>
         <div style="display: flex; flex-direction: column;justify-content:space-between;height:99%;">
           <div style="flex:1;height: 30%;visibility: hidden;margin-bottom:-10px;">
-            <div id="graphicsLayersDiv" >
-                <!-- style="display:none;" -->
-              <label class="toggle-switch"> 
+            <div id="graphicsLayersDiv">
+              <!-- style="display:none;" -->
+              <label class="toggle-switch">
                 <input type="checkbox" class="toggle-switch-input toggleGraphicsLayers" id="GL1" checked>
                 <span class="toggle-switch-track margin-right-1"></span>
               </label>
-            </div> 
+            </div>
           </div>
           <div style="flex:1;height: 30%;margin-bottom: 15px;">
-            <div id="graphicsLayersDiv" >
-              <label class="toggle-switch"> 
+            <div id="graphicsLayersDiv">
+              <label class="toggle-switch">
                 <input type="checkbox" class="toggle-switch-input toggleGraphicsLayers" id="GL0" checked>
                 <span class="toggle-switch-track margin-right-1"></span>
               </label>
-            </div> 
+            </div>
           </div>
           <div style="flex:1;height: 30%;">
-            <div id="graphicsLayersDiv" >
-              <label class="toggle-switch"> 
+            <div id="graphicsLayersDiv">
+              <label class="toggle-switch">
                 <input type="checkbox" class="toggle-switch-input toggleGraphicsLayers" id="GL2" checked>
                 <span class="toggle-switch-track margin-right-1"></span>
               </label>
-            </div> 
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-      <div id="listViewForOverallFeedbackDiv"></div>
-      <div id="listViewForDetailedFeedbackDiv"></div>
-      <div id="listViewForFeedbacksByEcoShpDiv"></div>
+    <div id="listViewForOverallFeedbackDiv"></div>
+    <div id="listViewForDetailedFeedbackDiv"></div>
+    <div id="listViewForFeedbacksByEcoShpDiv"></div>
 
-      <div id="openOverallFeedbackBtnDiv" class="leader-1">
-        <btn
-          id="openOverallFeedbackBtn"
-          class="btn btn-fill js-open-overall-feedback btn-disabled"
-          >Overall Feedback</btn
-        >
-      </div>
+    <div id="openOverallFeedbackBtnDiv" class="leader-1">
+      <btn id="openOverallFeedbackBtn" class="btn btn-fill js-open-overall-feedback btn-disabled" data-i18n="overall_feedback">Overall Feedback</btn>
     </div>
+  </div>
 
-    <div id="feedbackControlDiv"></div>
+  <div id="feedbackControlDiv"></div>
 
-    <div id="overallFeedbackDiv" class="hide"></div>
+  <div id="overallFeedbackDiv" class="hide"></div>
 
-    <!-- <div id='basemapGalleryControl' class=''>
+  <!-- <div id='basemapGalleryControl' class=''>
             <div id='basemapGalleryControlHeader'>
                 <span class='avenir-demi margin-left-half fonr-size--2'>Basemap Gallery</span>
                 <div class='inline-block right js-toggle-basemap-gallery cursor-pointer'>
@@ -209,6 +209,7 @@
             <div id='basemapGalleryDiv'></div>
         </div> -->
 
-    <div id="viewDiv" class="hide"></div>
-  </body>
+  <div id="viewDiv" class="hide"></div>
+</body>
+
 </html>

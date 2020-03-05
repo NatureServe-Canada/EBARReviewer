@@ -125,9 +125,9 @@ module.exports = {
   ],
 
   PRESENCE: [
-    {"code": "P", "text": "Present"},
-    {"code": "X", "text": "Presence Expected"},
-    {"code": "H", "text": "Historical"}
+    { "code": "P", "text": "Present" },
+    { "code": "X", "text": "Presence Expected" },
+    { "code": "H", "text": "Historical" }
   ],
 
   REMOVAL: [
@@ -250,4 +250,6 @@ module.exports = {
     searchWidgetDiv: "searchWidgetDiv",
     layerListDiv: "layerListDiv"
   },
+  i18n: false,
+  isMultiSelection: false
 };

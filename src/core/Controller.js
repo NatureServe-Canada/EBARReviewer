@@ -351,9 +351,7 @@ export default function Controller(props = {}) {
   const postOverallFeedback = async (
     data = {
       rating: 0,
-      comment: ""//,
-      // datecompleted: new Date(0),
-      // datestarted: new Date().toISOString().split('T')[0]
+      comment: ""
     }
   ) => {
 
@@ -392,9 +390,12 @@ export default function Controller(props = {}) {
 
       if (feedbacks[0]) {
         feature.attributes.ObjectId = feedbacks[0].attributes.objectid;
+        if (!feature.attributes.datestarted) {
+          feature.attributes.datestarted = new Date().getTime();
+        }
       }
       else {
-        feature.attributes.datestarted = (new Date().toISOString().split('T')[0]).toString();
+        feature.attributes.datestarted = new Date().getTime();
       }
       // REVIEWER TABLE HAS NO DATE FIELDS...
       /* 
@@ -892,7 +893,7 @@ export default function Controller(props = {}) {
       var obj = {
         userID,
         species,
-        reviewid, 
+        reviewid,
         ecoID,
         hucName,
         isHucInModeledRange,
