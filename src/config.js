@@ -250,6 +250,6 @@ module.exports = {
     searchWidgetDiv: "searchWidgetDiv",
     layerListDiv: "layerListDiv"
   },
-  i18n: false,
-  isMultiSelection: false
+  i18n: true,
+  isMultiSelection: true
 };
