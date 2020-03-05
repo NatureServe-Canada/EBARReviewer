@@ -13,7 +13,7 @@ species, including species subject to persecution and harm. You agree to use thi
 for the purposes of EBAR range maps review. Please contact the EBAR-KBA project at the email
 address provided below to suggest additional reviewers.
 <br><br>  
-Range maps will be published through NatureServe Canada (<a href="http://www.natureserve.ca">http://www.natureserve.ca)</a>, NatureServe Explorer 
+Range maps will be published through NatureServe Canada (<a href="http://www.natureserve.ca" target="_blank">http://www.natureserve.ca)</a>, NatureServe Explorer 
 and partners at no cost.
 <br><br>
 This app uses cookies to remember some user interface selections.
@@ -80,7 +80,7 @@ espèces, y compris les espèces sujettes à la persécution et aux dommages. Vo
 aux fins de l'examen des cartes de répartition EBAR. Veuillez contacter le projet EBAR-KBA par e-mail
 adresse indiquée ci-dessous pour suggérer des réviseurs supplémentaires.
 <br> <br>
-Les cartes des aires de répartition seront publiées par NatureServe Canada (<a href="http://www.natureserve.ca"> http://www.natureserve.ca) </a>, NatureServe Explorer
+Les cartes des aires de répartition seront publiées par NatureServe Canada (<a href="http://www.natureserve.ca" target="_blank"> http://www.natureserve.ca) </a>, NatureServe Explorer
 et partenaires sans frais.
 <br> <br>
 Cette application utilise des cookies pour mémoriser certaines sélections de l'interface utilisateur.
