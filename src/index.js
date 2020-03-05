@@ -327,10 +327,6 @@ const initApp = async oauthManager => {
       });
     },
     onSubmitHandler: data => {
-      // view.toggleOverallFeeback(false);
-      // if (data && !data.datestarted)
-      //   data.datestarted = new Date().toISOString().split('T')[0];
-
       console.log('submit overall feedback', data);
 
       view.toggleControlPanel({
@@ -343,7 +339,7 @@ const initApp = async oauthManager => {
     onSubmitSaveHandler: data => {
 
       // if (data && !data.datestarted)
-      data.datecompleted = (new Date().toISOString().split('T')[0]).toString();
+      data.datecompleted = new Date().getTime();
 
       console.log('submit with save overall feedback', data);
 
