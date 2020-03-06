@@ -217,9 +217,9 @@ module.exports = {
     status1: [166, 219, 160, 0.5],
     status2: [194, 165, 207, 0.5],
     actualModeledExtent: "#ffd400",
-    present: [168, 0, 132, 0.55], //Cattleya Orchid 
-    presenceexpected: [255, 115, 223, 0.55], //, Fuchsia Pink 
-    historical: [255, 190, 232, 0.55], //Rhodolite Rose
+    present: [76, 0, 115, 0.55],// [168, 0, 132, 0.55], //Cattleya Orchid 
+    presenceexpected: [169, 0, 230, 0.55],//[255, 115, 223, 0.55], //, Fuchsia Pink 
+    historical: [223, 115, 255, 0.55],// [255, 190, 232, 0.55], //Rhodolite Rose
 
   },
 
