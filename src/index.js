@@ -25,7 +25,7 @@ import PolyfillForIE from "./utils/PolyfillForIE";
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
   if (config.i18n)
-  $("[data-i18n=lang").css('display', 'block');
+    $("[data-i18n=lang").css('display', 'block');
 
   document.querySelector(".js-accept-terms").addEventListener("click", evt => {
     // console.log('agress');
@@ -195,7 +195,7 @@ const initApp = async oauthManager => {
 
       controller.setSelectedSpecies(val);
       let m = controller.getMetadata(val);
-      view.updateSpeciesMetadata(m);     
+      view.updateSpeciesMetadata(m);
     }
   });
 
@@ -284,35 +284,46 @@ const initApp = async oauthManager => {
           ...feedBack,
           hucForSpeciesData: feedBack.hucForSpeciesData.map((_hucForSpeciesData, _hucForSpeciesDataIndex) => { return { ..._hucForSpeciesData } }),
           additionalFields: { ...feedBack.additionalFields },
-          ecoAtts: { ...feedBack.ecoAtts },
+          ecoAtts: { ...feedBack.ecoAtts }
         }
       };
 
       res.forEach(el => {
-
-
         let _feedBack = _deepCopy(fb);
         _feedBack.ecoID = el.attributes.ecoshapeid;
         _feedBack.ecoAtts = el.attributes;
         _feedBack.status = 1;
-        let fb_current = controller.feedbackManager.getSavedItemFromDataStore(_feedBack);
-        if (fb_current) {
-          _feedBack.status = fb_current.isHucInModeledRange ? 2 : 1; //1- Add/change; 2- remove
-          if (_feedBack.status == 2) {
-            _feedBack.markup = "R";
-            _feedBack.additionalFields.removalreason = "O";
-          } else {
-            _feedBack.markup = "P";
+        _feedBack.isHucInModeledRange = false;
+        if (controller && controller.dataModel && controller.dataModel.ecoShapesBySpecies) {
+
+          for (var i = 0; i < controller.dataModel.ecoShapesBySpecies['1'].length; ++i) {
+
+            if (controller.dataModel.ecoShapesBySpecies['1'][i]['ecoshapeid'] == _feedBack.ecoID) {
+              _feedBack.isHucInModeledRange = true;
+            }
           }
-        } else {
-          _feedBack.markup = "P";
         }
+
+        _feedBack.status = (_feedBack.isHucInModeledRange && _feedBack.markup=='R')? 2 : 1;
+
+        if (_feedBack.isHucInModeledRange && _feedBack.isHucInModeledRange == true) {
+          if (_feedBack.markup == "P") {
+            _feedBack.markup = null;
+            _feedBack.additionalFields.removalreason = null;
+          }
+        }
+        else {
+          if (_feedBack.markup == "R") {
+            _feedBack.markup = "P";
+            _feedBack.additionalFields.removalreason = null;
+          }
+        }
+
         dataList.push(_feedBack);
-
+      
       });
-
+     // console.log('DATA_LIST', dataList);
       controller.feedbackManager.submitMS(dataList);
-
       mapControl.clearMSelection();
       mapControl.clearEcoPreviewGraphicLayer();
     }
