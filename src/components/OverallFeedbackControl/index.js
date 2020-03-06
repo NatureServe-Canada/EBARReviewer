@@ -65,8 +65,8 @@ export default function () {
                 <div class='leader-half trailer-half action-btn-wrap' style="display: flex;
                 justify-content: space-between;">
                     <btn class='btn btn-half js-close' style="margin:2px;" id="ofcClose">${$.i18n('close')}</btn>
-                    <btn class='btn btn-half js-submit' style="margin:2px;">${$.i18n('save')}</btn>
-                    <btn class='btn btn-half js-submitsave' style="margin:2px;">${$.i18n('submit')}</btn>
+                    <btn class='btn btn-half js-submit' style="margin:2px;" id="ofcSave">${$.i18n('save')}</btn>
+                    <btn class='btn btn-half js-submitsave' style="margin:2px;" id="ofcSubmit">${$.i18n('submit')}</btn>
                 </div>
             </div>
         `;
@@ -167,6 +167,8 @@ export default function () {
     if (data.datecompleted) {
       document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "none";
       document.getElementById("ofcClose").style.pointerEvents = "auto";
+      document.getElementById("ofcSave").style.opacity = "0.5";
+      document.getElementById("ofcSubmit").style.opacity = "0.5";
     }
     else{
       document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "auto";
