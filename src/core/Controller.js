@@ -794,12 +794,11 @@ export default function Controller(props = {}) {
       const reviewId = dataModel.getReviewId(species);
       data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
     }
-
     //data = data || feedbackManager.getFeedbackDataBySpecies(reviewId);
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
-
+    
     if (data) {
       var dataCount = Object.keys(data).length;
       const modal = document.getElementById("myModal");
@@ -807,7 +806,6 @@ export default function Controller(props = {}) {
 
       Object.keys(data).forEach(function (key) {
         // console.log(key, data[key]);
-
         const ecoID = data[key].ecoID;
         const status = data[key].status;
         console.log("renderEcoWithFeedbackDataOnMap ::  ecoid: " + ecoID + " status: " + status)
@@ -815,7 +813,6 @@ export default function Controller(props = {}) {
       });
     }
     else {
-
       controllerProps.runSetpEcoByStatusLoaded();
     }
   };
