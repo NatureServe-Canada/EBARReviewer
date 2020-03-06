@@ -799,10 +799,6 @@ export default function Controller(props = {}) {
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
-    var dataCount = Object.keys(data).length;
-    const modal = document.getElementById("myModal");
-    modal.style.display = "block";
-
 
     if (data) {
       var dataCount = Object.keys(data).length;

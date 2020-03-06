@@ -304,7 +304,6 @@ export default function FeedbackControlPanel() {
     if (state && state.data) {
 
       range.push({ code: "null", text: "None set", status: true });
-
       config.PRESENCE.map(d => {
 
         if (state && state.data && state.data.isHucInModeledRange) {
@@ -316,6 +315,12 @@ export default function FeedbackControlPanel() {
               range.push({ code: d.code, text: d.text, status: false });
             }
           }
+          else {
+            if (state && state.data && state.data.hucForSpeciesData && state.data.hucForSpeciesData.length == 0 && d.code.toUpperCase() != 'P') {
+              range.push({ code: d.code, text: d.text, status: (state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) ? true : false });
+            }
+          }
+
         } else {
           if (state && state.data && state.data.markup && state.data.markup.toUpperCase() == d.code.toUpperCase()) {
             range.push({ code: d.code, text: d.text, status: true });
@@ -507,7 +512,6 @@ export default function FeedbackControlPanel() {
 
     btnsForExistingItem += `</nav > `;
 
-    console.log(btnsForExistingItem);
     return isSaved ? btnsForExistingItem : saveBtn;
 
   };
@@ -518,7 +522,7 @@ export default function FeedbackControlPanel() {
     // protect for now as MS toggle is hidden
     if (element) {
       element.addEventListener("change", evt => {
-        console.log("toggle-switch-input MS on change", evt);
+        //  console.log("toggle-switch-input MS on change", evt);
         toggleIsMultiSelection();
       });
     }
@@ -535,6 +539,8 @@ export default function FeedbackControlPanel() {
       var fieldMarkupVal = (feedbackObjects.find(el => { return el.id == "field-markup"; })).value;
       feedbackObjects.map(el => {
         if (
+          (el.req && el.id == "field-markup" && (!el.value || el.value == '' || el.value == 'null'))
+          ||
           (el.req && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
           || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
         ) enable = false;
@@ -556,6 +562,8 @@ export default function FeedbackControlPanel() {
       var fieldMarkupVal = (feedbackObjects.find(el => { return el.id == "field-markup"; })).value;
       feedbackObjects.map(el => {
         if (
+          (el.req && el.id == "field-markup" && (!el.value || el.value == '' || el.value == 'null'))
+          ||
           (el.req && el.id != "field-markup" && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
           || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
         ) enable = false;

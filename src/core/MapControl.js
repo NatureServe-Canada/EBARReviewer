@@ -717,16 +717,13 @@ const MapControl = function ({
   }
 
   const clearMSelection = () => {
-    // REVISIT - mutli select has been commented out but need the cyan clear
-    ecoMultiSelection.removeAll();
-/*     console.log("clearMSelection");
     ecoMultiSelection.removeAll(); //all selected assets for multi-selection
     // ecoPreviewGraphicLayer.removeAll();//current selected asset
     multiSelectionList = [];
     const modal = document.getElementById("myModal");
     modal.setAttribute('multi_selection', false);
     addtoMSlist(currentSelectedFeature);
-    showMS(); */
+    showMS(); 
   }
   const clearEcoPreviewGraphicLayer = () => {
     ecoPreviewGraphicLayer.removeAll();//current selected asset
@@ -1208,7 +1205,6 @@ const MapControl = function ({
     getMultiSelectionList,
     setpEcoByStatusLoaded,
     setpEcoByPresenceLoaded
-
   };
 };
 
