@@ -69,7 +69,8 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "overall_fb": "Please provide overall range feedback",
             "overall_comment": "Overall comment",
             "submit": "Submit",
-            "close": "Close"
+            "close": "Close",
+            "submit_warning":"After submit, any changes will not be available. Do you want to continue?"
         },
         "fr": {
             "welcome": `
@@ -136,7 +137,8 @@ Vos évaluations d'espèces seront conservées dans une base de données pour so
             "overall_fb": "Veuillez fournir des commentaires sur la gamme globale",
             "overall_comment": "Commentaire général",
             "submit": "Submit",
-            "close": "Close"
+            "close": "Close",
+            "submit_warning":"Après l'envoi, aucune modification ne sera disponible. Voulez-vous continuer?"
         }
 
     }).done(function () {

@@ -117,26 +117,30 @@ export default function () {
       }
 
       if (event.target.classList.contains("js-submit")) {
-        if (!rating) {
-          alert("please provide a star rating");
-          return;
-        }
+          if (!rating) {
+            alert("please provide a star rating");
+            return;
+          }
 
-        onSubmitHandler({
-          rating,
-          comment
-        });
+          onSubmitHandler({
+            rating,
+            comment
+          });
       }
+      
       if (event.target.classList.contains("js-submitsave")) {
-        if (!rating) {
-          alert("please provide a star rating");
-          return;
-        }
+        var r = confirm($.i18n('submit_warning'));
+        if (r == true) {
+          if (!rating) {
+            alert("please provide a star rating");
+            return;
+          }
 
-        onSubmitSaveHandler({
-          rating,
-          comment
-        });
+          onSubmitSaveHandler({
+            rating,
+            comment
+          });
+        }
       }
 
     });
@@ -162,30 +166,30 @@ export default function () {
   };
 
   const checkState = data => {
-   //console.log('data.datecompleted',data.datecompleted);
- 
+    //console.log('data.datecompleted',data.datecompleted);
+
     if (data.datecompleted) {
       document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "none";
       document.getElementById("ofcClose").style.pointerEvents = "auto";
       document.getElementById("ofcSave").style.opacity = "0.5";
       document.getElementById("ofcSubmit").style.opacity = "0.5";
     }
-    else{
+    else {
       document.getElementById("overallFeedbackControlPanelContainer").style.pointerEvents = "auto";
     }
   }
 
-    const close = () => {
-      setRating();
-      setComment();
-      toggleVisibility(false);
-    };
+  const close = () => {
+    setRating();
+    setComment();
+    toggleVisibility(false);
+  };
 
-    return {
-      init,
-      // toggleVisibility,
-      open,
-      close,
+  return {
+    init,
+    // toggleVisibility,
+    open,
+    close,
     //  checkState
-    };
-  }
+  };
+}

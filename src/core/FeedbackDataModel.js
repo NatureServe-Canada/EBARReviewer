@@ -10,9 +10,10 @@ export default class FeedbackManager {
     this.isHucInModeledRange = null;
     this.isSaved = null;
     this.markup = null;
+    this.datecompleted = null;
   }
 
-  init(options) {
+  init(options,datecompleted) {
     console.log("INIT: options: ", options)
     this.userID = options.userID || null;
     this.reviewid = options.reviewid || null;
@@ -27,7 +28,7 @@ export default class FeedbackManager {
     this.ecoAtts = options.ecoAtts || {};
     this.hucForSpeciesData = options.hucForSpeciesData || {};
     this.markup = options.markup || null;
-
+    this.datecompleted = datecompleted || null;
   }
 
   // setUserID(val=''){
@@ -71,6 +72,7 @@ export default class FeedbackManager {
     this.ecoAtts = {};
     this.hucForSpeciesData = {};
     this.markup = null;
+    this.datecompleted = null;
   }
 
   getFeedbackData() {
