@@ -79,12 +79,12 @@ export default function Controller(props = {}) {
 
   const initFeedbackManager = () => {
     feedbackManager.init({
-      onOpenHandler: data => {      
-           const prevFeedbackData = dataModel.getOverallFeedback(dataModel.selectedSpecies);
-           data['datecompleted']=(prevFeedbackData && prevFeedbackData.datecompleted)?prevFeedbackData.datecompleted:null;
+      onOpenHandler: data => {
+        const prevFeedbackData = dataModel.getOverallFeedback(dataModel.selectedSpecies);
+        data['datecompleted'] = (prevFeedbackData && prevFeedbackData.datecompleted) ? prevFeedbackData.datecompleted : null;
         //console.log('feedbackManager onOpenHandler', data);
         controllerProps.feedbackManagerOnOpen(data);
- 
+
         if (document.getElementsByClassName('esri-icon-trash')[0]) { var elem = document.getElementsByClassName('esri-icon-trash')[0].click(); }
 
       },
@@ -183,7 +183,6 @@ export default function Controller(props = {}) {
     });
     console.log("this data is going from initSpeciesLookupTable in controller to the dataModel.setSpeciesLookup:", data)
     dataModel.setSpeciesLookup(data);
-
     controllerProps.speciesDataOnReady(data);
   };
 
@@ -326,7 +325,6 @@ export default function Controller(props = {}) {
 
 
       console.log(feedbacks);
-
       return feedbacks;
     } catch (err) {
       console.error(err);
@@ -366,7 +364,7 @@ export default function Controller(props = {}) {
         [config.FIELD_NAME.overallFeedback.rating]: data.rating,
         [config.FIELD_NAME.overallFeedback.comment]: data.comment,
         [config.FIELD_NAME.overallFeedback.username]: data.userID,
-        //[config.FIELD_NAME.overallFeedback.datestarted]: data.datestarted,
+        [config.FIELD_NAME.overallFeedback.datestarted]: data.datestarted,
         [config.FIELD_NAME.overallFeedback.datecompleted]: data.datecompleted
       }
     };
@@ -392,13 +390,13 @@ export default function Controller(props = {}) {
 
       if (feedbacks[0]) {
         feature.attributes.ObjectId = feedbacks[0].attributes.objectid;
-        if (!feature.attributes.datestarted) {
-          feature.attributes.datestarted = new Date().getTime();
-        }
+        // if (!feature.attributes.datestarted) {
+        //   feature.attributes.datestarted = new Date().getTime();
+        // }
       }
-      else {
-        feature.attributes.datestarted = new Date().getTime();
-      }
+      // else {
+      //   feature.attributes.datestarted = new Date().getTime();
+      // }
       // REVIEWER TABLE HAS NO DATE FIELDS...
       /* 
       if (dataLoadDate) {
@@ -800,7 +798,20 @@ export default function Controller(props = {}) {
 
     console.log('renderEcoWithFeedbackDataOnMap >>> species', species);
     console.log('renderEcoWithFeedbackDataOnMap >>> data', data);
-    
+
+    if (dataModel.selectedSpecies) {  
+      let overfb = dataModel.getOverallFeedback(dataModel.selectedSpecies);
+      if (!overfb.datestarted) {
+        overfb.datestarted = new Date().getTime();
+        dataModel.saveToOverallFeedback(dataModel.selectedSpecies, overfb);
+        postOverallFeedback(overfb);
+      }
+      //----temp delete
+      // overfb.datestarted = null;
+      // dataModel.saveToOverallFeedback(dataModel.selectedSpecies, overfb);
+      // postOverallFeedback(overfb);
+    }
+
     if (data) {
       var dataCount = Object.keys(data).length;
       const modal = document.getElementById("myModal");
@@ -930,7 +941,6 @@ export default function Controller(props = {}) {
   };
 
   const saveOverallFeedbackToDataModel = features => {
-
     features.forEach(feature => {
       const key = feature.attributes[config.FIELD_NAME.overallFeedback.species];
 
@@ -940,7 +950,9 @@ export default function Controller(props = {}) {
         [config.FIELD_NAME.overallFeedback.comment]:
           feature.attributes[config.FIELD_NAME.overallFeedback.comment],
         [config.FIELD_NAME.overallFeedback.datecompleted]:
-          feature.attributes[config.FIELD_NAME.overallFeedback.datecompleted]
+          feature.attributes[config.FIELD_NAME.overallFeedback.datecompleted],
+        [config.FIELD_NAME.overallFeedback.datestarted]:
+          feature.attributes[config.FIELD_NAME.overallFeedback.datestarted]
       };
 
       dataModel.saveToOverallFeedback(key, val);
@@ -990,6 +1002,10 @@ export default function Controller(props = {}) {
       getOverallFeedbacksForReviewMode();
       getHucsWithFeedbacksForReviewMode();
     }
+    //debugger
+    let sel = dataModel.selectedSpecies;
+    //dataModel.overallFeedback
+
   };
 
   const getMetadata = val => {
