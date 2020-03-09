@@ -218,7 +218,7 @@ export default function FeedbackControlPanel() {
 
                 </div>
 
-                <div class='trailer-half'>
+                <div class='trailer-half' id="fbBtns">
                     ${getHtmlForBtns(state.data.isSaved)}
                 </div>
             </div>
@@ -534,6 +534,11 @@ export default function FeedbackControlPanel() {
   };
 
   const enableSaveButton = () => {
+    if (state.data.datecompleted) {
+      document.getElementById("feedbackControlPanelContainer").style.pointerEvents = "none";
+      document.getElementById("fbBtns").style.opacity = "0.5";
+      $('.js-close')[0].style.pointerEvents = "auto";
+    }
     try {
       var enable = true;
       var fieldMarkupVal = (feedbackObjects.find(el => { return el.id == "field-markup"; })).value;
@@ -557,6 +562,13 @@ export default function FeedbackControlPanel() {
   }
 
   const enableSaveMSButton = () => {
+    try {
+      if (state.data.datecompleted) {
+        document.getElementById("feedbackControlPanelContainer").style.pointerEvents = "none";
+        document.getElementById("fbBtns").style.opacity = "0.5";
+        $('.js-close')[0].style.pointerEvents = "auto";
+      }
+    } catch{ }
     try {
       var enable = true;
       var fieldMarkupVal = (feedbackObjects.find(el => { return el.id == "field-markup"; })).value;

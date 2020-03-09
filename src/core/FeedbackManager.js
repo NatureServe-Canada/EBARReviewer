@@ -38,7 +38,7 @@ export default function (options = {}) {
     }
     console.log("about to pass data into feedback data model: ", data)
     feedbackDataModel.init(data);
-
+ 
     if (eventHandlers["onAdd"]) {
       eventHandlers["onAdd"](feedbackDataModel.getFeedbackData());
     }

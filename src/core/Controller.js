@@ -79,10 +79,12 @@ export default function Controller(props = {}) {
 
   const initFeedbackManager = () => {
     feedbackManager.init({
-      onOpenHandler: data => {
-        console.log('feedbackManager onOpenHandler', data);
+      onOpenHandler: data => {      
+           const prevFeedbackData = dataModel.getOverallFeedback(dataModel.selectedSpecies);
+           data['datecompleted']=(prevFeedbackData && prevFeedbackData.datecompleted)?prevFeedbackData.datecompleted:null;
+        //console.log('feedbackManager onOpenHandler', data);
         controllerProps.feedbackManagerOnOpen(data);
-        console.log('feedbackManager 2 onOpenHandler', data);
+ 
         if (document.getElementsByClassName('esri-icon-trash')[0]) { var elem = document.getElementsByClassName('esri-icon-trash')[0].click(); }
 
       },
@@ -824,7 +826,6 @@ export default function Controller(props = {}) {
     console.log("setSelectedHucFeature ", ecoID)
     if (!isReviewMode) {
       dataModel.setSelectedEcoShp(ecoID);
-      // console.log(selectedHucFeature);
       openFeedbackManager(feature.attributes);
     } else {
       // console.log('query feedbacks for selected huc', ecoID);
