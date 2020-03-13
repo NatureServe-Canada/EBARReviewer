@@ -32,6 +32,7 @@
           </p>
         </div>
 
+        <!--<span data-i18n="pre_lang">Preferred language: </span>-->
         <div class="text-right">
           <select class="language" onchange="translation(event)" data-i18n="lang" style="display:none">
             <option value="en" data-i18n="lang_en">English</option>
@@ -90,9 +91,13 @@
     <div class="">
       <div id="selectorsDiv"></div>
     </div>
+
     <div>
       <button id="zoomToSpeciesRange" class="btn btn-fill icon-ui-zoom-in-magnifying-glass"
         style="margin-bottom:5px;" data-i18n="bn_zoom">Zoom to Species Range</button>
+    </div>
+    <div class="completed" style="display: none;" id="review_submitted">
+      <span data-i18n="review_sub" style="color:lightpink">REVIEW SUBMITTED, additional markup and feedback for this range map are not allowed.</span>      
     </div>
 
     <div class="">

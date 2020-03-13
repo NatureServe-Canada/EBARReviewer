@@ -196,6 +196,13 @@ const initApp = async oauthManager => {
       controller.setSelectedSpecies(val);
       let m = controller.getMetadata(val);
       view.updateSpeciesMetadata(m);
+      
+      const revSub = document.getElementById("review_submitted");
+      if (controller.dataModel.overallFeedback[val].datecompleted){        
+        revSub.style.display = "block";
+      } else {
+        revSub.style.display = "none";
+      }
     }
   });
 

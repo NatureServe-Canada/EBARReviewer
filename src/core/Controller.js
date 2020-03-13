@@ -408,20 +408,24 @@ export default function Controller(props = {}) {
       apiManager
         .applyEditToFeatureTable(requestUrl, [feature])
         .then(res => {
-          console.log("post edit to OverallFeedback table", res);
+          console.log("post edit to OverallFeedback table - SAVE", res);
+          const revSub = document.getElementById("review_submitted");
+          if (feature.attributes.datecompleted){
+            revSub.style.display = "block";
+          }
           try {
             if (res['data']['addResults']) {
               let resArray = res['data']['addResults'];
               if (resArray[0]['success'] == false) {
                 alert(resArray[0]['error']['description']);
-                console.error("post edit to OverallFeedback table", resArray);
+                console.error("post edit to OverallFeedback table - SAVE ADD NEW", resArray);
               }
             }
             if (res['data']['updateResults']) {
               let resArray = res['data']['updateResults'];
               if (resArray[0]['success'] == false) {
                 alert(resArray[0]['error']['description']);
-                console.error("post edit to OverallFeedback table", resArray);
+                console.error("post edit to OverallFeedback table - SAVE UPDATE", resArray);
               }
             }
           } catch{ }
@@ -429,6 +433,7 @@ export default function Controller(props = {}) {
         .catch(err => {
           console.log(`${feedbackFailMessage}`);
           alert(`${feedbackFailMessage}`);
+          revSub.style.display = "none";
         });
 
       controllerProps.onOverallFeedbackSubmit(feature);

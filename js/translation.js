@@ -6,7 +6,7 @@ jQuery(function ($) {
     $.i18n().load({
         "en": {
             "welcome": `
-  Welcome to the NatureServe Canada EBAR Reviewer!
+  Welcome to the NatureServe Canada Ecosystem-based Automated Range Map (EBAR) Reviewer!  
 <br><br>
 In using this tool, you will be accessing information based on locations of rare and threatened 
 species, including species subject to persecution and harm. You agree to use this information only 
@@ -20,6 +20,7 @@ This app uses cookies to remember some user interface selections.
 <br><br>
 Your species reviews will be kept in a database to support the EBAR-KBA project.
 ` ,
+            "pre_lang": "Preferred language:",
             "lang_en": "English",
             "lang_fr": "French",
             "i_agree": "I AGREE",
@@ -53,7 +54,6 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "parent_ecoregion": "Parent Ecoregion",
             "ecozone": "Ecozone",
             "presence": "Presence",
-            "metadata": "Metadata",
             "markup_req": "Markup (required)",
             "rem_reason_req": "Removal Reason (required)",
             "multi_sel": "Multi-Selection",
@@ -70,11 +70,12 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "overall_comment": "Overall comment",
             "submit": "Submit",
             "close": "Close",
-            "submit_warning":"After submit, any changes will not be available. Do you want to continue?"
+            "submit_warning":"After submit, additional markup and feedback for this range map will not be allowed. Do you want to continue?",
+            "review_sub": "REVIEW SUBMITTED, additional markup and feedback for this range map are not allowed."
         },
         "fr": {
             "welcome": `
-   Bienvenue au réviseur EBAR de NatureServe Canada!
+Bienvenue à l'examinateur de cartes de portée automatisée (EBAR) basé sur l'écosystème de NatureServe Canada!
 <br> <br>
 En utilisant cet outil, vous accéderez à des informations basées sur des emplacements de
 espèces, y compris les espèces sujettes à la persécution et aux dommages. Vous acceptez d'utiliser ces informations uniquement
@@ -88,6 +89,7 @@ Cette application utilise des cookies pour mémoriser certaines sélections de l
 <br> <br>
 Vos évaluations d'espèces seront conservées dans une base de données pour soutenir le projet EBAR-KBA.
    `,
+            "pre_lang": "Langue préférée:",
             "lang_en": "Anglais",
             "lang_fr": "Français",
             "i_agree": "JE SUIS D'ACCORD",
@@ -138,7 +140,8 @@ Vos évaluations d'espèces seront conservées dans une base de données pour so
             "overall_comment": "Commentaire général",
             "submit": "Submit",
             "close": "Close",
-            "submit_warning":"Après l'envoi, aucune modification ne sera disponible. Voulez-vous continuer?"
+            "submit_warning":"Après l'envoi, le balisage et les commentaires supplémentaires pour cette carte de portée ne seront pas autorisés. Voulez-vous continuer?",
+            "review_sub": "REVIEW SUBMITTED, additional markup and feedback for this range map are not allowed."
         }
 
     }).done(function () {
@@ -154,6 +157,7 @@ function translation(event) {
         });
     }
     $("[data-i18n=welcome]")[0].innerHTML = $.i18n('welcome');
+    //$("[data-i18n=pre_lang]")[0].innerHTML = $.i18n('pre_lang');
     $("[data-i18n=lang_en]")[0].innerHTML = $.i18n('lang_en');
     $("[data-i18n=lang_fr]")[0].innerHTML = $.i18n('lang_fr');
     $("[data-i18n=i_agree]")[0].innerHTML = $.i18n('i_agree');
@@ -183,5 +187,6 @@ function translation(event) {
     $("[data-i18n=drag_and_drop_msg").text($.i18n('drag_and_drop_msg'));
     $("[data-i18n=overall_feedback").text($.i18n('overall_feedback'));
     $("[data-i18n=multi_sel_title").text($.i18n('multi_sel_title'));
+    $("[data-i18n=review_sub").text($.i18n('review_sub'));    
 
 }
