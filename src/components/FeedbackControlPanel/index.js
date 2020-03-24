@@ -122,7 +122,6 @@ export default function FeedbackControlPanel() {
       //need to clear graphics
       //defaultvalue
     }
-
   };
 
   const resetState = () => {
@@ -170,7 +169,7 @@ export default function FeedbackControlPanel() {
                     <hr>
                 </div>
 
-                <div class='feedbackControlPanelData'>
+                <div class='feedbackControlPanelData' id="feedbackMainArea">
                     <div id='actionDialogWrap'>`;
     // componentHtml += (state.isMultiSelection) ? `<span class='font-size-0'>Ecoshape: ${hucName}</span>` : ``;
 
@@ -228,6 +227,22 @@ export default function FeedbackControlPanel() {
     addSwitcherOnMultiSelectionHandler();
     enableSaveButton();
     enableSaveMSButton();
+
+    let ecoTitle = document.getElementById('fbTitle');
+    let feedbackDiv = document.getElementById('feedbackMainArea')
+    console.log(ecoTitle.offsetHeight)
+    
+    if (ecoTitle && feedbackDiv){
+      //let ecoTitleLen = ecoTitle.innerHTML.length;
+      //console.log('title length: ', ecoTitleLen);
+      // 19 appears to be the height when its a single line.
+      if (ecoTitle.offsetHeight > 19){
+        feedbackDiv.style = "height:84%"
+      }
+      else{
+        feedbackDiv.style = "height:87%"
+      }
+    }
     // console.log('render feedback control panel', state.data);
   };
 
@@ -299,7 +314,6 @@ export default function FeedbackControlPanel() {
     `;
     }
     let range = [];
-
 
     if (state && state.data) {
 

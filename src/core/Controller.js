@@ -7,6 +7,7 @@ import config from "../config";
 import OAuthManager from "./OauthManager";
 import ApiManager from "./ApiManager";
 import View from "./View";
+//import MapControl from "./MapControl";
 
 export default function Controller(props = {}) {
   const feedbackFailMessage =
@@ -46,7 +47,7 @@ export default function Controller(props = {}) {
       );
 
       const userIsAdmin = distinctUserSpecies.some(itm => itm == -1);
-      console.log("is admin? ", userIsAdmin)
+      //console.log("is admin? ", userIsAdmin)
       //Can do an override here for admin to query all or not... 
       const sepeciesData =
         portalUser.username === config.adminUser ||
@@ -84,9 +85,9 @@ export default function Controller(props = {}) {
         data['datecompleted'] = (prevFeedbackData && prevFeedbackData.datecompleted) ? prevFeedbackData.datecompleted : null;
         //console.log('feedbackManager onOpenHandler', data);
         controllerProps.feedbackManagerOnOpen(data);
-
-        if (document.getElementsByClassName('esri-icon-trash')[0]) { var elem = document.getElementsByClassName('esri-icon-trash')[0].click(); }
-
+        if (document.getElementsByClassName('esri-icon-trash')[0]){ 
+          var elem = document.getElementsByClassName('esri-icon-trash')[0].click();
+        }
       },
 
       onCloseHandler: () => {
@@ -98,7 +99,7 @@ export default function Controller(props = {}) {
       },
 
       onSubmitHandler: data => {
-        console.log('feedback manager onSubmitHandler', data);
+        //console.log('feedback manager onSubmitHandler', data);
         postFeedback(data);
         showEcoFeatureOnMap(data.ecoID, data.status, data);
         resetSelectedEcoFeature();
@@ -106,7 +107,7 @@ export default function Controller(props = {}) {
         controllerProps.onDeatiledFeedbackSubmit(data);
       },
       onSubmitMSHandler: data => {
-        console.log('MS DATA feedback manager onSubmitHandler', data);
+        //console.log('MS DATA feedback manager onSubmitHandler', data);
         postFeedbackMS(data);
         data.forEach(element => {
           showEcoFeatureOnMap(element.ecoID, element.status, element);
@@ -116,7 +117,7 @@ export default function Controller(props = {}) {
       },
 
       onSubmitSaveHandler: data => {
-        console.log('feedback manager onSubmitSaveHandler', data);
+        //console.log('feedback manager onSubmitSaveHandler', data);
 
         postFeedbackWithSave(data);
         showEcoFeatureOnMap(data.ecoID, data.status, data);
@@ -149,7 +150,6 @@ export default function Controller(props = {}) {
     overallFeedbacks
   ) => {
     const speciesWithDataLoaded = await apiManager.getDistinctSpeciesCodeFromModelingExtent();
-    console.log("initSpeciesLookupTable: ", speciesWithDataLoaded)
 
     const speciesWithOverallFeedback = {};
     const speciesWithDeatiledFeedback = {};
@@ -278,7 +278,7 @@ export default function Controller(props = {}) {
           comment: d.attributes[config.FIELD_NAME.feedbackTable.comment],
           markup: d.attributes[config.FIELD_NAME.feedbackTable.markup],
         };
-        console.log("this is the result of formattedfeedbackdata: ", formattedFeedbackData)
+        //console.log("this is the result of formattedfeedbackdata: ", formattedFeedbackData)
         // If additional fields, then we need to set them for the feedbackDatastore
         if (
           config.FIELD_NAME.feedbackTable.additionalFields &&
@@ -322,9 +322,6 @@ export default function Controller(props = {}) {
       });
       console.log("This is the queryOverallFeedbacksByUser feedback: ", feedbacks)
       saveOverallFeedbackToDataModel(feedbacks);
-
-
-      console.log(feedbacks);
       return feedbacks;
     } catch (err) {
       console.error(err);

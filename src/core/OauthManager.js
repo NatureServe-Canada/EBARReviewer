@@ -32,7 +32,6 @@ const OAuthManager = function(oauth_appid){
     const setUserCredential = (credentialObject)=>{
         userCredential = credentialObject;
         isAnonymous = credentialObject ? false : true;
-        // console.log(credentialObject);
     };
 
     const getUserContentUrl = ()=>{
@@ -92,9 +91,7 @@ const OAuthManager = function(oauth_appid){
                 esriId.registerOAuthInfos([info]);
 
                 esriId.checkSignInStatus(info.portalUrl + "/sharing").then((res)=>{
-                    console.log('already signed in as', res.userId);
                     setUserCredential(res);
-
                     setPortalUser().then(res=>{
                         poralUser = res;
                         resolve(res);
@@ -109,7 +106,6 @@ const OAuthManager = function(oauth_appid){
                 reject(err);
                 console.error(err);
             })
-
         });
 
     };

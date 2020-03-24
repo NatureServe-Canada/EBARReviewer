@@ -31,18 +31,16 @@ export default function ApiManager(props = {}) {
       speciesCode: []
     }
   ) => {
-    console.log("DID A USER SPECIES QUERY")
     const requestUrl = config.URL.speciesLookupTable + "/query";
 
     let whereClause = options.speciesCode
       .map(d => {
-        //console.log(d)
         return `${config.FIELD_NAME.speciesLookup.speciesCode} = '${d}'`;
       })
       .join(" OR ");
-    console.log("=======", options)
-    // NS: This added in to search by email (expertID) to filter the speciesLookup table
-    whereClause = "("+ whereClause + ") AND " +`${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`
+    // NS: need the username and to filter includereviewer to filter records properly
+    whereClause = "("+ whereClause + ") AND " +`${config.FIELD_NAME.speciesByUser.email} = '${options.username}'`+ 
+     "AND " + `${config.FIELD_NAME.speciesByUser.includeinebarreviewer} = 1`
     const bodyFormData = new FormData();
     console.log("USER: querySpeciesLookupTable whereClause: ", whereClause)
 
@@ -78,7 +76,7 @@ export default function ApiManager(props = {}) {
   const queryEcoShapeBySpecies = speciesKey => {
     // const requestUrl = config.URL.speciesExtent[speciesKey] ? config.URL.speciesExtent[speciesKey] + '/query' : null;
     const requestUrl = config.URL.speciesDistribution + "/query";
-    const whereClause = `${config.FIELD_NAME.speciesDistribution.rangeValForLookup} = ${speciesKey}`;   //this was speciesDist.SPECIESCODE = ...
+    const whereClause = `${config.FIELD_NAME.speciesDistribution.rangeValForLookup} = ${speciesKey}`;
 
     if (requestUrl) {
       console.log("queryEcoShapeBySpecies url: " + requestUrl)
@@ -189,7 +187,6 @@ export default function ApiManager(props = {}) {
         return d.attributes[config.FIELD_NAME.speciesDistribution.speciesCode];
       });
       resolve(feats);
-      console.log("from getDistrinctSpecieisCodeFromModel  feats:  " + feats)
     });
   };
 

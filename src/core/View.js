@@ -220,15 +220,51 @@ export default function View() {
 
   const updateSpeciesMetadata = (m) => {
 
-    document.getElementById("rversion").innerHTML = m['rangeversion'];
-    document.getElementById("rstage").innerHTML = m['rangestage'];
-    document.getElementById("rdate").innerHTML = new Date(m['rangedate']).toLocaleDateString();
+    const rversion = document.getElementById("rversion");
+    rversion.innerHTML = "";
+    if (m['rangeversion']){
+      rversion.innerHTML = m['rangeversion'];
+    }
+    
+    const rstage = document.getElementById("rstage");
+    rstage.innerHTML = "";
+    if (m['rangestage']){
+      rstage.innerHTML = m['rangestage'];
+    }
+    
+    const rdate = document.getElementById("rdate");
+    rdate.innerHTML = "";
+    if (m['rangedate']){
+      rdate.innerHTML = new Date(m['rangedate']).toLocaleDateString();
+    }
+    
+    const rlink = document.getElementById("rlink");
+    rlink.innerHTML = "";
+    if (m['national_scientific_name']){
+      let url = `http://explorer.natureserve.org/servlet/NatureServe?searchSciOrCommonName=${m['national_scientific_name']}&x=0&y=0`;
+      rlink.innerHTML = `<a href="${url}" target="_blank" class="link-white">go to NatureServe Explorer</a>`;
+    }
 
-    let url = `http://explorer.natureserve.org/servlet/NatureServe?searchSciOrCommonName=${m['national_scientific_name']}&x=0&y=0`
-    document.getElementById("rlink").innerHTML = `<a href="${url}" target="_blank" class="link-white">go to NatureServe Explorer</a>`
-    document.getElementById("rmetadata").innerHTML = m['rangemetadata'];
-    document.getElementById("rnotes").innerHTML = m['rangemapnotes'];
-
+    const rmetadata = document.getElementById("rmetadata");
+    rmetadata.innerHTML = "";
+    if (m['rangemetadata']){
+      rmetadata.innerHTML = m['rangemetadata'];
+    }
+    
+    const rnotes = document.getElementById("rnotes");
+    rnotes.innerHTML = "";
+    if (m['rangemapnotes']){
+      rnotes.innerHTML = m['rangemapnotes']
+    }
+    
+    const rscope = document.getElementById("rscope");
+    rscope.innerHTML = "";
+    config.RANGEMAPSCOPE.forEach(c => {
+      if (c['code'] == m['rangemapscope']){
+        rscope.innerHTML = c['text'];
+      }
+    });
+    
   };
 
   return {

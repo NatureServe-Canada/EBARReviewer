@@ -124,36 +124,38 @@ module.exports = {
     { "code": "H", "text": "Historical" }
   ],
 
-  PRESENCE: [
-    { "code": "P", "text": "Present" },
-    { "code": "X", "text": "Presence Expected" },
-    { "code": "H", "text": "Historical" }
-  ],
-
   REMOVAL: [
     { "attributes": { "removalcode": "X", "removaltext": "Presumed Extirpated" } },
     { "attributes": { "removalcode": "N", "removaltext": "Never Was There" } },
     { "attributes": { "removalcode": "F", "removaltext": "Reported But False" } },
     { "attributes": { "removalcode": "T", "removaltext": "Transient/Vagrant" } },
     { "attributes": { "removalcode": "O", "removaltext": "Other" } }
+  ],
 
+  RANGEMAPSCOPE: [
+     {"code": "N", "text": "National"},
+     {"code": "G", "text": "Global"},
+     {"code": "A", "text": "North American"}
+     //{ NULL=Blank}
   ],
 
   URL: {
     ecoShapes:
-      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/0",
+    "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/6",
     speciesLookupTable:
-      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/1",
-    speciesDistribution:
-      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/2",
-    speciesByUser:
-      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/1",
-    statusTable:
-      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/5", //queryDomains?layers=EcoshapeReview",
-    feedbackTable:
-      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/3",
-    overallFeedback:
-      "https://gis.natureserve.ca/arcgis/rest/services/ReviewerDev2/FeatureServer/4",
+    "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/1",
+   speciesDistribution:
+    "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/2",
+   speciesByUser:
+    "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/1",
+   //statusTable:
+   // "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/5", //queryDomains?layers=EcoshapeReview",
+   feedbackTable:
+    "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/3",
+  overallFeedback:
+    "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/4",
+  polyInfoShapes:
+    "6859b7d9c0c2491fa44d807bfa354c77"
 
     //PredictedHabitat: {
     // "137976": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Isotria_medeloides_Boundary/FeatureServer/0",
@@ -250,6 +252,6 @@ module.exports = {
     searchWidgetDiv: "searchWidgetDiv",
     layerListDiv: "layerListDiv"
   },
-  i18n: true,
-  isMultiSelection: true
+  i18n: false,
+  isMultiSelection: false
 };

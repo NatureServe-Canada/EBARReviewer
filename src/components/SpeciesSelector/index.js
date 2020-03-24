@@ -28,8 +28,6 @@ export default function SpeciesSelector(
     
     data.forEach(d => {
       const value = d[config.FIELD_NAME.speciesLookup.taxa];
-      //console.log(d)
-      //console.log(value)
       if (distinctTaxa.indexOf(value) === -1) {
         distinctTaxa.push(value);
       }
@@ -45,7 +43,7 @@ export default function SpeciesSelector(
       return 0;
     });
 
-    console.log(distinctTaxa);
+    //console.log(distinctTaxa);
 
     const optionsHtml = distinctTaxa
       .map(d => {
@@ -70,8 +68,7 @@ export default function SpeciesSelector(
     const dataForSelectedTaxa = data.filter(d => {
       return d[config.FIELD_NAME.speciesLookup.taxa] === selectedTaxa;
     });
-    console.log("this is the species selector data:", dataForSelectedTaxa)
-    //console.log(dataForSelectedTaxa)
+    //console.log("this is the species selector data:", dataForSelectedTaxa)
     dataForSelectedTaxa.sort((a, b) => {
       if (
         a[config.FIELD_NAME.speciesLookup.speciesName] <

@@ -193,6 +193,8 @@ const initApp = async oauthManager => {
       const modal = document.getElementById("myModal");
       modal.style.display = "block";
 
+      mapControl.setRangeMapShpDefQuery(val);
+
       controller.setSelectedSpecies(val);
       let m = controller.getMetadata(val);
       view.updateSpeciesMetadata(m);
@@ -432,11 +434,11 @@ const initApp = async oauthManager => {
   });
   csvLoader.init();
 
-  const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
+/*   const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
   if (userDiv) {
     let componentHTML = `<div><span class="font-size--2">${$.i18n('logged_in_as')}:<b> ` + oauthManager.getUserID() + `</b></span></div>`
     userDiv.innerHTML = componentHTML
-  }
+  } */
 
 
   const toggleGraphicsLayers = document.getElementsByClassName('toggleGraphicsLayers');

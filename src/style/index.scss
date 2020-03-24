@@ -1,7 +1,7 @@
 @import url("https://js.arcgis.com/4.10/esri/css/main.css");
 @import "~calcite-web/dist/css/calcite-web.min.css";
 
-$control-panel-width: 300px;
+$control-panel-width: 310px;
 
 html,
 body {
@@ -186,8 +186,8 @@ label.feedback {
 
   #settingControls {
     position: absolute;
-    top: 1.5rem;
-    right: 0;
+    top: -20rem;//1.5rem;
+    right: 20rem;//0;
     width: 100%;
     // padding: .75rem;
     background: rgba(0, 0, 0, 0.9);
@@ -332,5 +332,10 @@ p.meta {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.esri-popup__main-container.esri-widget {
+  //width: 310px !important;
+  max-height: 375px !important;
 }
 

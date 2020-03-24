@@ -35,6 +35,7 @@ const MapControl = function ({
   var pEcoByPresenceLoaded = false;
   let multiSelectionList = [];
   let currentSelectedFeature = null;
+  let rangeMapShapes = null;
 
 
   // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
@@ -162,11 +163,12 @@ const MapControl = function ({
           "esri/layers/MapImageLayer",
           "esri/layers/ImageryLayer",
           "esri/layers/FeatureLayer",
-          "esri/layers/VectorTileLayer"
+          "esri/layers/VectorTileLayer",
+          "esri/PopupTemplate"
         ],
         esriLoaderOptions
       )
-      .then(([MapImageLayer, ImageryLayer, FeatureLayer, VectorTileLayer, Basemap]) => {
+      .then(([MapImageLayer, ImageryLayer, FeatureLayer, VectorTileLayer, PopupTemplate]) => {
         const defaultOpacity = 0.7;
 
         const vt = new VectorTileLayer({
@@ -218,6 +220,19 @@ const MapControl = function ({
           visible: false
         });
 
+        rangeMapShapes = new MapImageLayer({
+          portalItem: {
+            id: config.URL.polyInfoShapes
+          },  
+          sublayers: [{
+            id: 0,
+            title: "Range Map Input Shapes",
+            definitionExpression: "rangemapid = -1",
+            popupEnabled: true
+          }],
+          title: "Range Map Inputs"          
+        });
+
         // HUC6
         // const huc6 = new FeatureLayer({
         //     portalItem: {
@@ -260,10 +275,44 @@ const MapControl = function ({
         mapView.map.add(protectedAreas, 0);
         mapView.map.add(wetlands, 0);
         mapView.map.add(landcover, 0);
+        mapView.map.add(rangeMapShapes)
       })
       .catch(err => {
         console.error(err);
       });
+  };
+
+  const setRangeMapShpDefQuery = rmapID => {
+    console.log(rmapID)
+    let rmapShp = rangeMapShapes.findSublayerById(0);
+    rmapShp.definitionExpression = "rangemapid = " + rmapID;
+    rmapShp.popupTemplate = {
+      content: [{
+        type: "fields", // Autocasts as new FieldsContent()
+        // Autocasts as new FieldInfo[]
+        fieldInfos: [{
+          fieldName: "rangemapid"
+        }, {
+          fieldName: "nationalscientificname"
+        }, {
+          fieldName: "synonymname"
+        }, {
+          fieldName: "nationalscientificname"
+        }, {
+          fieldName: "datasetsourcename"
+        }, {
+          fieldName: "datasettype"
+        }, {
+          fieldName: "accuracy"
+        }, {
+          fieldName: "maxdate"
+        }, {
+          fieldName: "coordinatesobscured"
+        }, {
+          fieldName: "originalgeometrytype"
+        }]
+      }]
+    }
   };
 
   const initEcoLayer = mapView => {
@@ -382,10 +431,10 @@ const MapControl = function ({
           var basemapid = portalItem.id;
 
           document.cookie = "basemap=" + basemapid;// newValue["title"];
-          console.log("New value: ", newValue,      // The new value of the property
-            "<br>Old value: ", oldValue,  // The previous value of the changed property
-            "<br>Watched property: ", property,  // In this example this value will always be "basemap.title"
-            "<br>Watched object: ", object);     // In this example this value will always be the map object
+         // console.log("New value: ", newValue,      // The new value of the property
+         //   "<br>Old value: ", oldValue,  // The previous value of the changed property
+         //   "<br>Watched property: ", property,  // In this example this value will always be "basemap.title"
+         //   "<br>Watched object: ", object);     // In this example this value will always be the map object
         });
 
         const bgExpand = new Expand({
@@ -1204,7 +1253,8 @@ const MapControl = function ({
     clearEcoPreviewGraphicLayer,
     getMultiSelectionList,
     setpEcoByStatusLoaded,
-    setpEcoByPresenceLoaded
+    setpEcoByPresenceLoaded,
+    setRangeMapShpDefQuery
   };
 };
 
