@@ -97,11 +97,10 @@ export default function ApiManager(props = {}) {
   };
 
   const fetchFeedback = (options = {}) => {
-    console.log("came from queryFeedbacksByUser try to do fetchFeedback")
-    const requestUrl = options.requestUrl;  //config.URL.feedbackTable + '/query'; 
-    console.log("fetchFeedback url: " + requestUrl)
+    //console.log("came from queryFeedbacksByUser try to do fetchFeedback")
+    const requestUrl = options.requestUrl;  //config.URL.feedbackTable + '/query';     
     const whereClause = options.where || "1=1"; // options.where = "reviewid = 'gisadmin' AND retirementdate IS NULL" ???
-    console.log("  fetchFeedback  whereClause: ", whereClause)
+    console.log("fetchFeedback url // whereClause: ", requestUrl, whereClause)
     const outFields = options.outFields || "*";
     const returnDistinctValues = options.returnDistinctValues || false;
     const orderByFields = options.returnDistinctValues ? outFields : null;

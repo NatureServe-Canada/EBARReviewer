@@ -23,7 +23,6 @@ export default function (options = {}) {
   };
 
   // const getTotalSelection = (data = []) => {
-
   //   console.log("getTotalSelection", data);
   // }
 
@@ -42,8 +41,6 @@ export default function (options = {}) {
     if (eventHandlers["onAdd"]) {
       eventHandlers["onAdd"](feedbackDataModel.getFeedbackData());
     }
-
-    // console.log(feedbackDataModel.getFeedbackData());
   };
 
   const close = () => {
@@ -81,7 +78,7 @@ export default function (options = {}) {
 
   const save = feedbackData => {
     const ecoId = feedbackData.ecoID;
-    console.log("save feedback: ", feedbackData.ecoID)
+    //console.log("save feedback: ", feedbackData.ecoID)
     //const species = feedbackData.species;
     const reviewid = feedbackData.reviewid;
     if (!feedbackDataStore[reviewid]) {

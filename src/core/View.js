@@ -10,9 +10,6 @@ import Legend from "../components/Legend";
 
 export default function View() {
   let viewProps = null;
-  // let downloadPdfBtnOnClick = null;
-  // let openOverallBtnOnclick = null;
-  // let opacitySliderOnUpdate = null;
 
   const speciesSelector = new SpeciesSelector({
     containerID: config.DOM_ID.speciesSelector
@@ -42,9 +39,6 @@ export default function View() {
 
   const init = (
     options = {
-      // downloadPdfBtnOnClick: null,
-      // openOverallBtnOnclick: null,
-      // layerOpacitySliderOnUpdate: null
     }
   ) => {
     // feedbackControlPanel.init({
@@ -52,10 +46,6 @@ export default function View() {
     // });
 
     viewProps = options;
-
-    // downloadPdfBtnOnClick = options.downloadPdfBtnOnClick;
-    // openOverallBtnOnclick = options.openOverallBtnOnclick;
-    // opacitySliderOnUpdate = options.layerOpacitySliderOnUpdate;
 
     // hide agreement info
     document.getElementById("agreementDiv").classList.add("hide");
@@ -77,10 +67,6 @@ export default function View() {
       // console.log('js-open-overall-feedback on click');
       element.addEventListener("click", viewProps.openOverallBtnOnclick);
     });
-
-    // document.querySelectorAll('.js-download-pdf').forEach(element=>{
-    //     element.addEventListener('click', viewProps.downloadPdfBtnOnClick);
-    // });
 
     document.querySelectorAll(".js-toggle-ui-component").forEach(element => {
       element.addEventListener("click", evt => {
@@ -139,13 +125,6 @@ export default function View() {
     } else {
       $mainControlPanel.classList.add("hide");
     }
-  };
-
-  const toggleDownloadAsPdfBtn = url => {
-    // const isActive = url ? true : false;
-    // document
-    //   .getElementById("downloadPdfBtn")
-    //   .classList.toggle("is-active", isActive);
   };
 
   const enableOpenOverallFeedbackBtnBtn = url => {
@@ -275,7 +254,6 @@ export default function View() {
     toggleMainControl,
     overallFeedbackControlPanel,
     // toggleOverallFeeback,
-    toggleDownloadAsPdfBtn,
     enableOpenOverallFeedbackBtnBtn,
     listViewForOverallFeedback,
     listViewForDetailedFeedback,

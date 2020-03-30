@@ -13,8 +13,6 @@ export default function Legend(options={}){
 
         data = options.data || [];
 
-        // console.log('init legend', data);
-
         if(data){
             render();
         }
@@ -25,7 +23,6 @@ export default function Legend(options={}){
     const render = (currentScale=1000000000)=>{
         
         if(data.length){
-            //console.log(data)
             const componentHtml = data.map((d,i)=>{
                 // const color = `rgb(${d.color.slice(0,3).join(',')})`;
                 const isTargetLayerInVisibleRange = d.minVisibleScale >= currentScale  ? true : false;

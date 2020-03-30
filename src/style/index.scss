@@ -118,6 +118,12 @@ label.feedback {
   background: url("../static/Historical.png") center center no-repeat;
   background-size: 90%;
 }
+
+/* Range Map Polygons */
+.legend-icon[data-index="6"] {
+  background: url("../static/polygons.png") center center no-repeat;
+  background-size: 90%;
+}
 /* 
 .legend-icon[data-index="3"] {
   background-color: rgba(255, 255, 255, 1);
@@ -218,26 +224,6 @@ label.feedback {
   cursor: pointer;
 }
 
-.download-pdf-btn {
-  height: 33px;
-  line-height: 33px;
-
-  div {
-    height: 33px;
-  }
-
-  svg {
-    fill: #999;
-  }
-}
-
-.download-pdf-btn.is-active {
-  cursor: pointer;
-  svg {
-    fill: #56a5d8;
-  }
-}
-
 #searchWidgetDiv {
   width: 100%;
 }
@@ -336,6 +322,6 @@ p.meta {
 
 .esri-popup__main-container.esri-widget {
   //width: 310px !important;
-  max-height: 375px !important;
+  max-height: 360px !important;
 }
 

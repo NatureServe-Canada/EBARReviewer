@@ -24,12 +24,6 @@ export default function(options={
             if(evt.target.classList.contains('js-close') && options.onCloseHandler){
                 options.onCloseHandler();
             }
-
-            // if(evt.target.classList.contains('js-show-huc') && options.onClickHandler){
-            //     options.onClickHandler(evt.target.dataset.value);
-            //     setActiveRow(evt.target.dataset.value);
-            //     // console.log(evt.target.dataset.value);
-            // }
         });
     };
 
@@ -49,20 +43,20 @@ export default function(options={
         `;
 
         const tableRowsHtml = options.data.map(d=>{
-            const status = +d.attributes[config.FIELD_NAME.feedbackTable.status];
+           // const status = +d.attributes[config.FIELD_NAME.feedbackTable.status];
             const userID = d.attributes[config.FIELD_NAME.feedbackTable.userID];
             const comment = d.attributes[config.FIELD_NAME.feedbackTable.comment];
 
-            const statusLable = {
+/*             const statusLable = {
                 1: 'Add',
                 2: 'Remove',
                 3: 'n/a'
-            };
+            }; */
 
             return `
                 <tr class='review-data-row font-size--3'>
                     <td>${userID}</td>
-                    <td>${statusLable[status]}</td>
+                   <!-- <td>${statusLable[status]}</td> -->
                     <td>${comment}</td>
                 </tr>
             `

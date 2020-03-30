@@ -19,7 +19,6 @@ export default function SpeciesSelector(
     onChangeHandler = options.onChange || null;
 
     render();
-
     initEventHandler();
   };
 
@@ -43,8 +42,6 @@ export default function SpeciesSelector(
       return 0;
     });
 
-    //console.log(distinctTaxa);
-
     const optionsHtml = distinctTaxa
       .map(d => {
         return `<option class='select-option' value="${d}">${d}</option>`;
@@ -64,7 +61,7 @@ export default function SpeciesSelector(
   };
 
   const getHtmlForSpeciesSelector = () => {
-    console.log("getHtmlForSpeciesSelector: ", data)
+
     const dataForSelectedTaxa = data.filter(d => {
       return d[config.FIELD_NAME.speciesLookup.taxa] === selectedTaxa;
     });
@@ -133,8 +130,6 @@ export default function SpeciesSelector(
   ) => {
     data = options.data || data;
 
-    console.log('139',data);
-
     // const options = data.map(d=>{
     //     const val = d.SpeciesCode;
     //     const label = d.SpeciesName;
@@ -162,26 +157,12 @@ export default function SpeciesSelector(
   };
 
   const updateSpeciesSelector = () => {
-    // console.log(getHtmlForSpeciesSelector());
     document.getElementById(
       "speciesSelectorDiv"
     ).innerHTML = getHtmlForSpeciesSelector();
   };
 
   const initEventHandler = (options = {}) => {
-    // const changeEventHandler = (event)=>{
-    //     if(event.target.value && onChangeHandler){
-    //         onChangeHandler(event.target.value);
-    //     }
-    // };
-
-    // const taxaSelectorOnChange = (event)=>{
-    //     console.log(event.target.value);
-    // };
-
-    // container.querySelector('#speciesSelector').onchange = changeEventHandler;
-
-    // container.querySelector('#taxaSelector').onchange = taxaSelectorOnChange;
 
     container.addEventListener("change", evt => {
       const actionsByElementID = {
@@ -214,8 +195,6 @@ export default function SpeciesSelector(
     const decorationClass = getOptionDecorationClass(feedbackType);
 
     selectOption.classList.add(decorationClass);
-
-    // console.log(speciesCode);
 
     data.forEach(d => {
       if (d[config.FIELD_NAME.speciesLookup.speciesCode] === speciesCode) {

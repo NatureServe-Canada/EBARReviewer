@@ -39,9 +39,7 @@ export default function FeedbackControlPanel() {
       : null;
 
     onCloseHandler = options.onCloseHandler || null;
-
     // statusOnChange = options.statusOnChange || null;
-
     commentOnChange = options.commentOnChange || null;
 
     additionalFieldInputOnChange = options.additionalFieldInputOnChange || null;
@@ -243,16 +241,12 @@ export default function FeedbackControlPanel() {
         feedbackDiv.style = "height:87%"
       }
     }
-    // console.log('render feedback control panel', state.data);
   };
 
   // const refreshActionDialog = ()=>{
   //     document.getElementById('actionDialogWrap').innerHTML = getHtmlForActions();
   // };
 
-  // const getLabelForTextInput = ()=>{
-  //     return state.isSumbitCommentOnly ? statusLookup[3] : 'Comment'
-  // }
 
   const getHtmlForActions = () => {
     //let status = getNewStatus();
@@ -290,7 +284,6 @@ export default function FeedbackControlPanel() {
         });
       }
     }
-
 
     let outputHtml = ``;
 
@@ -417,10 +410,6 @@ export default function FeedbackControlPanel() {
     }
     return outputHtml;
   }
-
-
-
-
 
   // Adds select, textarea, text, and label entries to the feedback container depending on configuration
   const getHtmlForAdditionalFields = () => {
@@ -681,8 +670,6 @@ export default function FeedbackControlPanel() {
     });
 
 
-
-
     container.addEventListener('change', function (event) {
       if (!(event && event.target && event.target.id)) return;
       if (event.target.id != "field-markup") return;
@@ -722,15 +709,6 @@ export default function FeedbackControlPanel() {
 
     });
 
-    // container.addEventListener('click', function (event){
-    //     if (event.target.classList.contains('js-submit-feedback')) {
-    //         // console.log('close feedback control panel');
-    //         const newStatus = event.target.dataset.status || null;
-    //         if(onSubmitHandler){
-    //             onSubmitHandler(newStatus);
-    //         }
-    //     }
-    // });
   };
 
   const open = (data = {}) => {

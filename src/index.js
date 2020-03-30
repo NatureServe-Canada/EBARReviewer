@@ -159,10 +159,8 @@ const initApp = async oauthManager => {
       mapControl.clearEcoPresenceGraphics();
     },
 
-    showEcoFeatureOnMap: (ecoId = "", status, len) => {
-
-      //console.log('showEcoFeatureOnMap', ecoId, status);
-      mapControl.showEcoFeatureByStatus(ecoId, status, len);
+    showEcoFeatureOnMap: (ecoId = "", markup, len) => {
+      mapControl.showEcoFeatureByStatus(ecoId, markup, len);
     },
 
 
@@ -178,11 +176,8 @@ const initApp = async oauthManager => {
     //addPreviewHucByID
     addPreviewEcoByID: ecoId => {
       mapControl.addPreviewEcoByID(ecoId);
-    },
-
-    pdfUrlOnChange: (url = "") => {
-      view.toggleDownloadAsPdfBtn(url);
     }
+
   });
 
   view.speciesSelector.init({
@@ -219,7 +214,6 @@ const initApp = async oauthManager => {
       mapControl.clearMSelection();
     },
     commentOnChange: val => {
-      // console.log(val);
       controller.feedbackManager.feedbackDataModel.setComment(val);
     },
     additionalFieldInputOnChange: (field, value) => {
@@ -375,9 +369,6 @@ const initApp = async oauthManager => {
   });
 
   view.init({
-    // downloadPdfBtnOnClick: ()=>{
-    //     controller.downloadPdf();
-    // },
     openOverallBtnOnclick: () => {
       // const data = controller.getOverallFeedback();
       // view.toggleOverallFeeback(true, data);
@@ -387,9 +378,6 @@ const initApp = async oauthManager => {
         isVisible: true,
         data: controller.getOverallFeedback()
       });
-      //   console.log(view);
-
-
     },
     layerOpacitySliderOnUpdate: val => {
       // console.log(val);
@@ -434,7 +422,7 @@ const initApp = async oauthManager => {
   });
   csvLoader.init();
 
-/*   const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
+  /*   const userDiv = document.getElementById(config.DOM_ID.loggedInUser)
   if (userDiv) {
     let componentHTML = `<div><span class="font-size--2">${$.i18n('logged_in_as')}:<b> ` + oauthManager.getUserID() + `</b></span></div>`
     userDiv.innerHTML = componentHTML
@@ -450,9 +438,7 @@ const initApp = async oauthManager => {
           mapControl.graphicsVisibility(event);
       });
     }
-  }
-
-
+  };
 
   const zoomToSpeciesRange = document.getElementById('zoomToSpeciesRange');
   if (zoomToSpeciesRange) {
@@ -462,9 +448,7 @@ const initApp = async oauthManager => {
       //if (event && event.target)
       mapControl.fullExtent();
     });
-
-  }
-
+  };
 
   // window.appDebugger = {
   //     signOut: oauthManager.signOut

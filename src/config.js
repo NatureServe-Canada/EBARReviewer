@@ -10,7 +10,7 @@ module.exports = {
   FIELD_NAME: {
     ecoShapeLayerID: "ecoshapeid",
     statusType: "artext", //"StatusType",
-    hucLayerHucName: "HUC8",  //referenced from CONTROLLER: openFeedbackManager
+    //hucLayerHucName: "HUC8",  //referenced from CONTROLLER: openFeedbackManager
 
     speciesLookup: {
       rangeValForLookup: "rangemapid", //"speciesid", this has been back and forth from speciesID. but appears its rangemap needed as the dropdown species val to hook up properly with speciesDist table
@@ -18,19 +18,18 @@ module.exports = {
       rangemapID: "rangemapid",
       speciesName: "national_scientific_name", //"Scientific_Name",
       taxa: "tax_group", // "Taxonomic_Group",
-      boundaryLayerLink: "BoundaryLayerLink",
-      pdfLink: "PdfLink"
+      boundaryLayerLink: "BoundaryLayerLink"
     },
     speciesDistribution: {
       rangeValForLookup: "rangemapid",  //this was added as the new matching item to speciesLookup
       speciesCode: "ecoshapeid", //"rangemapid", // "SpeciesCode",
-      ecoShapeID: "ecoshapeid" // "HUCID"
+      ecoShapeID: "ecoshapeid"
     },
     rangeMap: {
       speciesID: "speciesid"
     },
     feedbackTable: {
-      ecoShapeID: "ecoshapeid",// "HUCID",
+      ecoShapeID: "ecoshapeid",
       userID: "reviewid", //"UserID",
       species: "reviewid", //"Species",
       comment: "ecoshapereviewnotes", //"Comment_Long",
@@ -83,7 +82,6 @@ module.exports = {
       species: "rangemapid", //"Species",
       comment: "reviewnotes", //"Comment_Long",
       rating: "overallstarrating", //"Rating",
-      // retirementDate: "datecompleted", // "RetirementDate",
       datecompleted: "datecompleted", // "DateCompleted ",
       datestarted: "datestarted"// "DataLoadDate"
     },
@@ -91,10 +89,6 @@ module.exports = {
       speciesCode: "speciesid",
       email: "username", //"Reviewer_email"  NOT USING EMAIL, USING "expertid" now
       includeinebarreviewer: "includeinebarreviewer"
-    },
-    pdfLookup: {
-      speciesCode: "cutecode",
-      url: "url"
     },
     datestarted: {
       species_code: "cutecode",
@@ -115,7 +109,8 @@ module.exports = {
     { "attributes": { "artext": "Remove", "arcode": 2 } },
     { "attributes": { "artext": "Present", "arcode": 3 } },
     { "attributes": { "artext": "Presence Expected", "arcode": 4 } },
-    { "attributes": { "artext": "Historical", "arcode": 5 } }
+    { "attributes": { "artext": "Historical", "arcode": 5 } },
+    { "attributes": { "artext": "Unrestricted Range Map Inputs", "arcode": 6 } }
   ],
 
   PRESENCE: [
@@ -123,6 +118,8 @@ module.exports = {
     { "code": "X", "text": "Presence Expected" },
     { "code": "H", "text": "Historical" }
   ],
+
+  MARKUPCODES: "pxhrPXHR",
 
   REMOVAL: [
     { "attributes": { "removalcode": "X", "removaltext": "Presumed Extirpated" } },
@@ -156,23 +153,6 @@ module.exports = {
     "https://gis.natureserve.ca/arcgis/rest/services/EBAR-KBA/ReviewerApp/FeatureServer/4",
   polyInfoShapes:
     "6859b7d9c0c2491fa44d807bfa354c77"
-
-    //PredictedHabitat: {
-    // "137976": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Isotria_medeloides_Boundary/FeatureServer/0",
-    // "941975": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Lithobates_kauffeldi_Boundary/FeatureServer/0",
-    // line:
-    //   "https://gis.natureserve.ca/arcgis/rest/services/EBAR_KBA/FeatureServer/1",
-    // polygon:
-    //   "https://gis.natureserve.ca/arcgis/rest/services/EBAR_KBA/FeatureServer/2",
-    // line2:
-    //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Line_Part_2/FeatureServer/0",
-    // polygon2:
-    //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Polygon_Part_2/FeatureServer/0"
-    //},
-    // pdfLookup:
-    //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/6",
-    // datestarted:
-    //   "https://gis.natureserve.ca/arcgis/rest/services/Hosted/USA_Schema_WFL1/FeatureServer/9"
   },
 
   layerParameters: {

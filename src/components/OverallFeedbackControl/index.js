@@ -41,8 +41,6 @@ export default function () {
   };
 
   const render = () => {
-    // const comment = data.comment || '';
-
     if (!comment) {
       comment = " " //a "" comment will render as null in the html, so send in a space
     }
@@ -88,8 +86,6 @@ export default function () {
   };
 
   const toggleRating = (rating = 0) => {
-    // console.log('calling toggleRating', rating, isRemove)
-
     // if(isRemove){
     //     setRating(rating-1);
     // } else {

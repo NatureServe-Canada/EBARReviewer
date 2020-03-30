@@ -22,9 +22,7 @@ const MapControl = function ({
   let ecoShpLayer = null;
   let ecoShpByStatusGraphicLayer = null;
   let ecoPreviewGraphicLayer = null;
-  // let actualModelBoundaryLayer = null;
   let ecoFeatureOnSelectHandler = null;
-  // let isOnHoldEventDisabled = false;
   let isMapMultiSelectionClick = false;
 
   let ecoPresenceGraphicLayer = null;
@@ -71,15 +69,14 @@ const MapControl = function ({
 
     ecoFeatureOnSelectHandler = options.ecoFeatureOnSelectHandler || null;
     initMapView();
-    console.log("done init: map view")
+    //console.log("done init: map view")
   };
 
   const initMapView = () => {
     esriLoader
-      .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config", "esri/core/watchUtils"], esriLoaderOptions)
-      .then(([MapView, WebMap, esriConfig, watchUtils]) => {
+      .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config"], esriLoaderOptions)
+      .then(([MapView, WebMap, esriConfig]) => {
         esriConfig.portalUrl = config.portalURL; //"https://gis.natureserve.ca/arcgis";
-
 
         const webmap = new WebMap({
           portalItem: {
@@ -89,15 +86,21 @@ const MapControl = function ({
 
         mapView = new MapView({
           map: webmap,
-          container: mapViewContainerID
+          container: mapViewContainerID,
+          popup: {
+            dockEnabled: false,
+            dockOptions: {
+              buttonEnabled: false
+            }
+          },
+          highlightOptions: {
+            color: [255, 255, 0, 1],
+            haloOpacity: 0.9,
+            fillOpacity: 0.2
+          }
         });
 
         mapView.when(mapViewOnReadyHandler);
-
-        // watchUtils.whenTrue(mapView, "stationary", function () {
-        //   const modal = document.getElementById("myModal");
-        //   modal.style.display = "none";
-        // });
 
       });
   };
@@ -106,7 +109,6 @@ const MapControl = function ({
     esriLoader
       .loadModules(["esri/widgets/LayerList"], esriLoaderOptions)
       .then(([LayerList]) => {
-        mapView.a
         const layerlist = new LayerList({
           container: config.DOM_ID.layerListDiv,
           view: mapView
@@ -120,17 +122,10 @@ const MapControl = function ({
 
   const initBaseMapLayer = () => {
     esriLoader
-      .loadModules(
-        [
-          "esri/Basemap"
-        ],
-        esriLoaderOptions
-      )
+      .loadModules(["esri/Basemap"], esriLoaderOptions)
       .then(([Basemap]) => {
 
-        console.log(mapView.map);
-
-        let basemapid = getCookie("basemap");//"d0135822507947b2a3809af36f2d91e6";
+        let basemapid = getCookie("basemap");
         if (basemapid) {
           var basemap = new Basemap({
             portalItem: {
@@ -148,14 +143,6 @@ const MapControl = function ({
 
 
   const initReferenceLayers = mapView => {
-    // Layer.fromPortalItem({
-    //     portalItem: {  // autocasts new PortalItem()
-    //         id: "dd6077b7b71c4492aceab1ae0146ad1c"
-    //     }
-    // }).then(function(layer){
-    //     // add the layer to the map
-    //     mapView.map.add(layer);
-    // });
 
     esriLoader
       .loadModules(
@@ -163,12 +150,11 @@ const MapControl = function ({
           "esri/layers/MapImageLayer",
           "esri/layers/ImageryLayer",
           "esri/layers/FeatureLayer",
-          "esri/layers/VectorTileLayer",
-          "esri/PopupTemplate"
+          "esri/layers/VectorTileLayer"
         ],
         esriLoaderOptions
       )
-      .then(([MapImageLayer, ImageryLayer, FeatureLayer, VectorTileLayer, PopupTemplate]) => {
+      .then(([MapImageLayer, ImageryLayer, FeatureLayer, VectorTileLayer]) => {
         const defaultOpacity = 0.7;
 
         const vt = new VectorTileLayer({
@@ -230,40 +216,9 @@ const MapControl = function ({
             definitionExpression: "rangemapid = -1",
             popupEnabled: true
           }],
-          title: "Range Map Inputs"          
-        });
-
-        // HUC6
-        // const huc6 = new FeatureLayer({
-        //     portalItem: {
-        //       // autocasts as esri/portal/PortalItem
-        //       id: config.reference_layers.HUC6.itemId
-        //     },
-        //     title: config.reference_layers.HUC6.title,
-        //     opacity: 0.9,
-        //     visible: false,
-        //     renderer: {
-        //       type: "simple", // autocasts as new SimpleRenderer()
-        //       symbol: {
-        //         type: "simple-fill", // autocasts as new SimpleFillSymbol()
-        //         color: [0, 0, 0, 0],
-        //         outline: {
-        //           // autocasts as new SimpleLineSymbol()
-        //           color: [0, 255, 0, 1],
-        //           width: "2"
-        //         }
-        //       }
-        //     }
-        //   }); 
-
-        //  const rivers = new FeatureLayer({
-        //   portalItem: {
-        //     // autocasts as esri/portal/PortalItem
-        //     id: config.reference_layers.RIVERS.itemId
-        //   },
-        //   title: config.reference_layers.RIVERS.title,
-        //   visible: false
-        // }); 
+          title: "Range Map Inputs",
+          visible: false         
+        });       
 
         // KH -- Need to do a test where if a layer isn't avaialble, will it blow up the app here
         // also to test if that fails, does it fail using addMany
@@ -283,36 +238,59 @@ const MapControl = function ({
   };
 
   const setRangeMapShpDefQuery = rmapID => {
-    console.log(rmapID)
     let rmapShp = rangeMapShapes.findSublayerById(0);
     rmapShp.definitionExpression = "rangemapid = " + rmapID;
     rmapShp.popupTemplate = {
-      content: [{
+      title: formatTitle, //"{datasetsourcename} - {maxdate}",
+      outFields: ["*"],
+      content: [{        
         type: "fields", // Autocasts as new FieldsContent()
         // Autocasts as new FieldInfo[]
         fieldInfos: [{
-          fieldName: "rangemapid"
+          fieldName: "nationalscientificname",
+          label: "National Scientific Name"
         }, {
-          fieldName: "nationalscientificname"
+          fieldName: "synonymname",
+          label: "Synonym Name"
         }, {
-          fieldName: "synonymname"
+          fieldName: "datasetsourcename",
+          label: "Data Source Name"
         }, {
-          fieldName: "nationalscientificname"
+          fieldName: "datasettype",
+          label: "Dataset Type"
         }, {
-          fieldName: "datasetsourcename"
+          fieldName: "accuracy",
+          label: "Accuracy",
+          format: {
+            digitSeparator: true,
+            places: 0
+          }
         }, {
-          fieldName: "datasettype"
+          fieldName: "maxdate",
+          label: "Max Date",
+          format:{
+            dateFormat: "short-date"
+          }
         }, {
-          fieldName: "accuracy"
+          fieldName: "coordinatesobscured",
+          label: "Coordinates Obscured"
         }, {
-          fieldName: "maxdate"
-        }, {
-          fieldName: "coordinatesobscured"
-        }, {
-          fieldName: "originalgeometrytype"
+          fieldName: "originalgeometrytype",
+          label: "Original Geometry Type"
         }]
+      }],
+      expressionInfos: [{
+        name: "coordinatesobscured",
+        title: "Coordinates Obscured",
+        expression: "$feature.coordinatesobscured" * 5
       }]
     }
+  };
+
+  function formatTitle(feature){
+    let d =  new Date(feature.graphic.attributes.maxdate).toLocaleDateString();
+    console.log(feature)
+    return feature.graphic.attributes.datasetsourcename + " - " + d;
   };
 
   const initEcoLayer = mapView => {
@@ -539,8 +517,8 @@ const MapControl = function ({
         });
 
         sketchWidget.on("create", function (event) {
-          //   // check if the create event's state has changed to complete indicating
-          //   // the graphic create operation is completed.
+          // check if the create event's state has changed to complete indicating
+          //  the graphic create operation is completed.
           initMapEventHandlersRemove();
           if (event.state === "complete") {
             console.log(event.graphic);
@@ -626,14 +604,12 @@ const MapControl = function ({
 
         // ecoPreviewGraphicLayer.add(graphicForSelectedEco);
         ecoMultiSelection.add(graphicForSelectedEco);
-        console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
-
+        //console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
       });
 
     addtoMSlist(feature);
 
   };
-
 
   const addtoMSlist = feature => {
     const modal = document.getElementById("myModal");
@@ -699,8 +675,6 @@ const MapControl = function ({
 
     return new Promise((resolve, reject) => {
       ecoShpLayer.queryFeatures(query).then(function (response) {
-        // console.log(response);
-
         if (response.features && response.features.length) {
           resolve(response.features[0]);
         }
@@ -726,7 +700,6 @@ const MapControl = function ({
         .queryFeatures(query)
         .then(function (response) {
           if (response.features && response.features.length) {
-            // console.log(response.features[0]);
             resolve(response.features);
 
           } else {
@@ -761,7 +734,6 @@ const MapControl = function ({
   };
 
   const getSelectedArray = () => {
-
     return ecoPreviewGraphicLayer;
   }
 
@@ -797,10 +769,9 @@ const MapControl = function ({
     pEcoByStatusLoaded = true;
   }
 
-
   const showEcoFeatureByStatus = (
     ecoId,
-    status,
+    markup,
     len,
     options = {
       attributes: null,
@@ -810,11 +781,12 @@ const MapControl = function ({
 
     removeEcoGraphicByStatus(ecoId);
 
-    console.log("in showEcoFeatureByStatus")
-    if (+status > 0) {
+    //console.log("in showEcoFeatureByStatus", markup)
+    //if (+status > 0) {      
+    if (config.MARKUPCODES.indexOf(markup) > 0) {  // (markup === 'P' || markup === 'R') {
       queryEcoShpsLayerByEcoID(ecoId).then(features => {
-        console.log('ByStatus', features);
-        addEcoGraphicByStatus(features[0], status, options);
+        //console.log('ByStatus', features);
+        addEcoGraphicByStatus(features[0], markup, options);
         ++pEcoByStatusCount;
         console.log('pEcoByStatusCount', pEcoByStatusCount, len);
         if (len) {
@@ -839,18 +811,18 @@ const MapControl = function ({
     }
   };
 
-
   const setpEcoByPresenceLoaded=() => {
     pEcoByPresenceLoaded = true;
   }
-
+ 
   const showEcoFeatureByPresence = (ecoId, presence, len) => {
     queryEcoShpsLayerByEcoID(ecoId).then(features => {
       // fullExtentArray.push(features[0]);
       drawEcoShapeByPresence(features[0], presence);
-      console.log('ByPresence', features);
+      //console.log('ByPresence', features);
       ++pEcoByPresenceCount;
       console.log('pEcoByPresenceCount', pEcoByPresenceCount, len);
+      
       if (len) {
         if (pEcoByPresenceCount == len) {
           pEcoByPresenceLoaded = true;
@@ -861,10 +833,7 @@ const MapControl = function ({
     });
   }
 
-
   const fullExtent = () => {
-
-    console.log('FULL Extent');
     var fullExtent = null;
     for (var i = 0; i < ecoShpByStatusGraphicLayer.graphics.items.length; i++) {
       var features = ecoShpByStatusGraphicLayer.graphics.items[i];
@@ -882,7 +851,6 @@ const MapControl = function ({
         fullExtent.union(features.geometry.extent)
     }
 
-
     mapView.goTo(fullExtent).then(function () {
       if (!mapView.extent.contains(fullExtent))
         mapView.zoom -= 1;
@@ -893,7 +861,6 @@ const MapControl = function ({
     }
   }
 
-
   const drawEcoShapeByPresence = (feature, presence) => {
     const geometry = feature.geometry;
     const symbol = presenceSymbols[presence];
@@ -903,77 +870,52 @@ const MapControl = function ({
       .then(([Graphic]) => {
         const graphic = new Graphic({
           geometry,
-          symbol,
-          //attributes
-          // popupTemplate
+          symbol
         });
-        //console.log("about to drawEcoShapeByPresence add graphic", graphic)
+
         ecoPresenceGraphicLayer.add(graphic);
       })
       .catch(err => {
         console.error(err);
       });
-
   };
 
-  const addEcoGraphicByStatus = (feature, status, options = {}) => {
+  const addEcoGraphicByStatus = (feature, markup, options = {}) => {
     const geometry = feature.geometry;
     const attributes = options.attributes
       ? { ...feature.attributes, ...options.attributes }
       : feature.attributes;
     // const popupTemplate = options.popupTemplate || null;
 
-    console.log('calling addEcoGraphicByStatus', feature, status);
+    //console.log('calling addEcoGraphicByStatus', feature, markup);
+    const greenHatch = {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: [76,230,0,1],
+      style: "forward-diagonal",
+      outline: {
+        color: [76,230,0,1],//config.COLOR.ecoBorderIsModeled,
+        width: "3px"
+      }
+    }
+    const redHatch = {      
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "red",
+      style: "backward-diagonal",
+      outline: {
+        color: config.COLOR.ecoBorderIsModeled,
+        width: "3px"
+      }
+    }
 
     const symbols = {
-      1: {
-        //type: "picture-fill", // autocasts as new PictureFillSymbol()
-        //url: hatchBlack, //"https://static.arcgis.com/images/Symbols/Shapes/BlackStarLargeB.png",
-        //width: "24px",
-        //height: "24px",
-        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        color: [76,230,0,1],
-        style: "forward-diagonal",
-        outline: {
-          color: [76,230,0,1],//config.COLOR.ecoBorderIsModeled,
-          width: "3px"
-        }
-      },
-      2: {
-        //type: "picture-fill", // autocasts as new PictureFillSymbol()
-        //url: hatchRed, //"https://static.arcgis.com/images/Symbols/Shapes/BlackStarLargeB.png",
-        //width: "24px",
-        //height: "24px",
-        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        color: "red",
-        style: "backward-diagonal",
-        outline: {
-          color: config.COLOR.ecoBorderIsModeled,
-          width: "3px"
-        }
-      },
-      3: {
-        // type: "simple-fill", // autocasts as new SimpleFillSymbol()
-        // color: [0, 0, 0, 0],
-        // outline: {
-        //   // autocasts as new SimpleLineSymbol()
-        //   color: config.COLOR.ecoBorderCommentWithoutAction,
-        //   width: "4px"
-        // }
-
-        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        color: "red",
-        style: "backward-diagonal",
-        outline: {
-          color: config.COLOR.ecoBorderIsModeled,
-          width: "3px"
-        }
-
-
-      }
+      'P': greenHatch,
+      'X': greenHatch,
+      'H': greenHatch,
+      'R': redHatch
     };
 
-    const symbol = symbols[+status];
+    //const symbol = symbols[+status];
+    const symbol = symbols[markup];
 
     esriLoader
       .loadModules(["esri/Graphic"], esriLoaderOptions)
@@ -987,8 +929,6 @@ const MapControl = function ({
         //console.log("about to ecoShpByStatusGraphicLayer add graphic", graphic)
         ecoShpByStatusGraphicLayer.add(graphic);
         document.getElementById('graphicsLayersDiv').style.display = "block";
-
-
 
       })
       .catch(err => {
@@ -1016,8 +956,6 @@ const MapControl = function ({
   };
 
   const addPreviewEcoGraphic = feature => {
-    // const attributes = feature.attributes;
-
     cleanPreviewEcoGraphic();
 
     const symbol = {
@@ -1040,9 +978,6 @@ const MapControl = function ({
 
         ecoPreviewGraphicLayer.add(graphicForSelectedEco);
         ecoMultiSelection.add(graphicForSelectedEco);
-
-        console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
-
 
       });
     try {
@@ -1215,9 +1150,7 @@ const MapControl = function ({
         if (ecoPresenceGraphicLayer)
           ecoPresenceGraphicLayer.visible = status;
         break;
-
     }
-
   };
 
   const fullExtentClear = () => {

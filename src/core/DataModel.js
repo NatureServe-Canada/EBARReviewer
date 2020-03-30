@@ -34,10 +34,11 @@ export default class DataModel {
     this.overallFeedback[key] = val;
     // this.ecoShapesBySpecies = data;
   }
-
+  
+  // Dont think this is being called...
   setStatus(data = []) {
+    //console.log("INSIDE SETSTATUS", data)
     this.status = data;
-    // console.log(this.status);
   }
 
   setSelectedSpecies(val = null) {
@@ -75,13 +76,14 @@ export default class DataModel {
     })[0]['reviewid'];
   }
 
+  // DONT THINK THIS IS BEING USED ANYMORE....
   getStatusByIndex(index) {
+    console.log("INSIDE getStatusByIndex", index, this.status[+index])
     return index && this.status[+index] ? this.status[+index] : null;
   }
 
   isHucInModeledRange(ecoId, species) {
     const ecos = this.ecoShapesBySpecies[species];
-    // console.log('isHucInModeledRange', ecoId);
 
     if (ecos) {
       return ecos.filter(d => {
@@ -92,8 +94,6 @@ export default class DataModel {
     } else {
       return false;
     }
-    // const isHucInModeledRange = ecos.filter(d=>{ return d[config.FIELD_NAME.speciesDistribution.ecoShapeID] === ecoId }).length ? true : false;
-    // return isHucInModeledRange;
   }
 
   getOverallFeedback(key) {
