@@ -35,6 +35,8 @@ const MapControl = function ({
   let currentSelectedFeature = null;
   let rangeMapShapes = null;
 
+  let largeDrawError = false;
+
 
   // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
   const outline = {
@@ -238,6 +240,9 @@ const MapControl = function ({
   };
 
   const setRangeMapShpDefQuery = rmapID => {
+    // Reseting the draw error here as I know species select/changes calls here
+    largeDrawError = false;
+    
     let rmapShp = rangeMapShapes.findSublayerById(0);
     rmapShp.definitionExpression = "rangemapid = " + rmapID;
     rmapShp.popupTemplate = {
@@ -404,7 +409,6 @@ const MapControl = function ({
         });
 
         var handle = basemapGallery.watch('activeBasemap', function (newValue, oldValue, property, object) {
-          // alert("Here!");'
           var portalItem = newValue["portalItem"];
           var basemapid = portalItem.id;
 
@@ -694,7 +698,6 @@ const MapControl = function ({
     query.outSpatialReference = 102100;
     query.returnGeometry = true;
     query.outFields = ["*"];
-
     return new Promise((resolve, reject) => {
       ecoShpLayer
         .queryFeatures(query)
@@ -707,6 +710,12 @@ const MapControl = function ({
           }
         })
         .catch(err => {
+          if (!largeDrawError){
+            largeDrawError = true;
+            alert("Failed to draw species. Please select a new species and try again.");
+          }
+          const modal = document.getElementById("myModal");
+          modal.style.display = "none";
           reject(err);
         });
     });
