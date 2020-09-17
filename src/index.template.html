@@ -34,10 +34,13 @@
 
         <!--<span data-i18n="pre_lang">Preferred language: </span>-->
         <div class="text-right">
-          <select class="language" onchange="translation(event)" data-i18n="lang" style="display:none">
-            <option value="en" data-i18n="lang_en">English</option>
-            <option value="fr" data-i18n="lang_fr">French</option>
-          </select>
+          <div data-i18n="lang" style="display:none">
+            <label class="font-size-2" style="float:left; margin-right: 0.5%;">Language/langue:</label>
+            <select class="font-size-2 language"id="languageSelector" onchange="translation(event)" data-i18n="lang" style="display:none">
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
+        </div>
           <btn class="btn btn-large js-accept-terms">
             <span class="padding-left-1 padding-right-1" data-i18n="i_agree">I AGREE </span></btn>
         </div>
@@ -215,7 +218,12 @@
             <div id='basemapGalleryDiv'></div>
         </div> -->
 
-  <div id="viewDiv" class="hide"></div>
+  <div id="viewDiv" class="hide">
+    <div id="line-button" class="esri-widget esri-widget--button
+    esri-interactive hide" title="Draw polyline">
+      <span class="esri-icon-polyline"></span>
+    </div>
+  </div>
 </body>
 
 </html>

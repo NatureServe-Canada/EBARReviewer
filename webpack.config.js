@@ -18,6 +18,10 @@ module.exports = (env, options) => {
         module: {
             rules: [
                 {
+                    test: /\.css$/,
+                    use: ["style-loader", "css-loader", "postcss-loader"]
+                },
+                {
                     test: /\.js$/,
                     exclude: /node_modules/,
                     use: {

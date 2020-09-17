@@ -125,13 +125,13 @@ export default function () {
       }
       
       if (event.target.classList.contains("js-submitsave")) {
+        if (!rating) {
+          alert("please provide a star rating");
+          return;
+        }
+
         var r = confirm($.i18n('submit_warning'));
         if (r == true) {
-          if (!rating) {
-            alert("please provide a star rating");
-            return;
-          }
-
           onSubmitSaveHandler({
             rating,
             comment

@@ -14,6 +14,8 @@ import ns_white from "./static/ns_white.png";
 
 import PolyfillForIE from "./utils/PolyfillForIE";
 
+import translation from "../js/translation"
+
 (async function initOAuthManager() {
 
   const logo = document.getElementById("logo");
@@ -25,7 +27,11 @@ import PolyfillForIE from "./utils/PolyfillForIE";
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
   if (config.i18n)
+  {
+    
     $("[data-i18n=lang").css('display', 'block');
+
+  }
 
   document.querySelector(".js-accept-terms").addEventListener("click", evt => {
     // console.log('agress');
@@ -369,14 +375,14 @@ const initApp = async oauthManager => {
   });
 
   view.init({
-    openOverallBtnOnclick: () => {
+    openOverallBtnOnclick: async () => {
       // const data = controller.getOverallFeedback();
       // view.toggleOverallFeeback(true, data);
 
       view.toggleControlPanel({
         target: view.overallFeedbackControlPanel,
         isVisible: true,
-        data: controller.getOverallFeedback()
+        data: await controller.getOverallFeedback()
       });
     },
     layerOpacitySliderOnUpdate: val => {

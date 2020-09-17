@@ -91,6 +91,7 @@ export default function Controller(props = {}) {
         controllerProps.feedbackManagerOnClose();
         try {
           document.getElementsByClassName('esri-sketch')[0].style.display = "none";
+          document.getElementById('sketchWidget').style.display = "none";
         } catch (e) { }
       },
 
@@ -891,7 +892,9 @@ export default function Controller(props = {}) {
     }
   };
 
-  const getOverallFeedback = () => {
+  const getOverallFeedback = async () => {
+    // re-query the database to update the datamodels
+    await queryOverallFeedbacksByUser();
     const species = dataModel.getSelectedSpecies();
 
     const prevFeedbackData = dataModel.getOverallFeedback(species);

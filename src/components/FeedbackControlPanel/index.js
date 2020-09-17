@@ -82,6 +82,7 @@ export default function FeedbackControlPanel() {
     if (state.isMultiSelection === true) {
       document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "block";
       document.getElementsByClassName('esri-sketch')[0].style.display = "block";
+      document.getElementById('sketchWidget').style.display = "block";
       const modal = document.getElementById("myModal");
       modal.setAttribute('multi_selection', 'true');
       try { document.getElementById("fbSaveMS").style.display = "block"; } catch{ }
@@ -95,10 +96,34 @@ export default function FeedbackControlPanel() {
       try { document.getElementById('additional-field-reference').value = ""; } catch{ }
       try { document.getElementById("field-markup").selectedIndex = "0"; } catch{ }
 
+      
+      // add multiple selections dropdown options if hasn't added yet
+      let x = document.getElementById("field-markup");
+      let valueArr = []
+
+      for (let i = 0; i< x.options.length; i++)
+      {
+        valueArr.push(x.options[i].value)
+      }
+
+      let newOption = document.createElement("option");
+      if (valueArr.includes('R'))
+      {
+        newOption.text = "Present";
+        newOption.value = "P"
+        x.add(newOption, x.options[1]);
+      }
+      else 
+      {
+        newOption.text = "Remove";
+        newOption.value = "R"
+        x.add(newOption);
+      }
     }
     else {
       document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "none";
       document.getElementsByClassName('esri-sketch')[0].style.display = "none";
+      document.getElementById('sketchWidget').style.display = "none";
       clearMultiSelectGraphics();
       const modal = document.getElementById("myModal");
       modal.setAttribute('multi_selection', 'false');
@@ -117,8 +142,10 @@ export default function FeedbackControlPanel() {
       try { document.getElementById('field-comment').value = document.getElementById('field-comment').getAttribute('defaultvalue'); } catch{ }
       try { document.getElementById('additional-field-reference').value = document.getElementById('additional-field-reference').getAttribute('defaultvalue'); } catch{ }
       try { document.getElementById("field-markup").selectedIndex = "0"; } catch{ }
-      //need to clear graphics
-      //defaultvalue
+      // remove the options added for the multi-select
+      let x = document.getElementById("field-markup");
+      if (state.data.isHucInModeledRange) x.remove(1)
+      else x.remove(4)
     }
   };
 
@@ -132,7 +159,11 @@ export default function FeedbackControlPanel() {
     try {
       const modal = document.getElementById("myModal");
       var ms = modal.getAttribute('multi_selection');
-      if (ms && ms == "true") { state.isMultiSelection = true; document.getElementsByClassName('esri-sketch')[0].style.display = "block"; }
+      if (ms && ms == "true") { 
+        state.isMultiSelection = true; 
+        document.getElementsByClassName('esri-sketch')[0].style.display = "block"; 
+        document.getElementById('sketchWidget').style.display = "block";
+      }
     }
     catch (e) {
       console.log(e);
@@ -206,7 +237,7 @@ export default function FeedbackControlPanel() {
                     </div>
 
                     <div id="feedbackControlPanelMultiSelectInfo" style="flex;flex-direction:row;display:${state.isMultiSelection ? "block" : "none"};" class="font-size--3 meta">
-                    <span style="color:lightpink">${$.i18n('warning_markup')}</span>
+                      <span style="color:lightpink">${$.i18n('warning_markup')}</span>
                        <div>Ecoshape(s):<span id="feedbackControlPanelMSIecoshapes" style="margin-left:5px;"></span></div>
                        <div>${$.i18n('ter_area')}<span id="feedbackControlPanelMSIarea" style="margin-left:5px;"></span></div>
                         <div>${$.i18n('ter_proportion')}<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
@@ -286,7 +317,9 @@ export default function FeedbackControlPanel() {
     }
 
     let outputHtml = ``;
-
+    // get the Species dropdown selected value from the dom 
+    let e = document.getElementById('speciesSelector')
+    let selectedSpecies = e.options[e.selectedIndex].innerText
     if (!state.isMultiSelection) {
       outputHtml += `<div class='flex-container'>
     <div class='inline-block' id="curEcoSelected">
@@ -298,8 +331,9 @@ export default function FeedbackControlPanel() {
         <strong>${$.i18n('ter_area')}:</strong> ${terrArea} km&sup2;<br>
 
         <strong>${$.i18n('ter_proportion')}:</strong> ${terrProp.toFixed(1)}%    <br>  
-        <strong>${$.i18n('presence')}:</strong> ${presence}  <br>     
-        <strong>${$.i18n('metadata')}:</strong> ${hucNotes} <br>     
+        <strong>${$.i18n('presence')}:</strong> ${presence}  <br>
+        <strong>${$.i18n('species')}:</strong> ${selectedSpecies} <br>     
+        <strong>${$.i18n('metadata')}</strong> ${hucNotes} <br>
 
       </p>  
     </div>
@@ -309,8 +343,17 @@ export default function FeedbackControlPanel() {
     let range = [];
 
     if (state && state.data) {
-
       range.push({ code: "null", text: "None set", status: true });
+      // if the multi select is turned on, add all options
+      if (state.isMultiSelection)
+      {
+        config.PRESENCE.map(d => {
+          range.push({ code: d.code, text: d.text, status:false });
+        })
+        range.push({ code: "R", text: "Remove", status: false });
+      }
+      else 
+      {
       config.PRESENCE.map(d => {
 
         if (state && state.data && state.data.isHucInModeledRange) {
@@ -336,8 +379,8 @@ export default function FeedbackControlPanel() {
           }
 
         }
-
       });
+
       if (state && state.data && state.data.isHucInModeledRange) {
         if (state.data.markup && state.data.markup.toUpperCase() === "R") {
           range.push({ code: "R", text: "Remove", status: true });
@@ -346,6 +389,7 @@ export default function FeedbackControlPanel() {
           range.push({ code: "R", text: "Remove", status: false });
         }
       }
+    }
     }
 
 
@@ -549,7 +593,7 @@ export default function FeedbackControlPanel() {
         if (
           (el.req && el.id == "field-markup" && (!el.value || el.value == '' || el.value == 'null'))
           ||
-          (el.req && el.id != "additional-field-removalreason" && (!el.value || el.value == '' || el.value == 'null'))
+          (el.req && el.id != "additional-field-removalreason" && ( !el.value || el.value == '' || el.value == 'null'))
           || (el.req && el.id == "additional-field-removalreason" && (fieldMarkupVal == 'R') && (!el.value || el.value == '' || el.value == 'null'))
         ) enable = false;
       });
@@ -669,10 +713,62 @@ export default function FeedbackControlPanel() {
       enableSaveMSButton();
     });
 
+  // store dropdown value from 'change' event. 
+  // Making sure drop down could also control the enable/disable button
+    const handleNonChromeDropDown = () =>{
+      feedbackObjects.map(el => {
+        if (el.id == event.target.id) {
+          el.value = event.target.value}})
+          enableSaveButton();
+          enableSaveMSButton();
+    }
+
+    const checkBrowser = () => {
+      let sBrowser, sUsrAg = navigator.userAgent;
+
+      // The order matters here, and this may report false positives for unlisted browsers.
+      if (sUsrAg.indexOf("Firefox") > -1) {
+        sBrowser = "Mozilla Firefox";
+        // "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"
+      } else if (sUsrAg.indexOf("SamsungBrowser") > -1) {
+        sBrowser = "Samsung Internet";
+        // "Mozilla/5.0 (Linux; Android 9; SAMSUNG SM-G955F Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/9.4 Chrome/67.0.3396.87 Mobile Safari/537.36
+      } else if (sUsrAg.indexOf("Opera") > -1 || sUsrAg.indexOf("OPR") > -1) {
+        sBrowser = "Opera";
+        // "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 OPR/57.0.3098.106"
+      } else if (sUsrAg.indexOf("Trident") > -1) {
+        sBrowser = "Microsoft Internet Explorer";
+        // "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; Zoom 3.6.0; wbx 1.0.0; rv:11.0) like Gecko"
+      } else if (sUsrAg.indexOf("Edge") > -1) {
+        sBrowser = "Microsoft Edge";
+        // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299"
+      } else if (sUsrAg.indexOf("Chrome") > -1) {
+        sBrowser = "Google Chrome or Chromium";
+        // "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/66.0.3359.181 Chrome/66.0.3359.181 Safari/537.36"
+      } else if (sUsrAg.indexOf("Safari") > -1) {
+        sBrowser = "Apple Safari";
+        // "Mozilla/5.0 (iPhone; CPU iPhone OS 11_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Mobile/15E148 Safari/604.1 980x1306"
+      } else {
+        sBrowser = "unknown";
+      }
+
+      return sBrowser
+    }
 
     container.addEventListener('change', function (event) {
       if (!(event && event.target && event.target.id)) return;
+      // ----------------------------------------------------
+      // below section is to handle IE not listening 'input'
+      let browserType = checkBrowser()
+      if (browserType != 'Google Chrome or Chromium') handleNonChromeDropDown()
+      // feedbackObjects.map(el => {
+      //   if (el.id == event.target.id) {
+      //     el.value = event.target.value}})
+      //     enableSaveButton();
+      //     enableSaveMSButton();
+      // ----------------------------------------------------
       if (event.target.id != "field-markup") return;
+      // update the 'field-markup' value
 
       var selValue = event.srcElement.value;
       var removeReason = document.getElementById('removeReason');
@@ -705,8 +801,6 @@ export default function FeedbackControlPanel() {
       else {
         removeReason.innerHTML = '';
       }
-
-
     });
 
   };

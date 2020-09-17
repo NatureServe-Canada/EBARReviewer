@@ -221,7 +221,7 @@ export default function View() {
     rlink.innerHTML = "";
     if (m['national_scientific_name']){
       let url = `http://explorer.natureserve.org/servlet/NatureServe?searchSciOrCommonName=${m['national_scientific_name']}&x=0&y=0`;
-      rlink.innerHTML = `<a href="${url}" target="_blank" class="link-white">go to NatureServe Explorer</a>`;
+      rlink.innerHTML = `<a href="${url}" target="_blank" class="link-white">${$.i18n('visit_NSExplorer')}</a>`;
     }
 
     const rmetadata = document.getElementById("rmetadata");

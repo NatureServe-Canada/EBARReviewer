@@ -6,20 +6,20 @@ jQuery(function ($) {
     $.i18n().load({
         "en": {
             "welcome": `
-  Welcome to the NatureServe Canada Ecosystem-based Automated Range Map (EBAR) Reviewer!  
-<br><br>
-In using this tool, you will be accessing information based on locations of rare and threatened 
-species, including species subject to persecution and harm. You agree to use this information only 
-for the purposes of EBAR range maps review. Please contact the EBAR-KBA project at the email
-address provided below to suggest additional reviewers.
-<br><br>  
-Range maps will be published through NatureServe Canada (<a href="http://www.natureserve.ca" target="_blank">http://www.natureserve.ca)</a>, NatureServe Explorer 
-and partners at no cost.
-<br><br>
-This app uses cookies to remember some user interface selections.
-<br><br>
-Your species reviews will be kept in a database to support the EBAR-KBA project.
-` ,
+            Welcome to the NatureServe Canada Ecosystem-based Automated Range Map (EBAR) Reviewer!  
+            <br><br>
+            In using this tool, you will be accessing information based on locations of rare and threatened 
+            species, including species subject to persecution and harm. You agree to use this information only 
+            for the purposes of EBAR range maps review. Please contact the EBAR-KBA project at the email
+            address provided below to suggest additional reviewers.
+            <br><br>  
+            Range maps will be published through NatureServe Canada (<a href="http://www.natureserve.ca" target="_blank">http://www.natureserve.ca)</a>, NatureServe Explorer 
+            and partners at no cost.
+            <br><br>
+            This app uses cookies to remember some user interface selections.
+            <br><br>
+            Your species reviews will be kept in a database to support the EBAR-KBA project.
+            ` ,
             "pre_lang": "Preferred language:",
             "lang_en": "English",
             "lang_fr": "French",
@@ -38,7 +38,7 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "range_version": "Range Version:",
             "stage": "Stage:",
             "species_info": "Species Information:",
-            "metadata": "Metadata",
+            "metadata": "Metadata:",
             "rangescope": "Range Map Scope:",
             "search_add": "Search/Add Data",
             "search_by_location": "Search by location",
@@ -48,7 +48,7 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "drag_and_drop_msg": `Drag and drop a csv file from Windows Explorer onto the map. File should be formatted with “latitude” and “longitude” columns.`,
             "overall_feedback": "Overall Feedback",
             "multi_sel_title": "Multiple Ecoshapes selected",
-            "warning_markup": "WARNING: existing Markup for the selected Ecoshapes will be replaced on Save.",
+            "warning_markup": "WARNING: existing Markup for the selected Ecoshapes will be replaced on Save. Chosen Markup will only be applied to relevant Ecoshapes",
             "ecoshapes": "Ecoshape(s):",
             "ter_area": "Terrestrial Area",
             "ter_proportion": "Terrestrial Proportion",
@@ -71,31 +71,30 @@ Your species reviews will be kept in a database to support the EBAR-KBA project.
             "overall_comment": "Overall comment",
             "submit": "Submit",
             "close": "Close",
+            "species":"Species",
             "submit_warning":"After submit, additional markup and feedback for this range map will not be allowed. Do you want to continue?",
-            "review_sub": "REVIEW SUBMITTED, additional markup and feedback for this range map are not allowed."
+            "review_sub": "REVIEW SUBMITTED, additional markup and feedback for this range map are not allowed.",
+            "visit_NSExplorer" : "go to NatureServe Explorer"
         },
         "fr": {
             "welcome": `
-Bienvenue à l'examinateur de cartes de portée automatisée (EBAR) basé sur l'écosystème de NatureServe Canada!
-<br> <br>
-En utilisant cet outil, vous accéderez à des informations basées sur des emplacements de
-espèces, y compris les espèces sujettes à la persécution et aux dommages. Vous acceptez d'utiliser ces informations uniquement
-aux fins de l'examen des cartes de répartition EBAR. Veuillez contacter le projet EBAR-KBA par e-mail
-adresse indiquée ci-dessous pour suggérer des réviseurs supplémentaires.
-<br> <br>
-Les cartes des aires de répartition seront publiées par NatureServe Canada (<a href="http://www.natureserve.ca" target="_blank"> http://www.natureserve.ca) </a>, NatureServe Explorer
-et partenaires sans frais.
-<br> <br>
-Cette application utilise des cookies pour mémoriser certaines sélections de l'interface utilisateur.
-<br> <br>
-Vos évaluations d'espèces seront conservées dans une base de données pour soutenir le projet EBAR-KBA.
-   `,
+            Bienvenue à l’Application Reviseur CAARBE - Cartographie automatisée des aires de répartissaient basée sur les écosystèmes de NatureServe Canada!
+            <br> <br>
+            En utilisant cet outil, vous accéderez à des informations basées sur des emplacements de certaines espèces,  y compris les espèces rares and sujettes à la persécution. Vous acceptez d'utiliser ces informations uniquement aux fins de l'examen des cartes de répartition du projet CAARBE. Veuillez contacter le projet CAARBE-KBA par courriel indiqué ci-dessous pour suggérer des réviseurs supplémentaires.
+            <br> <br>
+            Les cartes des aires de répartition seront publiées sans frais par NatureServe Canada (<a href="http://www.natureserve.ca" target="_blank">http://www.natureserve.ca)</a>, NatureServe Explorer
+            et partenaires.
+            <br> <br>
+            Cette application utilise des cookies pour mémoriser les sélections de l'interface de l’utilisateur.
+            <br> <br>
+            Vos évaluations d'espèces seront conservées dans une base de données pour soutenir le projet CAARBE-KBA.
+            `,
             "pre_lang": "Langue préférée:",
             "lang_en": "Anglais",
             "lang_fr": "Français",
             "i_agree": "JE SUIS D'ACCORD",
             "questions": "Questions des utilisateurs, suggestions de réviseurs supplémentaires, commentaires et assistance technique:",
-            "about": "À propos de l'application EBAR Reviewer",
+            "about": "À propos de l’Application Reviseur CAARBE",
             "source_code": "Code source",
             "app_dev": "Développement d'applications: Esri Canada",
             "based_on": "Basé sur:",
@@ -103,46 +102,48 @@ Vos évaluations d'espèces seront conservées dans une base de données pour so
             "under": "sous",
             "comment": "Commentaire (obligatoire):",
             //"logged_in_as": "Connecté en tant que",
-            "EBAR_Reviewer": "EBAR Critique",
+            "EBAR_Reviewer": " Reviseur CAARBE ",
             "bn_zoom": "Zoom sur l'aire de répartition des espèces",
-            "range_version": "Version de la gamme:",
+            "range_version": "Version de la carte:",
             "stage": "Étape:",
             "species_info": "Informations sur l'espèce:",
-            "metadata": "Métadonnées",
+            "metadata": "Métadonnées:",
             "rangescope": "Portée de la carte de répartition:",
             "search_add": "Rechercher/Ajouter des données",
             "search_by_location": "Recherche par lieu",
             "ref_layers": "Couches de référence",
             "switch_account": "Déconnexion",
-            "to_add_your_point_data": "Pour ajouter vos propres données de point:",
-            "drag_and_drop_msg": `Faites glisser et déposez un fichier csv depuis l'Explorateur Windows sur la carte. Le fichier doit être formaté avec «latitude» et «longitude» Colonnes.`,
-            "overall_feedback": "Rétroaction globale",
+            "to_add_your_point_data": "Pour ajouter vos propres données de position ponctuelles:",
+            "drag_and_drop_msg": `Faites glisser et déposez un fichier csv sur la carte. Le fichier doit comprendre des colonnes nommées «latitude» et «longitude».`,
+            "overall_feedback": "Opinion générale",
             "multi_sel_title": "Plusieurs éco-formes sélectionnées",
             "warning_markup": "AVERTISSEMENT: le balisage existant pour les formes écologiques sélectionnées sera remplacé lors de l'enregistrement.",
-            "ecoshapes": "Ecoshape(s):",
+            "ecoshapes": "éco-forme(s):",
             "ter_area": "Zone terrestre",
             "ter_proportion": "Proportion terrestre",
-            "parent_ecoregion": "Écorégion parent",
+            "parent_ecoregion": "Écorégion parente",
             "ecozone": "Écozone",
             "presence": "Présence",
             "markup_req": "Balisage (obligatoire)",
             "rem_reason_req": "Motif de suppression (obligatoire)",
             "multi_sel": "Multi-sélection",
-            "save": "Save",
+            "save": "Savez",
             "reset": "Réinitialiser",
-            "all_feedbacks_by": "Tous les retours de",
-            "all_feedback_for": "Tous les retours pour",
-            "no_overall_fb": "Aucune rétroaction globale pour les espèces sélectionnées",
+            "all_feedbacks_by": "Tous les opinions de",
+            "all_feedback_for": "Tous les opinions pour",
+            "no_overall_fb": "Aucun opinion pour les espèces sélectionnées",
             "overall_fb": "Rétroaction globale de tous les utilisateurs",
             "Reference": "Référence",
             "removalreason": "Motif de suppression",
             "Migrant Status": "Statut de migrant",
-            "overall_fb": "Veuillez fournir des commentaires sur la gamme globale",
+            "overall_fb": "Veuillez fournir des commentaires sur la carte en général",
             "overall_comment": "Commentaire général",
-            "submit": "Submit",
-            "close": "Close",
-            "submit_warning":"Après l'envoi, le balisage et les commentaires supplémentaires pour cette carte de portée ne seront pas autorisés. Voulez-vous continuer?",
-            "review_sub": "REVIEW SUBMITTED, additional markup and feedback for this range map are not allowed."
+            "submit": "Soumit",
+            "close": "Fermé",
+            "species":"Espèce",
+            "submit_warning":" Après l'envoi, le balisage et les commentaires supplémentaires pour cette carte ne seront pas autorisés. Voulez-vous continuer?",
+            "review_sub": "REVISION SOUMISE, les changements et commentaires supplémentaires pour cette carte ne sont plus autorisés.",
+            "visit_NSExplorer" : "allez à NatureServe Explorer"
         }
 
     }).done(function () {
@@ -152,15 +153,31 @@ Vos évaluations d'espèces seront conservées dans une base de données pour so
 
 
 function translation(event) {
+
+    if (event ===undefined)
+    {   // acquire language cookie value at this location
+        if (document.cookie.split(';').some((item) => item.trim().startsWith('language='))) 
+        {
+          const languageCookieValue = document.cookie.split('; ').find(row => row.startsWith('language')).split('=')[1];
+          $.i18n({locale: languageCookieValue});
+          if (languageCookieValue == 'en') document.getElementById('languageSelector').value = 'en'
+          else if ((languageCookieValue == 'fr')) document.getElementById('languageSelector').value = 'fr'
+        }
+    }
+
     if (event && event.target && event.target.value) {
         $.i18n({
             locale: event.target.value
         });
+        // store language cookie value at this location
+        let currentLangauge = document.getElementById('languageSelector').value
+        document.cookie= `language=${currentLangauge}`
     }
+
     $("[data-i18n=welcome]")[0].innerHTML = $.i18n('welcome');
     //$("[data-i18n=pre_lang]")[0].innerHTML = $.i18n('pre_lang');
-    $("[data-i18n=lang_en]")[0].innerHTML = $.i18n('lang_en');
-    $("[data-i18n=lang_fr]")[0].innerHTML = $.i18n('lang_fr');
+    // $("[data-i18n=lang_en]")[0].innerHTML = $.i18n('lang_en');
+    // $("[data-i18n=lang_fr]")[0].innerHTML = $.i18n('lang_fr');
     $("[data-i18n=i_agree]")[0].innerHTML = $.i18n('i_agree');
     $("[data-i18n=questions]")[0].innerHTML = $.i18n('questions');
     $("[data-i18n=about]")[0].innerHTML = $.i18n('about');

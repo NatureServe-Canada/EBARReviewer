@@ -1,6 +1,6 @@
 "use strict";
 
-import config from "../config";
+import config, { isMultiSelection } from "../config";
 import * as esriLoader from "esri-loader";
 //import hatchRed from "../static/remove.png";
 //import hatchBlack from "../static/add.png";
@@ -8,7 +8,7 @@ import * as esriLoader from "esri-loader";
 const Promise = require("es6-promise").Promise;
 
 const esriLoaderOptions = {
-  url: "https://js.arcgis.com/4.10"
+  url: "https://js.arcgis.com/4.16"
 };
 
 const MapControl = function ({
@@ -34,8 +34,11 @@ const MapControl = function ({
   let multiSelectionList = [];
   let currentSelectedFeature = null;
   let rangeMapShapes = null;
-
   let largeDrawError = false;
+
+  // handle remove
+  let originalFeatureName = '';
+  let graphicEcoshapNameKVP = {};
 
 
   // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
@@ -74,6 +77,8 @@ const MapControl = function ({
     //console.log("done init: map view")
   };
 
+
+  
   const initMapView = () => {
     esriLoader
       .loadModules(["esri/views/MapView", "esri/WebMap", "esri/config"], esriLoaderOptions)
@@ -121,6 +126,37 @@ const MapControl = function ({
       });
   };
 
+  const initCoordinateConversion = mapView =>{
+    esriLoader
+    .loadModules(["esri/widgets/CoordinateConversion"], esriLoaderOptions)
+    .then(([CoordinateConversion]) => {
+
+      // let cc = new CoordinateConversion();
+
+      // let coordinateFormats = cc.formats.filter((format) => {
+      //   let coordinateNames = ["dd", "ddm", "dms", "utm"]
+      //   if (coordinateNames.includes(format.name)) return format
+      //   return format.name === "dd";
+      //   });
+      // let ddmCoordinateFormat = cc.formats.filter((format) => {
+      //   return format.name === "ddm";
+      //   });
+      // let dmsCoordinateFormat = cc.formats.filter((format) => {
+      //   return format.name === "dms";
+      //   });
+      // let utmCoordinateFormat = cc.formats.filter((format) => {
+      //   return format.name === "utm";
+      //   });
+
+      const ccWidget = new CoordinateConversion({
+        view: mapView
+      });
+      mapView.ui.add(ccWidget, "bottom-left");
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  }
 
   const initBaseMapLayer = () => {
     esriLoader
@@ -254,41 +290,74 @@ const MapControl = function ({
         fieldInfos: [{
           fieldName: "nationalscientificname",
           label: "National Scientific Name"
-        }, {
+        }, 
+        {
           fieldName: "synonymname",
           label: "Synonym Name"
-        }, {
+        }, 
+        {
           fieldName: "datasetsourcename",
-          label: "Data Source Name"
-        }, {
+          label: "Dataset Source Name"
+        },
+        {
+          fieldName: "datasetsourceuniqueid",
+          label: "Dataset Source Unique ID"
+        },
+        {
           fieldName: "datasettype",
           label: "Dataset Type"
-        }, {
+        }, 
+        {
           fieldName: "accuracy",
-          label: "Accuracy",
+          label: "Accuracy (m)",
           format: {
             digitSeparator: true,
             places: 0
           }
-        }, {
+        }, 
+        {
           fieldName: "maxdate",
           label: "Max Date",
           format:{
             dateFormat: "short-date"
           }
-        }, {
-          fieldName: "coordinatesobscured",
-          label: "Coordinates Obscured"
-        }, {
-          fieldName: "originalgeometrytype",
-          label: "Original Geometry Type"
-        }]
+        }, 
+        // {
+        //   fieldName: "coordinatesobscured",
+        //   label: "Coordinates Obscured"
+        // }, 
+        // {
+        //   fieldName: "originalgeometrytype",
+        //   label: "Original Geometry Type"
+        // },
+        {
+          fieldName: "expression/coordinatesobscuredConvert"
+        },
+        {
+          fieldName: "expression/originalgeometrytypeConvert"
+        },
+        {
+          fieldName: "uri",
+          label: "URI"
+        },
+        {
+          fieldName: "eorank",
+          label: "EO Rank"
+        }
+      ]
       }],
-      expressionInfos: [{
-        name: "coordinatesobscured",
+      expressionInfos: [
+      {
+        name: "coordinatesobscuredConvert",
         title: "Coordinates Obscured",
-        expression: "$feature.coordinatesobscured" * 5
-      }]
+        expression: "IIf($feature.coordinatesobscured == 1, 'Yes', 'No')"
+      },
+      {
+        name: "originalgeometrytypeConvert",
+        title: "Original Geometry Type",
+        expression: "When($feature.originalgeometrytype == 'Y', 'Polygon', $feature.originalgeometrytype == 'P', 'Point', $feature.originalgeometrytype == 'L', 'Line', 'N/A')"
+      }
+    ]
     }
   };
 
@@ -358,8 +427,9 @@ const MapControl = function ({
           title: "Selection"
         });
 
-        mapView.map.addMany([ ecoPreviewGraphicLayer, ecoPresenceGraphicLayer, ecoShpByStatusGraphicLayer,ecoMultiSelection]);
-
+        mapView.map.addMany([ecoPreviewGraphicLayer, ecoPresenceGraphicLayer, ecoShpByStatusGraphicLayer,ecoMultiSelection]);
+        // only initialize the sketch when all the layers are ready to use.
+        initSketch(mapView);
       });
   };
 
@@ -371,6 +441,7 @@ const MapControl = function ({
       if (!ms || ms == "false") {
         ecoMultiSelection.removeAll();
         ecoPreviewGraphicLayer.removeAll();
+        graphicEcoshapNameKVP ={}
       }
 
       queryEcoLayerByMouseEvent(event)
@@ -394,7 +465,6 @@ const MapControl = function ({
       ecoMultiSelection.remove(event.graphic);
     });
   }
-
 
 
   const initBasemapGallery = view => {
@@ -493,8 +563,6 @@ const MapControl = function ({
     console.log('mapView is ready...');
     initMapEventHandlers();
 
-    initSketch(mapView);
-
     initBasemapGallery(mapView);
 
     initReferenceLayers(mapView);
@@ -507,17 +575,27 @@ const MapControl = function ({
 
     initLayerList(mapView);
 
+    initCoordinateConversion(mapView);
+
     initBaseMapLayer();
   };
 
   const initSketch = view => {
     esriLoader
-      .loadModules(["esri/widgets/Sketch"], esriLoaderOptions)
-      .then(([Sketch]) => {
+      .loadModules(["esri/widgets/Sketch", "esri/widgets/Expand"], esriLoaderOptions)
+      .then(([Sketch, Expand]) => {
         const sketchWidget = new Sketch({
           view,
           layer: ecoMultiSelection,
-          id: "SketchWidget"
+          id: "SketchWidget",
+          availableCreateTools : ["polyline", "polygon", "rectangle"],
+          defaultUpdateOptions : {
+            enableRotation : false,
+            enableScaling  : false,
+            enableZ : false,
+            multipleSelectionEnabled : false,
+            toggleToolOnClick : false
+          }
         });
 
         sketchWidget.on("create", function (event) {
@@ -527,8 +605,8 @@ const MapControl = function ({
           if (event.state === "complete") {
             console.log(event.graphic);
 
-            if (queryEcoLayerByMSMouseEvent)
-              queryEcoLayerByMSMouseEvent(event.graphic.geometry);
+            // if (queryEcoLayerByMSMouseEvent)
+            //   queryEcoLayerByMSMouseEvent(event.graphic.geometry);
 
             queryEcoLayerByMSMouseEvent(event)
               .then(queryEcoLayerByMSMouseEventOnSuccessHandler)
@@ -536,23 +614,36 @@ const MapControl = function ({
                 console.log(err);
               });
 
-
             // remove the graphic from the layer. Sketch adds
             // the completed graphic to the layer by default.
             ecoMultiSelection.remove(event.graphic);
-            initMapEventHandlers();
+            // initMapEventHandlers();
             // use the graphic.geometry to query features that intersect it
             // selectFeatures(event.graphic.geometry);
           }
         });
 
+        let sketchContainer = document.createElement("div");
+        sketchContainer.setAttribute("id", "sketchWidget");
+        sketchContainer.style.display = "none";
 
-        view.ui.add(sketchWidget, {
-          position: "bottom-left",
-          index: 0,
-          id: "SketchWidget",
-          visible: false
+        const sketchExpand = new Expand({
+          view,
+          expandIconClass: "esri-icon-sketch-rectangle",
+          content: sketchWidget,
+          container: sketchContainer
         });
+
+        mapView.ui.add(sketchExpand, "top-left");
+
+
+        // view.ui.add(sketchWidget, {
+        //   position: "bottom-left",
+        //   index: 0,
+        //   id: "SketchWidget",
+        //   visible: false
+        // });
+
       })
       .catch(err => {
         console.log(err);
@@ -608,6 +699,7 @@ const MapControl = function ({
 
         // ecoPreviewGraphicLayer.add(graphicForSelectedEco);
         ecoMultiSelection.add(graphicForSelectedEco);
+        multiSelectionHelper(graphicForSelectedEco, feature);
         //console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
       });
 
@@ -622,6 +714,7 @@ const MapControl = function ({
     if (!ms || ms == "false") {
       multiSelectionList = [];
       multiSelectionList.push(feature);
+      graphicEcoshapNameKVP ={}
     }
     else {
       let existObj = false;
@@ -760,9 +853,13 @@ const MapControl = function ({
   }
 
   const queryEcoLayerByMouseEventOnSuccessHandler = feature => {
-    addPreviewEcoGraphic(feature);
+    // need to store the original feature first
+    const modal = document.getElementById("myModal");
+    var ms = modal.getAttribute('multi_selection');
+    if (!ms || ms === "false") originalFeatureName = feature.attributes.ecoshapename
 
-    if (ecoFeatureOnSelectHandler) {
+    addPreviewEcoGraphic(feature);
+    if (ecoFeatureOnSelectHandler && (!ms || ms === "false")) {
       ecoFeatureOnSelectHandler(feature);
     }
 
@@ -984,9 +1081,9 @@ const MapControl = function ({
           geometry: feature.geometry,
           symbol: symbol
         });
-
         ecoPreviewGraphicLayer.add(graphicForSelectedEco);
-        ecoMultiSelection.add(graphicForSelectedEco);
+        // ecoMultiSelection.add(graphicForSelectedEco);
+        multiSelectionHelper(graphicForSelectedEco, feature);
 
       });
     try {
@@ -995,6 +1092,38 @@ const MapControl = function ({
     } catch (e) { }
 
   };
+
+  // handle click add and remove graphics from the collection
+  const multiSelectionHelper = (graphicItem, feature) =>{
+    let existedGraphic = null;
+    let ecoshapename = feature.attributes.ecoshapename;
+    if (ecoshapename in graphicEcoshapNameKVP)
+    {
+      if (ecoshapename != originalFeatureName)
+      {
+        let graphicID = graphicEcoshapNameKVP[ecoshapename]
+        ecoMultiSelection.graphics.items.forEach(element => {
+          if (element.uid === graphicID) existedGraphic = element
+        });
+
+        // remove the element from the feature list and refresh the feedbackcontrol panel
+        multiSelectionList = multiSelectionList.filter(element => element.attributes.ecoshapename != ecoshapename);
+        showMS();
+        // remove the graphics 
+        ecoMultiSelection.remove(existedGraphic);
+        if (ecoMultiSelection.graphics.length == 0) ecoMultiSelection.removeAll();
+        delete graphicEcoshapNameKVP[ecoshapename];
+        // since you are clear out the current selected graphic, need to chear the preview graphicLayer
+      }
+      clearEcoPreviewGraphicLayer();
+    }
+    else 
+    {
+      ecoMultiSelection.add(graphicItem);
+      graphicEcoshapNameKVP[ecoshapename] = graphicItem.uid
+    }
+    
+}
 
   const getMultiSelectionList = () => {
     return multiSelectionList;

@@ -86,6 +86,7 @@ export default function SpeciesSelector(
       .map(d => {
         const val = d[config.FIELD_NAME.speciesLookup.rangeValForLookup];
         console.log("this is the val going into speciesSelector:", val)
+        // label is the name of the species
         const label = d[config.FIELD_NAME.speciesLookup.speciesName];
         const hasOverallFeedback = d.hasOverallFeedback
           ? getOptionDecorationClass("overall")

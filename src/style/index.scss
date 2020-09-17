@@ -1,4 +1,4 @@
-@import url("https://js.arcgis.com/4.10/esri/css/main.css");
+@import url("https://js.arcgis.com/4.16/esri/css/main.css");
 @import "~calcite-web/dist/css/calcite-web.min.css";
 
 $control-panel-width: 310px;
@@ -26,9 +26,9 @@ button.esri-sketch__button.esri-icon-redo{
   display: none;
 }
 
-div.esri-component.esri-sketch.esri-widget{
-  display: none;
-}
+// div.esri-component.esri-sketch.esri-widget{
+//   display: none;
+// }
 
 label.feedback {
   margin: 0px;
@@ -124,6 +124,7 @@ label.feedback {
   background: url("../static/polygons.png") center center no-repeat;
   background-size: 90%;
 }
+
 /* 
 .legend-icon[data-index="3"] {
   background-color: rgba(255, 255, 255, 1);
@@ -325,3 +326,7 @@ p.meta {
   max-height: 360px !important;
 }
 
+ul, ol {
+  font-size: 0.875rem !important;
+  line-height: 1.5;
+}

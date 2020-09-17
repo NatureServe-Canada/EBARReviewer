@@ -4,7 +4,7 @@ import config from "../config";
 
 const Promise = require('es6-promise').Promise;
 const esriLoaderOptions = {
-    url: 'https://js.arcgis.com/4.10'
+    url: 'https://js.arcgis.com/4.16'
 };
 // before using esri-loader, tell it to use the promise library if the Promise polyfill is being used
 esriLoader.utils.Promise = Promise;
