@@ -3,10 +3,10 @@ ArcGIS JavaScript web app for reviewing EBAR maps
 
 Project: Ecosytem-based Automated Range Mapping (EBAR)
 
-Credits: Kevin Hibma, Randal Greene
+Credits: Kevin Hibma, Max Guo, Randal Greene
 
 Based on: https://github.com/allenanselmo/species-reviewer-naba and https://github.com/vannizhang/species-reviewer under Apache 2.0 (http://www.apache.org/licenses/)<br>
-© NatureServe Canada 2019 under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+© NatureServe Canada 2020 under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
 
 From the project's root directory, install the required packages (dependencies):
 
