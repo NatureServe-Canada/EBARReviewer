@@ -78,10 +78,10 @@ export default function Controller(props = {}) {
 
   const initFeedbackManager = () => {
     feedbackManager.init({
-      onOpenHandler: data => {
+      onOpenHandler: (data, isMultiSelect) => {
         const prevFeedbackData = dataModel.getOverallFeedback(dataModel.selectedSpecies);
         data['datecompleted'] = (prevFeedbackData && prevFeedbackData.datecompleted) ? prevFeedbackData.datecompleted : null;
-        controllerProps.feedbackManagerOnOpen(data);
+        controllerProps.feedbackManagerOnOpen(data, isMultiSelect);
         if (document.getElementsByClassName('esri-icon-trash')[0]){ 
           var elem = document.getElementsByClassName('esri-icon-trash')[0].click();
         }
@@ -806,14 +806,14 @@ export default function Controller(props = {}) {
     }
   };
 
-  const setSelectedHucFeature = (feature = null) => {
+  const setSelectedHucFeature = (feature = null, isMultiSelect) => {
     state.selectedHucFeature = feature;
     const ecoID =
       state.selectedHucFeature.attributes[config.FIELD_NAME.ecoShapeLayerID];
     console.log("setSelectedHucFeature ", ecoID)
     if (!isReviewMode) {
       dataModel.setSelectedEcoShp(ecoID);
-      openFeedbackManager(feature.attributes);
+      openFeedbackManager(feature.attributes, isMultiSelect);
     } else {
       // console.log('query feedbacks for selected huc', ecoID);
       controllerProps.hucFeatureOnSelectForReviewMode(state.selectedHucFeature);
@@ -825,7 +825,7 @@ export default function Controller(props = {}) {
     feedbackManager.close();
   };
 
-  const openFeedbackManager = (ecoAtts = {}) => {
+  const openFeedbackManager = (ecoAtts = {}, isMultiSelect) => {
 
     if (document.getElementById('overallFeedbackControlPanelContainer')) {
       document.getElementById('overallFeedbackControlPanelContainer').style.display = "none";
@@ -882,7 +882,7 @@ export default function Controller(props = {}) {
         hucForSpeciesData
       };
 
-      feedbackManager.open(obj);
+      feedbackManager.open(obj, isMultiSelect);
       controllerProps.showMSdata();
     } else {
       console.error(

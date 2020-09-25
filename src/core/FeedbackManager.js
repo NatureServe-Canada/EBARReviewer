@@ -26,7 +26,7 @@ export default function (options = {}) {
   //   console.log("getTotalSelection", data);
   // }
 
-  const open = (data = {}) => {
+  const open = (data = {}, isMultiSelect) => {
     console.log("feedback open", data);
     // if data is already in dataStore, use the item from data store instead because it has the status and comments info
     const savedData = getSavedItemFromDataStore(data);
@@ -39,7 +39,7 @@ export default function (options = {}) {
     feedbackDataModel.init(data);
  
     if (eventHandlers["onAdd"]) {
-      eventHandlers["onAdd"](feedbackDataModel.getFeedbackData());
+      eventHandlers["onAdd"](feedbackDataModel.getFeedbackData(), isMultiSelect);
     }
   };
 

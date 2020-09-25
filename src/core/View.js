@@ -100,12 +100,13 @@ export default function View() {
     options = {
       target: null,
       isVisible: false,
-      data: null
+      data: null,
+      isMultiSelect : false
     }
   ) => {
     if (options.target) {
       if (options.isVisible) {
-        options.target.open(options.data);
+        options.target.open(options.data, options.isMultiSelect);
       } else {
         options.target.close();
       }

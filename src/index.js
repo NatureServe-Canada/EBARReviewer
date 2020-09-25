@@ -74,11 +74,12 @@ const initApp = async oauthManager => {
     legendDataOnReady: data => {
       view.legend.init({ data });
     },
-    feedbackManagerOnOpen: data => {
+    feedbackManagerOnOpen: (data,isMultiSelect) => {
       view.toggleControlPanel({
         target: view.feedbackControlPanel,
         isVisible: true,
-        data
+        data,
+        isMultiSelect
       });
     },
     feedbackManagerOnClose: () => {
@@ -411,9 +412,9 @@ const initApp = async oauthManager => {
   });
 
   mapControl.init({
-    ecoFeatureOnSelectHandler: ecoFeature => {
+    ecoFeatureOnSelectHandler: (ecoFeature, isMultiSelect) => {
       console.log('selected ecoFeature', ecoFeature);
-      controller.setSelectedHucFeature(ecoFeature);
+      controller.setSelectedHucFeature(ecoFeature, isMultiSelect);
     }
   });
 

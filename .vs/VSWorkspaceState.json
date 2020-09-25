@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src\\components",
+    "\\src\\static"
   ],
+  "SelectedNode": "\\webpack.config.js",
   "PreviewInSolutionExplorer": false
 }

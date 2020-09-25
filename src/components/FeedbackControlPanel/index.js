@@ -81,8 +81,8 @@ export default function FeedbackControlPanel() {
     state.isMultiSelection = !state.isMultiSelection;
     if (state.isMultiSelection === true) {
       document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "block";
-      document.getElementsByClassName('esri-sketch')[0].style.display = "block";
-      document.getElementById('sketchWidget').style.display = "block";
+      // document.getElementsByClassName('esri-sketch')[0].style.display = "block";
+      // document.getElementById('sketchWidget').style.display = "block";
       const modal = document.getElementById("myModal");
       modal.setAttribute('multi_selection', 'true');
       try { document.getElementById("fbSaveMS").style.display = "block"; } catch{ }
@@ -122,8 +122,8 @@ export default function FeedbackControlPanel() {
     }
     else {
       document.getElementById("feedbackControlPanelMultiSelectInfo").style.display = "none";
-      document.getElementsByClassName('esri-sketch')[0].style.display = "none";
-      document.getElementById('sketchWidget').style.display = "none";
+      // document.getElementsByClassName('esri-sketch')[0].style.display = "none";
+      // document.getElementById('sketchWidget').style.display = "none";
       clearMultiSelectGraphics();
       const modal = document.getElementById("myModal");
       modal.setAttribute('multi_selection', 'false');
@@ -155,7 +155,7 @@ export default function FeedbackControlPanel() {
   };
 
 
-  const render = () => {
+  const renderSingleSelect = () => {
     try {
       const modal = document.getElementById("myModal");
       var ms = modal.getAttribute('multi_selection');
@@ -202,7 +202,7 @@ export default function FeedbackControlPanel() {
                     <div id='actionDialogWrap'>`;
     // componentHtml += (state.isMultiSelection) ? `<span class='font-size-0'>Ecoshape: ${hucName}</span>` : ``;
 
-    componentHtml += `${getHtmlForActions()}
+    componentHtml += `${getHtmlForActions(false)}
                     </div>
 
                     <div id='removeReason'>
@@ -274,12 +274,96 @@ export default function FeedbackControlPanel() {
     }
   };
 
-  // const refreshActionDialog = ()=>{
-  //     document.getElementById('actionDialogWrap').innerHTML = getHtmlForActions();
-  // };
+
+  const renderMultiSelects = () => {
+
+    if (state.data) {
+      feedbackObjects.map(el => {
+        switch (el.rep) {
+          case "field-":
+            el.value = state.data[el.id.replace(el.rep, '')];
+            break;
+          case "additional-field-":
+            el.value = state.data.additionalFields[el.id.replace(el.rep, '')];
+            break;
+        }
+      });
+    }
+
+    const comment = state.data.comment || "";
+
+    let componentHtml = `
+            <div id='feedbackControlPanelContainer' class='panel panel-black'>
+                <div class='trailer-0 text-right close-btn'>
+                    <span class='icon-ui-left-arrow js-close'></span>
+                </div>
+                <div class='leader-half trailer-half' style='margin-top:0px'> 
+                  <span class='font-size-0' id="fbTitle" data-i18n="multi_sel_title">${$.i18n('multi_sel_title')}
+                  </span>
+                  <hr>
+                </div>`;
+    componentHtml += `<div class='feedbackControlPanelData' id="feedbackMainArea">
+                    <div id='actionDialogWrap'>`;
+
+    componentHtml += `${getHtmlForActions(true)}
+                    </div>
+
+                    <div id='removeReason'>
+                    ${getHtmlForAdditionalFieldsRemoveReason()}
+                    </div>
+
+                    <div class='comment-dialog'>
+                        <label class="feedback">
+                            <br>
+                            <span class='font-size--3'>${$.i18n('comment')}</span>
+                            <textarea type="text" id="field-comment" placeholder="" class="comment-textarea" maxlength="4095" defaultValue="${comment}">${comment}</textarea>
+                        </label>
+                    </div>
+
+                    <div class='additional-field-dialog'>
+                         ${getHtmlForAdditionalFields()} 
+                    </div>
+
+                    <div id="feedbackControlPanelMultiSelectInfo" style="flex;flex-direction:row;display:"block"};" class="font-size--3 meta">
+                      <span style="color:lightpink">${$.i18n('warning_markup')}</span>
+                       <div>Ecoshape(s):<span id="feedbackControlPanelMSIecoshapes" style="margin-left:5px;"></span></div>
+                       <div>${$.i18n('ter_area')}<span id="feedbackControlPanelMSIarea" style="margin-left:5px;"></span></div>
+                        <div>${$.i18n('ter_proportion')}<span id="feedbackControlPanelMSIproportion" style="margin-left:5px;"></span></div>
+                   
+                        </div>
+
+                </div>
+
+                <div class='trailer-half' id="fbBtns">
+                    ${getHtmlForBtns(state.data.isSaved)}
+                </div>
+            </div>
+        `;
+
+    container.innerHTML = componentHtml;
+    addSwitcherOnMultiSelectionHandler();
+    enableSaveButton();
+    enableSaveMSButton();
+
+    let ecoTitle = document.getElementById('fbTitle');
+    let feedbackDiv = document.getElementById('feedbackMainArea')
+    console.log(ecoTitle.offsetHeight)
+    
+    if (ecoTitle && feedbackDiv){
+      //let ecoTitleLen = ecoTitle.innerHTML.length;
+      //console.log('title length: ', ecoTitleLen);
+      // 19 appears to be the height when its a single line.
+      if (ecoTitle.offsetHeight > 19){
+        feedbackDiv.style = "height:84%"
+      }
+      else{
+        feedbackDiv.style = "height:87%"
+      }
+    }
+  };
 
 
-  const getHtmlForActions = () => {
+  const getHtmlForActions = (multiselect) => {
     //let status = getNewStatus();
 
     // const isChecked = state.isSumbitCommentOnly ? '' : 'is-checked';
@@ -320,7 +404,7 @@ export default function FeedbackControlPanel() {
     // get the Species dropdown selected value from the dom 
     let e = document.getElementById('speciesSelector')
     let selectedSpecies = e.options[e.selectedIndex].innerText
-    if (!state.isMultiSelection) {
+    if (!multiselect) {
       outputHtml += `<div class='flex-container'>
     <div class='inline-block' id="curEcoSelected">
 
@@ -334,7 +418,6 @@ export default function FeedbackControlPanel() {
         <strong>${$.i18n('presence')}:</strong> ${presence}  <br>
         <strong>${$.i18n('species')}:</strong> ${selectedSpecies} <br>     
         <strong>${$.i18n('metadata')}</strong> ${hucNotes} <br>
-
       </p>  
     </div>
     </div>       
@@ -396,8 +479,7 @@ export default function FeedbackControlPanel() {
     // outputHtml += `
     //     <div class='flex-container'><label class="feedback" id="markupLabel" style="display:${state.isMultiSelection ? "none" : "block"};"> <span class="font-size--3">Markup (required):</snap>
     //         <select style="width:100%" id="field-markup" required>`;
-    outputHtml += `<br>
-    <div class='flex-container'><label class="feedback" id="markupLabel" > <span class="font-size--3">${$.i18n('markup_req')}:</snap>
+    outputHtml += `<div class='flex-container'><label class="feedback" id="markupLabel" > <span class="font-size--3">${$.i18n('markup_req')}:</snap>
         <select style="width:100%" id="field-markup" required>`;
 
     range.map(item => {
@@ -805,9 +887,10 @@ export default function FeedbackControlPanel() {
 
   };
 
-  const open = (data = {}) => {
+  const open = (data = {}, isMultiSelect) => {
     initState(data);
-    render();
+    if (isMultiSelect) renderMultiSelects();
+    else renderSingleSelect();
   };
 
   const close = () => {

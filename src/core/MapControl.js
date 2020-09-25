@@ -39,6 +39,10 @@ const MapControl = function ({
   // handle remove
   let originalFeatureName = '';
   let graphicEcoshapNameKVP = {};
+  // handle new multi-select
+  let draw;
+  let isInDrawMode = false;
+  let deselectClick = false;
 
 
   // need to attach a completely transparent outline to each presence symbol below, otherwise they draw as full black
@@ -435,15 +439,17 @@ const MapControl = function ({
 
   const initMapEventHandlers = () => {
     mapView.on("click", event => {
-      const modal = document.getElementById("myModal");
-      var ms = modal.getAttribute('multi_selection');
-
-      if (!ms || ms == "false") {
-        ecoMultiSelection.removeAll();
-        ecoPreviewGraphicLayer.removeAll();
-        graphicEcoshapNameKVP ={}
-      }
-
+      // const modal = document.getElementById("myModal");
+      // var ms = modal.getAttribute('multi_selection');
+      if (isInDrawMode) return;
+      // if (!isInDrawMode) {
+      //   ecoMultiSelection.removeAll();
+      //   ecoPreviewGraphicLayer.removeAll();
+      //   graphicEcoshapNameKVP ={}
+      // }
+      ecoMultiSelection.removeAll();
+      ecoPreviewGraphicLayer.removeAll();
+      graphicEcoshapNameKVP ={}
       queryEcoLayerByMouseEvent(event)
         .then(queryEcoLayerByMouseEventOnSuccessHandler)
         .catch(err => {
@@ -457,6 +463,11 @@ const MapControl = function ({
         onScaleChange(mapView.scale);
       }
     });
+
+    mapView.on('key-down', event => {
+      if (event.key === 'Control') deselectClick = true
+  });
+;
   };
 
   const initMapEventHandlersRemove = () => {
@@ -581,68 +592,149 @@ const MapControl = function ({
   };
 
   const initSketch = view => {
-    esriLoader
-      .loadModules(["esri/widgets/Sketch", "esri/widgets/Expand"], esriLoaderOptions)
-      .then(([Sketch, Expand]) => {
-        const sketchWidget = new Sketch({
-          view,
-          layer: ecoMultiSelection,
-          id: "SketchWidget",
-          availableCreateTools : ["polyline", "polygon", "rectangle"],
-          defaultUpdateOptions : {
-            enableRotation : false,
-            enableScaling  : false,
-            enableZ : false,
-            multipleSelectionEnabled : false,
-            toggleToolOnClick : false
-          }
-        });
-
-        sketchWidget.on("create", function (event) {
-          // check if the create event's state has changed to complete indicating
-          //  the graphic create operation is completed.
-          initMapEventHandlersRemove();
-          if (event.state === "complete") {
-            console.log(event.graphic);
-
-            // if (queryEcoLayerByMSMouseEvent)
-            //   queryEcoLayerByMSMouseEvent(event.graphic.geometry);
-
-            queryEcoLayerByMSMouseEvent(event)
-              .then(queryEcoLayerByMSMouseEventOnSuccessHandler)
-              .catch(err => {
-                console.log(err);
+    esriLoader.loadModules([
+      "esri/views/draw/Draw",
+      "esri/Graphic",
+      "esri/geometry/Polyline",
+      "esri/geometry/Polygon"], esriLoaderOptions)
+        .then(([Draw, Graphic, Polyline, Polygon]) => {
+              view.ui.add("line-button", "top-left");
+              draw = new Draw({
+                  view: view
               });
 
-            // remove the graphic from the layer. Sketch adds
-            // the completed graphic to the layer by default.
-            ecoMultiSelection.remove(event.graphic);
-            // initMapEventHandlers();
-            // use the graphic.geometry to query features that intersect it
-            // selectFeatures(event.graphic.geometry);
-          }
-        });
 
-        let sketchContainer = document.createElement("div");
-        sketchContainer.setAttribute("id", "sketchWidget");
-        sketchContainer.style.display = "none";
-
-        const sketchExpand = new Expand({
-          view,
-          expandIconClass: "esri-icon-sketch-rectangle",
-          content: sketchWidget,
-          container: sketchContainer
-        });
-
-        mapView.ui.add(sketchExpand, "top-left");
+        document.getElementById("line-button").onclick = () => {
+          // clear all the previous stored multi-select features
+          isInDrawMode = true;
+          multiSelectionList = [];
+          ecoMultiSelection.removeAll();
+          ecoPreviewGraphicLayer.removeAll();
+          graphicEcoshapNameKVP ={}
 
 
-        // view.ui.add(sketchWidget, {
-        //   position: "bottom-left",
-        //   index: 0,
-        //   id: "SketchWidget",
-        //   visible: false
+          // creates and returns an instance of PolyLineDrawAction
+          const action = draw.create("polygon", "freehand");
+
+          // focus the view to activate keyboard shortcuts for sketching
+          view.focus();
+
+          // listen polylineDrawAction events to give immediate visual feedback
+          // to users as the line is being drawn on the view.
+          action.on(
+              ["vertex-remove", "cursor-update", "redo", "undo"],
+              updateVertices
+          );
+
+          action.on(["vertex-add", "draw-complete"], function (event) {
+              // create a polyline from returned vertices
+              if (event.vertices.length > 1) {
+                  createGraphic(event);
+              }
+              if (event.type === "draw-complete") {
+
+              //   var polyline = new Polyline({
+              //     paths: event.vertices,
+              //     spatialReference: view.spatialReference
+              // });
+
+              var polygon = new Polygon({
+                rings: event.vertices,
+                spatialReference: view.spatialReference
+            });
+
+                queryEcoLayerByMSMouseEvent(polygon)
+                .then(queryEcoLayerByMSMouseEventOnSuccessHandler)
+                .then(view.graphics.removeAll())
+                .then(window.setTimeout(() => {
+                    isInDrawMode = false
+                }, 1000))
+                .catch(err => {
+                  console.log(err);
+                });
+
+
+                  // //console.log('drawing Complete! Is in drawmode?  getState?', isInDrawMode, getSelectState());
+                  // var polyline = new Polyline({
+                  //     paths: event.vertices,
+                  //     spatialReference: view.spatialReference
+                  // });
+                  // queryHucsLayerByMouseEvent(polyline)
+                  //     .then(queryHucsLayerByMouseEventOnSuccessHandler)
+                  //     .then(view.graphics.removeAll())
+                  //     .then(window.setTimeout(() => {
+                  //         isInDrawMode = false
+                  //     }, 500))
+                  //     .catch(err => {
+                  //         console.log(err);
+                  //     });
+              }
+
+          });
+      };
+
+
+        // sketchWidget.on("create", function (event) {
+        //   initMapEventHandlersRemove();
+        //   if (event.state === "complete") {
+        //     console.log(event.graphic);
+
+        //     queryEcoLayerByMSMouseEvent(event)
+        //       .then(queryEcoLayerByMSMouseEventOnSuccessHandler)
+        //       .catch(err => {
+        //         console.log(err);
+        //       });
+
+        //     ecoMultiSelection.remove(event.graphic);
+        //   }
         // });
+
+        // let sketchContainer = document.createElement("div");
+        // sketchContainer.setAttribute("id", "sketchWidget");
+        // sketchContainer.style.display = "none";
+
+        // const sketchExpand = new Expand({
+        //   view,
+        //   expandIconClass: "esri-icon-sketch-rectangle",
+        //   content: sketchWidget,
+        //   container: sketchContainer
+        // });
+
+        // mapView.ui.add(sketchExpand, "top-left");
+
+
+        // Checks if the last vertex is making the line intersect itself.
+        const updateVertices = (event) => {
+          // create a polyline from returned vertices
+          if (event.vertices.length > 1) {
+              createGraphic(event);
+          }
+        }
+
+        // create a new graphic presenting the polyline that is being drawn on the view
+        const createGraphic = (event) => {
+          const vertices = event.vertices;
+          view.graphics.removeAll();
+
+          // a graphic representing the polyline that is being drawn
+          const graphic = new Graphic({
+              geometry: {
+                  type: "polygon",
+                  rings: vertices,
+                  spatialReference: view.spatialReference
+              },
+              symbol: {
+                  type: "simple-fill", // autocasts as new SimpleFillSymbol
+                  color: [4, 90, 141, 0.5]
+                  // width: 4,
+                  // cap: "round",
+                  // join: "round"
+              }
+          });
+
+          view.graphics.add(graphic);
+        }
+
 
       })
       .catch(err => {
@@ -650,11 +742,11 @@ const MapControl = function ({
       });
   };
 
-  const queryEcoLayerByMSMouseEvent = event => {
+  const queryEcoLayerByMSMouseEvent = geometry => {
     if (!ecoShpLayer) return;
-    if (!(event && event.graphic && event.graphic.geometry)) return;
+    if (!geometry) return;
     const query = ecoShpLayer.createQuery();
-    query.geometry = event.graphic.geometry; // the point location of the pointer
+    query.geometry = geometry; // the point location of the pointer
     query.spatialRelationship = "intersects"; // this is the default
     query.distance = 20;
     query.returnGeometry = true;
@@ -676,6 +768,8 @@ const MapControl = function ({
       console.log(features[i]);
       addPreviewEcoGraphicMS(features[i]);
     }
+    // TODO, think of a way to open the feedback panel with multiple features
+    ecoFeatureOnSelectHandler(multiSelectionList[0], true)
   };
 
   const addPreviewEcoGraphicMS = feature => {
@@ -697,9 +791,9 @@ const MapControl = function ({
           symbol: symbol
         });
 
-        // ecoPreviewGraphicLayer.add(graphicForSelectedEco);
+        ecoPreviewGraphicLayer.add(graphicForSelectedEco);
         ecoMultiSelection.add(graphicForSelectedEco);
-        multiSelectionHelper(graphicForSelectedEco, feature);
+        // multiSelectionHelper(graphicForSelectedEco, feature);
         //console.log('ecoMultiSelection.graphics.items.length', ecoMultiSelection.graphics.items.length);
       });
 
@@ -709,28 +803,28 @@ const MapControl = function ({
 
   const addtoMSlist = feature => {
     const modal = document.getElementById("myModal");
-    var ms = modal.getAttribute('multi_selection');
+    // var ms = modal.getAttribute('multi_selection');
 
-    if (!ms || ms == "false") {
-      multiSelectionList = [];
+    // if (!ms || ms == "false") {
+    //   multiSelectionList = [];
+    //   multiSelectionList.push(feature);
+    //   graphicEcoshapNameKVP ={}
+    // }
+    // else {
+    let existObj = false;
+    let ind = 0;
+    for (var i = 0; i < multiSelectionList.length; ++i) {
+      if (feature.attributes.ecoshapename === multiSelectionList[i].attributes.ecoshapename) {
+        existObj = true;
+        ind = i;
+      }
+    }
+
+    if (!existObj) {
       multiSelectionList.push(feature);
-      graphicEcoshapNameKVP ={}
     }
-    else {
-      let existObj = false;
-      let ind = 0;
-      for (var i = 0; i < multiSelectionList.length; ++i) {
-        if (feature.attributes.ecoshapename === multiSelectionList[i].attributes.ecoshapename) {
-          existObj = true;
-          ind = i;
-        }
-      }
-
-      if (!existObj) {
-        multiSelectionList.push(feature);
-      }
-      showMS();
-    }
+    showMS();
+    // }
 
   };
 
@@ -859,8 +953,8 @@ const MapControl = function ({
     if (!ms || ms === "false") originalFeatureName = feature.attributes.ecoshapename
 
     addPreviewEcoGraphic(feature);
-    if (ecoFeatureOnSelectHandler && (!ms || ms === "false")) {
-      ecoFeatureOnSelectHandler(feature);
+    if (ecoFeatureOnSelectHandler && (!isInDrawMode)) {
+      ecoFeatureOnSelectHandler(feature, false);
     }
 
   };
@@ -1082,8 +1176,9 @@ const MapControl = function ({
           symbol: symbol
         });
         ecoPreviewGraphicLayer.add(graphicForSelectedEco);
-        // ecoMultiSelection.add(graphicForSelectedEco);
-        multiSelectionHelper(graphicForSelectedEco, feature);
+        ecoMultiSelection.add(graphicForSelectedEco);
+        
+        // multiSelectionHelper(graphicForSelectedEco, feature);
 
       });
     try {
